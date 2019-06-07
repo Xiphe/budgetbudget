@@ -1,0 +1,84 @@
+{
+  "name": "moneymoneymonthlybudgets",
+  "productName": "moneymoneymonthlybudgets",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": ".webpack/main",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "keywords": [],
+  "author": "xiphe",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "moneymoneymonthlybudgets"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ],
+      "plugins": [
+        [
+          "@electron-forge/plugin-webpack",
+          {
+            "mainConfig": "./webpack/main.js",
+            "renderer": {
+              "config": "./webpack/renderer.js",
+              "entryPoints": [
+                {
+                  "html": "./app/index.html",
+                  "js": "./app/bootstrap.tsx",
+                  "name": "main_window"
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "1.0.0",
+    "react": "16.8.6",
+    "react-dom": "16.8.6"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "6.0.0-beta.39",
+    "@electron-forge/maker-deb": "6.0.0-beta.39",
+    "@electron-forge/maker-rpm": "6.0.0-beta.39",
+    "@electron-forge/maker-squirrel": "6.0.0-beta.39",
+    "@electron-forge/maker-zip": "6.0.0-beta.39",
+    "@electron-forge/plugin-webpack": "6.0.0-beta.39",
+    "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
+    "@types/node": "12.0.7",
+    "@types/react": "16.8.19",
+    "@types/react-dom": "16.8.4",
+    "awesome-typescript-loader": "5.2.1",
+    "electron": "5.0.2",
+    "node-loader": "^0.6.0",
+    "source-map-loader": "0.2.4",
+    "typescript": "3.5.1"
+  }
+}

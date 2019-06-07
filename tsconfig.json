@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "jsx": "react",
+    "outDir": "dist",
+    "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["es6", "es2017.object", "dom", "esnext.asynciterable"],
+    "paths": {
+      "*": ["node_modules/*"]
+    }
+  },
+  "include": ["app/**/*", "main/**/*"]
+}
