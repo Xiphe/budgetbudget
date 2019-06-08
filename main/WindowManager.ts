@@ -3,6 +3,9 @@ import { BrowserWindow } from 'electron';
 const DEFAULT_WINDOW_CONFIG = {
   width: 800,
   height: 600,
+  webPreferences: {
+    nodeIntegration: true,
+  },
 };
 
 export default class WindowManager {
