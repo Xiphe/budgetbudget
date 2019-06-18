@@ -1,11 +1,16 @@
 import React from 'react';
 import { render } from 'react-dom';
 import App from './App';
-import { ErrorBoundary } from './lib/components';
+import {
+  ErrorHandler,
+  MoneyMoneyClientProvider,
+} from './lib/components/providers';
 
 render(
-  <ErrorBoundary>
-    <App />
-  </ErrorBoundary>,
+  <ErrorHandler>
+    <MoneyMoneyClientProvider>
+      <App />
+    </MoneyMoneyClientProvider>
+  </ErrorHandler>,
   document.getElementById('root'),
 );

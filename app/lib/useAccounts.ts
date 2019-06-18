@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Account, useClient } from './moneyMoneyClient';
+import { Account, useClient } from './moneyMoney';
 import { IpcError } from '../../shared/ipc';
 import useActiveEffect from './useActiveEffect';
 
@@ -8,10 +8,6 @@ export default function useAccounts() {
   const [accounts, setAccounts] = useState<Account[] | null | IpcError>(null);
   useActiveEffect(
     (whenActive) => {
-      if (!api) {
-        return;
-      }
-
       const guardedSetAccounts = whenActive(setAccounts);
       api.getAccounts().then(guardedSetAccounts, guardedSetAccounts);
     },
