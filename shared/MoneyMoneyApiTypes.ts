@@ -7,7 +7,7 @@ type Balance = [number, Currency];
 
 export type Account = {
   name: string;
-  balance: Balance[];
+  balance: Balance;
 };
 
 export type GetAccounts = {

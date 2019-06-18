@@ -4,8 +4,13 @@ import { server } from '../shared/ipc';
 import { AllMessages, Account } from '../shared/MoneyMoneyApiTypes';
 import { osascript } from './lib';
 import { parse } from 'plist';
+import { Omit } from '../shared/types';
 
-function isAccount(account: any): account is Account {
+type AccountWithMultiBalance = Omit<Account, 'balance'> & {
+  balance: Account['balance'][];
+};
+
+function isAccount(account: any): account is AccountWithMultiBalance {
   if (!account.accountNumber || !account.accountNumber.length) {
     /* Though the account number is not part of the type, we're excluding
        accounts without number, assuming its a group */
@@ -22,12 +27,19 @@ function isAccount(account: any): account is Account {
   );
 }
 
-function normalizeAccounts(accounts: Account[]) {
+function normalizeAccounts(
+  accounts: AccountWithMultiBalance[],
+): Promise<Account[]> {
   return Promise.all(
     accounts.map(async ({ name, balance }) => {
+      if (balance.length !== 1) {
+        throw new Error(
+          `Unexpectedly got multiple balance from account "${name}"`,
+        );
+      }
       return {
         name,
-        balance,
+        balance: balance[0],
       };
     }),
   );

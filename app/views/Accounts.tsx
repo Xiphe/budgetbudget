@@ -15,7 +15,11 @@ export default function Accounts() {
   return (
     <ul>
       {accounts.map(({ name, balance }) => {
-        return <li key={name}>{name}</li>;
+        return (
+          <li key={name}>
+            {name}: {balance[0]} {balance[1]}
+          </li>
+        );
       })}
     </ul>
   );
