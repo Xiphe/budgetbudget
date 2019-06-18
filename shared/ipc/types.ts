@@ -4,6 +4,21 @@ export type Message = {
   response?: any;
 };
 
+export type RetryHandler = (err: RetryError) => void;
+
+export type IpcError = Error & {
+  retry?: boolean;
+  code?: string | number;
+  attempts?: number;
+};
+
+export type RetryError = Error & {
+  code?: string | number;
+  attempts?: number;
+  retry: () => void;
+  cancel: () => void;
+};
+
 export type IdMessage = Message & {
   id: number;
 };

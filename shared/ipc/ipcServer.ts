@@ -1,5 +1,5 @@
 import { EventEmitter, Event } from 'electron';
-import { Message, IdMessage, MessageHandlers } from './types';
+import { Message, IdMessage, MessageHandlers, IpcError } from './types';
 import createDebugger from 'debug';
 
 type ReplyableEvent = Event & {
@@ -24,10 +24,14 @@ function handle(
   return fn(message.payload);
 }
 
-function error(err: Error, id: number) {
+function error(err: IpcError, id: number) {
   return {
     ok: false,
-    error: err,
+    error: {
+      message: err.message,
+      code: err.code,
+      retry: err.retry,
+    },
     id,
   };
 }
