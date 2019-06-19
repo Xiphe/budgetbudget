@@ -4,7 +4,7 @@ export type Message = {
   response?: any;
 };
 
-export type RetryHandler = (err: RetryError) => void;
+export type RetryHandler = (err: RetryError) => () => void;
 
 export type IpcError = Error & {
   retry?: boolean;

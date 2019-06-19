@@ -10,20 +10,7 @@ export default function MoneyMoneyClientProvider({
 }) {
   const setError = useContext(ErrorContext);
   const api = useMemo(() => {
-    return createApiClient((err) => {
-      const originalCancel = err.cancel;
-      const originalRetry = err.retry;
-      let remove: () => void;
-      err.cancel = () => {
-        remove();
-        originalCancel();
-      };
-      err.retry = () => {
-        remove();
-        originalRetry();
-      };
-      remove = setError(err);
-    });
+    return createApiClient(setError);
   }, [setError]);
   return (
     <ClientContext.Provider value={api}>{children}</ClientContext.Provider>

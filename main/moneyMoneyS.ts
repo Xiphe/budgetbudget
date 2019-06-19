@@ -45,7 +45,15 @@ function normalizeAccounts(
   );
 }
 
-async function getAccounts(): Promise<Account[]> {
+function isDbLocked(err: any) {
+  return err.stderr && err.stderr.includes('Locked database. (-2720)');
+}
+
+function delay(t: number) {
+  return new Promise((r) => setTimeout(r, t));
+}
+
+async function getAccounts(_?: any, retry = 0): Promise<Account[]> {
   try {
     const parsedStdout = parse(
       await osascript('tell application "MoneyMoney" to export accounts'),
@@ -57,12 +65,14 @@ async function getAccounts(): Promise<Account[]> {
 
     return normalizeAccounts(parsedStdout.filter(isAccount));
   } catch (err) {
-    console.log(err);
-    if (err.stderr && err.stderr.includes('Locked database. (-2720)')) {
+    if (isDbLocked(err)) {
+      if (retry < 3) {
+        await delay(retry * 500);
+        return getAccounts(_, retry + 1);
+      }
       throw { retry: true, message: 'MoneyMoney database is locked' };
     }
-
-    throw err.stderr || err;
+    throw err;
   }
 }
 

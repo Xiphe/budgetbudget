@@ -24,8 +24,6 @@ type Sender = (channel: string, message: IdMessage) => void;
 type Queue = {
   [key: number]: {
     (err: IpcError | null, response?: any): void;
-    attempts?: number;
-    retry?: () => void;
   };
 };
 
@@ -36,7 +34,6 @@ function listen(
   emitter: EventEmitter,
   queue: Queue,
   debug: ReturnType<typeof createDebugger>,
-  { maxRetries = 3 }: { maxRetries?: number } = {},
 ) {
   const resChannel = `${channel}Res`;
   const handler = (event: Event, r: ResponseMessage) => {
@@ -50,21 +47,10 @@ function listen(
 
     if (!r.ok) {
       debug('got error', r);
-      if (r.error.retry && (queue[r.id].attempts || 0) < maxRetries) {
-        queue[r.id].attempts = (queue[r.id].attempts || 0) + 1;
-        debug('retrying: ', queue[r.id].attempts, 'of', maxRetries);
-        setTimeout(() => {
-          queue[r.id].retry!();
-        }, queue[r.id].attempts! * 300);
-        return;
-      }
 
       const e: IpcError = new Error(r.error.message);
       e.code = r.error.code;
-      if (r.error.retry) {
-        e.retry = true;
-        e.attempts = maxRetries;
-      }
+      e.retry = r.error.retry;
       queue[r.id](e);
     } else {
       debug('got response', r);
@@ -117,24 +103,24 @@ export default function ipcClient<M extends Message[]>(
 
             if (err.retry && retryHandler) {
               const retryErr: RetryError = err as any;
+              let cleanup: () => void;
               retryErr.retry = () => {
+                cleanup();
                 memo[action](payload).then(resolve, reject);
               };
               retryErr.cancel = () => {
+                cleanup();
                 reject(err);
               };
-              return retryHandler(retryErr);
+              cleanup = retryHandler(retryErr);
+              return;
             }
 
             reject(err);
           };
           const message = { id, action, payload };
-          const trySend = () => {
-            tryListen();
-            send(`${channel}Req`, message);
-          };
-          queue[id].retry = trySend;
-          trySend();
+          tryListen();
+          send(`${channel}Req`, message);
           debug('send request', message);
         });
       };
