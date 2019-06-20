@@ -60,11 +60,11 @@ export default function ManualErrorHandler({
 
   const setError = useMemo(() => {
     return (err: Error) => {
-      updateErrors([...errors, err]);
+      updateErrors((prevErrors) => [...prevErrors, err]);
       return () => {
-        updateErrors([
-          ...errors.slice(0, errors.indexOf(err)),
-          ...errors.slice(errors.indexOf(err) + 1),
+        updateErrors((prevErrors) => [
+          ...prevErrors.slice(0, prevErrors.indexOf(err)),
+          ...prevErrors.slice(prevErrors.indexOf(err) + 1),
         ]);
       };
     };
