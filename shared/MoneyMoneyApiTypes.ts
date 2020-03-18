@@ -56,7 +56,7 @@ export type GetCategories = {
 
 export type GetTransactions = {
   action: typeof GET_TRANSACTIONS;
-  payload: Month;
+  payload: void;
   response: Transaction[];
 };
 
