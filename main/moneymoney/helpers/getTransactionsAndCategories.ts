@@ -63,26 +63,23 @@ function toTransaction(account: Account) {
 }
 
 function extractCategories(transactions: Transaction[]) {
-  return transactions.reduce(
-    (memo, { categoryId, category }) => {
-      if (!category || !categoryId) {
-        return memo;
-      }
-
-      if (memo.find(({ id }) => id === categoryId)) {
-        return memo;
-      }
-
-      const tokens = category.split('\\');
-      const parents = tokens.splice(0, tokens.length - 1);
-      const [name] = tokens;
-
-      memo.push({ id: categoryId, name, parents });
-
+  return transactions.reduce((memo, { categoryId, category }) => {
+    if (!category || !categoryId) {
       return memo;
-    },
-    [] as Category[],
-  );
+    }
+
+    if (memo.find(({ id }) => id === categoryId)) {
+      return memo;
+    }
+
+    const tokens = category.split('\\');
+    const parents = tokens.splice(0, tokens.length - 1);
+    const [name] = tokens;
+
+    memo.push({ id: categoryId, name, parents });
+
+    return memo;
+  }, [] as Category[]);
 }
 
 function isPlistObject(val: any): val is PlistObject {
@@ -105,9 +102,7 @@ async function getAccountTransactions(
   try {
     const resp = parse(
       await osascript(
-        `tell application "MoneyMoney" to export transactions from account "${
-          account.number
-        }" from date "1.1.1980" as "plist"`,
+        `tell application "MoneyMoney" to export transactions from account "${account.number}" from date "1.1.1980" as "plist"`,
       ),
     );
 
