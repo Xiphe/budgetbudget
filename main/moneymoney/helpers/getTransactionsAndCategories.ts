@@ -9,7 +9,6 @@ import { parse, PlistObject } from 'plist';
 import isDbLocked from './isDbLocked';
 import delay from '../../../shared/delay';
 import { getAccounts } from '../handlers';
-import { Omit } from '../../../shared/types';
 
 type TransactionWithoutAccountNumber = Omit<Transaction, 'accountNumber'>;
 

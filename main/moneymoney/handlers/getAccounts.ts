@@ -1,7 +1,6 @@
 import { Account, CURRENCIES } from '../../../shared/MoneyMoneyApiTypes';
 import { osascript } from '../../lib';
 import { parse } from 'plist';
-import { Omit } from '../../../shared/types';
 import isDbLocked from '../helpers/isDbLocked';
 import delay from '../../../shared/delay';
 
