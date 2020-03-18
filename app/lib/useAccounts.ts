@@ -1,17 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Account, useClient } from './moneyMoney';
 import { IpcError } from '../../shared/ipc';
-import useActiveEffect from './useActiveEffect';
 
 export default function useAccounts() {
   const api = useClient();
   const [accounts, setAccounts] = useState<Account[] | null | IpcError>(null);
-  useActiveEffect(
-    (whenActive) => {
-      const guardedSetAccounts = whenActive(setAccounts);
-      api.getAccounts().then(guardedSetAccounts, guardedSetAccounts);
-    },
-    [api, setAccounts],
-  );
+  useEffect(() => {
+    let canceled = false;
+    const setUnlessCanceled = (accounts: Account[] | IpcError) => {
+      if (!canceled) {
+        setAccounts(accounts);
+      }
+    };
+    api.getAccounts().then(setUnlessCanceled, setUnlessCanceled);
+    return () => {
+      canceled = true;
+    };
+  }, [api, setAccounts]);
   return accounts;
 }
