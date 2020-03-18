@@ -6,6 +6,7 @@ import delay from '../../../shared/delay';
 
 type InteropAccount = Omit<Account, 'balance'> & {
   balance: Account['balance'][];
+  attributes?: { [key: string]: string };
   accountNumber: string;
 };
 
@@ -24,6 +25,10 @@ function normalizeAccounts(accounts: InteropAccount[]): Promise<Account[]> {
       };
     }),
   );
+}
+
+function isVisible(account: InteropAccount) {
+  return !account.attributes || account.attributes['mb-hide'] !== 'true';
 }
 
 function isAccount(account: any): account is InteropAccount {
@@ -65,7 +70,7 @@ export default async function getAccounts(
       throw new Error('Unexpectedly got non-array as accounts');
     }
 
-    return normalizeAccounts(parsedStdout.filter(isAccount));
+    return normalizeAccounts(parsedStdout.filter(isAccount).filter(isVisible));
   } catch (err) {
     if (isDbLocked(err)) {
       if (retry < 3) {
