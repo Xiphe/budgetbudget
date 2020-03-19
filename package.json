@@ -4,7 +4,9 @@
   "description": "work with monthly budgets alongside moneymoney",
   "main": "start-electron.js",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "export PORT=$(get-port 7654) && concurrently npm:start:cra npm:start:electron",
+    "start:cra": "BROWSER=none react-scripts start",
+    "start:electron": "export SERVER_URL=http://localhost:$PORT && wait-on $SERVER_URL && NODE_ENV=development electron .",
     "build": "react-scripts build",
     "test": "react-scripts test"
   },
@@ -19,36 +21,26 @@
     "@types/react-dom": "16.9.5",
     "concurrently": "5.1.0",
     "electron": "8.1.1",
+    "get-port-cli": "2.0.0",
     "pouchdb": "7.2.1",
     "react": "16.13.0",
     "react-dom": "16.13.0",
     "react-scripts": "3.4.0",
-    "typescript": "3.8.3"
+    "typescript": "3.8.3",
+    "wait-on": "4.0.1"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
   "browserslist": [
-    "electron"
+    "electron 8.1.1"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Xiphe/moneymoneymonthlybudgets.git"
   },
-  "keywords": [
-    "budget",
-    "moneymoney",
-    "osx",
-    "monthly",
-    "ynab",
-    "actual",
-    "budgeting"
-  ],
   "private": true,
   "author": "Hannes Diercks <node@xiphe.net> (https://xiphe.net/)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Xiphe/moneymoneymonthlybudgets/issues"
-  },
-  "homepage": "https://github.com/Xiphe/moneymoneymonthlybudgets#readme"
+  "homepage": "./"
 }
