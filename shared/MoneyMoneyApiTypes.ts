@@ -1,14 +1,10 @@
 const GET_ACCOUNTS = 'getAccounts';
 const GET_CATEGORIES = 'getCategories';
-const GET_TRANSACTIONS = 'getTransactions';
+const GET_BALANCES = 'getBalances';
 export const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const;
-export const ACTIONS = [
-  GET_ACCOUNTS,
-  GET_CATEGORIES,
-  GET_TRANSACTIONS,
-] as const;
+export const ACTIONS = [GET_ACCOUNTS, GET_CATEGORIES, GET_BALANCES] as const;
 
-export const CURRENCIES = ['EUR'] as const;
+export const CURRENCIES = ['EUR', 'USD'] as const;
 
 export type Currency = typeof CURRENCIES[number];
 
@@ -25,8 +21,14 @@ export type Account = {
 export type Category = {
   id: number;
   name: string;
-  parents: string[];
 };
+
+export type CategoryGroup = {
+  name: string;
+  children: CategoryTree[];
+};
+
+export type CategoryTree = Category | CategoryGroup;
 
 export type Transaction = {
   id: number;
@@ -42,6 +44,20 @@ export type Transaction = {
   categoryId?: number;
 };
 
+export type CategoryBalance = {
+  amount: number;
+  currency: Currency;
+  transactions: Transaction[];
+};
+export type MonthlyBalance = {
+  month: Month;
+  year: number;
+  categories: {
+    [key: number]: CategoryBalance[];
+  };
+  uncategorised: CategoryBalance[];
+};
+
 export type GetAccounts = {
   action: typeof GET_ACCOUNTS;
   payload: void;
@@ -51,13 +67,13 @@ export type GetAccounts = {
 export type GetCategories = {
   action: typeof GET_CATEGORIES;
   payload: void;
-  response: Category[];
+  response: CategoryTree[];
 };
 
-export type GetTransactions = {
-  action: typeof GET_TRANSACTIONS;
+export type GetBalances = {
+  action: typeof GET_BALANCES;
   payload: void;
-  response: Transaction[];
+  response: MonthlyBalance[];
 };
 
-export type AllMessages = [GetAccounts, GetCategories, GetTransactions];
+export type AllMessages = [GetAccounts, GetCategories, GetBalances];
