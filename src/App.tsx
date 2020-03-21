@@ -1,10 +1,17 @@
 import React from 'react';
-import { getAccounts, getBalancesAndCategories } from './moneymoney';
-
-getAccounts()
-  .then(getBalancesAndCategories)
-  .then(console.log, console.error);
+import { useInit } from './lib';
+import { Loading } from './components';
 
 export default function App() {
-  return <h1>Hello</h1>;
+  const init = useInit();
+
+  if (!init) {
+    return <Loading />;
+  }
+
+  if (init instanceof Error) {
+    return <p>Error: {init.message}</p>;
+  }
+
+  return <h1>Hello {init}</h1>;
 }

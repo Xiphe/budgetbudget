@@ -1,7 +1,13 @@
-const { app, BrowserWindow } = require('electron');
+const { app, dialog, BrowserWindow, Menu, ipcMain } = require('electron');
 
-console.log(process.env.NODE_ENV, process.env.SERVER_URL);
-function createWindow() {
+const windows = {};
+
+function createWindow(file) {
+  if (windows[file]) {
+    windows[file].show();
+    return;
+  }
+
   const win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -16,9 +22,51 @@ function createWindow() {
   } else {
     win.loadFile('./build/index.html');
   }
+
+  if (file) {
+    windows[file] = win;
+  }
 }
 
-app.on('ready', createWindow);
+ipcMain.handle('INIT', (ev) => {
+  const [file] =
+    Object.entries(windows).find(
+      ([_, { webContents }]) => webContents === ev.sender,
+    ) || [];
+
+  return file;
+});
+
+const menu = Menu.buildFromTemplate([
+  { role: 'appMenu' },
+  {
+    label: 'File',
+    submenu: [
+      {
+        label: 'New Budget',
+        click() {
+          createWindow();
+        },
+      },
+      {
+        label: 'Open',
+        async click() {
+          const { canceled, filePaths } = await dialog.showOpenDialog({
+            properties: ['openFile'],
+            filters: [{ name: 'Budget', extensions: ['budget'] }],
+          });
+          if (canceled) {
+            return;
+          }
+          filePaths.forEach(createWindow);
+        },
+      },
+    ],
+  },
+]);
+Menu.setApplicationMenu(menu);
+
+app.on('ready', () => createWindow());
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
