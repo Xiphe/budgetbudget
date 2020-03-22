@@ -1,7 +1,6 @@
 import {
   Transaction,
   CURRENCIES,
-  Account,
   CategoryTree,
   CategoryGroup,
   MonthlyBalance,
@@ -37,7 +36,7 @@ function isTransaction(transaction: any): transaction is InteropTransaction {
   );
 }
 
-function toTransaction(account: Account) {
+function toTransaction(accountNumber: string) {
   return ({
     id,
     amount,
@@ -53,7 +52,7 @@ function toTransaction(account: Account) {
     return {
       id,
       amount: [amount, currency],
-      accountNumber: account.number,
+      accountNumber,
       booked,
       bookingDate,
       valueDate,
@@ -114,13 +113,13 @@ function isArray(val: any): val is any[] {
 }
 
 async function getAccountTransactions(
-  account: Account,
+  accountNumber: string,
   retry = 0,
 ): Promise<Transaction[]> {
   try {
     const resp = parse(
       await osascript(
-        `tell application "MoneyMoney" to export transactions from account "${account.number}" from date "1.1.1980" as "plist"`,
+        `tell application "MoneyMoney" to export transactions from account "${accountNumber}" from date "1.1.1980" as "plist"`,
       ),
     );
 
@@ -132,12 +131,14 @@ async function getAccountTransactions(
       throw new Error('Unexpectedly got non-array as transactions');
     }
 
-    return resp.transactions.filter(isTransaction).map(toTransaction(account));
+    return resp.transactions
+      .filter(isTransaction)
+      .map(toTransaction(accountNumber));
   } catch (err) {
     if (isDbLocked(err)) {
       if (retry < 3) {
         await delay(retry * 500);
-        return getAccountTransactions(account, retry + 1);
+        return getAccountTransactions(accountNumber, retry + 1);
       }
       throw new Error('MoneyMoney database is locked');
     }
@@ -214,13 +215,13 @@ function calculateBalances(transactions: Transaction[]): MonthlyBalance[] {
 }
 
 export default async function getBalancesAndCategories(
-  accounts: Account[],
+  accountNumbers: string[],
 ): Promise<{
   balances: MonthlyBalance[];
   categories: CategoryTree[];
 }> {
   const transactions = (
-    await Promise.all(accounts.map(getAccountTransactions))
+    await Promise.all(accountNumbers.map(getAccountTransactions))
   ).reduce((memo, transactions) => memo.concat(transactions), []);
 
   return {
