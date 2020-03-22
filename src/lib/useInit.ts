@@ -1,8 +1,9 @@
 import { IpcRenderer } from 'electron';
 import { useState, useEffect } from 'react';
 
-export default function useInit(): Error | string | null | true {
-  const [file, setFile] = useState<string | null | true>(null);
+export const INIT_NEW = Symbol('INIT_NEW');
+export default function useInit(): Error | string | null | typeof INIT_NEW {
+  const [file, setFile] = useState<string | null | typeof INIT_NEW>(null);
   const [error, setError] = useState<null | Error>(null);
   useEffect(() => {
     let canceled = false;
@@ -12,7 +13,7 @@ export default function useInit(): Error | string | null | true {
         return;
       }
       if (typeof res === 'undefined') {
-        setFile(true);
+        setFile(INIT_NEW);
       } else if (typeof res === 'string') {
         setFile(res);
       } else {
