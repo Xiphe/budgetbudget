@@ -152,7 +152,7 @@ function mergeCatBalance(balances: Balance[] = [], transaction: Transaction) {
   );
   if (!catBalance) {
     catBalance = {
-      amount: transaction.amount,
+      amount: [transaction.amount[0], transaction.amount[1]],
       transactions: [transaction],
     };
     balances.push(catBalance);
@@ -186,7 +186,7 @@ function calculateBalances(transactions: Transaction[]): MonthlyBalance[] {
       if (total) {
         total[0] += transaction.amount[0];
       } else {
-        memo[key].total.push(transaction.amount);
+        memo[key].total.push([transaction.amount[0], transaction.amount[1]]);
       }
 
       const categoryId = transaction.categoryId;
