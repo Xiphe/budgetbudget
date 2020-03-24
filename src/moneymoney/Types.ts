@@ -1,9 +1,7 @@
-export const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const;
 export const CURRENCIES = ['EUR', 'USD'] as const;
 
 export type Currency = typeof CURRENCIES[number];
 export type Amount = [number, Currency];
-export type Month = typeof MONTHS[number];
 
 export type Account = {
   name: string;
@@ -20,6 +18,9 @@ export type CategoryGroup = {
   children: CategoryTree[];
 };
 export type CategoryTree = Category | CategoryGroup;
+export function isCategory(tree: CategoryTree): tree is Category {
+  return typeof (tree as Category).id === 'number';
+}
 
 export type Transaction = {
   id: number;
@@ -34,16 +35,17 @@ export type Transaction = {
   categoryId?: number;
 };
 
-export type Balance = {
-  amount: Amount;
+export type AmountWithTransactions = {
+  amount: number;
   transactions: Transaction[];
 };
-export type MonthlyBalance = {
-  month: Month;
-  year: number;
-  total: Amount[];
+export type Balance = {
+  total: number;
   categories: {
-    [key: number]: Balance[];
+    [key: number]: AmountWithTransactions;
   };
-  uncategorised: Balance[];
+  uncategorised: AmountWithTransactions;
+};
+export type Balances = {
+  [key: string]: undefined | Balance;
 };

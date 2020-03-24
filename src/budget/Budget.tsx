@@ -1,14 +1,13 @@
-import { readFile as rft } from 'fs';
-import React, { useEffect, useReducer, lazy, useState } from 'react';
+import React, { useReducer, lazy } from 'react';
 import { INIT_NEW } from '../lib';
 import { Loading } from '../components';
 import useMenu from './useMenu';
 import budgetReducer, { ACTION_INIT } from './budgetReducer';
 import useSave from './useSave';
-import { isBudgetState } from './Types';
+import useInit from './useInit';
 
+const Months = lazy(() => import('./Months'));
 const NewBudget = lazy(() => import('./NewBudget'));
-const readFile: typeof rft = window.require('fs').readFile;
 
 type Props = {
   init: string | typeof INIT_NEW;
@@ -18,35 +17,7 @@ export default function Budget({ init }: Props) {
   const [state, dispatch] = useReducer(budgetReducer, null);
   const menu = useMenu();
   const error = useSave(menu, state);
-  const [loadingError, setLoadingError] = useState<null | Error>(null);
-  useEffect(() => {
-    let canceled = false;
-    if (init === INIT_NEW) {
-      dispatch({ type: ACTION_INIT, payload: { settings: {} } });
-    } else {
-      readFile(init, (err, data) => {
-        if (canceled) {
-          return;
-        }
-        if (err) {
-          setLoadingError(err);
-          return;
-        }
-        try {
-          const budget = JSON.parse(data.toString());
-          if (!isBudgetState(budget)) {
-            throw new Error(`Malformed budget: ${init}`);
-          }
-          dispatch({ type: ACTION_INIT, payload: budget });
-        } catch (err) {
-          setLoadingError(err);
-        }
-      });
-    }
-    return () => {
-      canceled = true;
-    };
-  }, [init]);
+  const loadingError = useInit(init, dispatch);
 
   if (loadingError) {
     return <p>Error: {loadingError.message}</p>;
@@ -66,5 +37,10 @@ export default function Budget({ init }: Props) {
     );
   }
 
-  return <h1>{state.name}</h1>;
+  return (
+    <>
+      <h1>{state.name}</h1>
+      <Months state={state} dispatch={dispatch} />
+    </>
+  );
 }

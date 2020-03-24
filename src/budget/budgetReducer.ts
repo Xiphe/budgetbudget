@@ -6,7 +6,7 @@ type InitAction = {
   type: typeof ACTION_INIT;
   payload: BudgetState;
 };
-type Action = InitAction;
+export type Action = InitAction;
 
 export default function budgetReducer(
   state: null | BudgetState,

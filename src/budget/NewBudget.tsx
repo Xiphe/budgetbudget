@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BudgetState } from './Types';
+import { BudgetState, VERSION } from './Types';
 import { useAccounts } from '../moneymoney';
 import { Loading } from '../components';
 
@@ -71,7 +71,12 @@ export default function NewBudget({ onCreate }: Props) {
       <button
         disabled={name === '' || !selectedAccounts.length}
         onClick={() =>
-          onCreate({ name, settings: { accounts: selectedAccounts } })
+          onCreate({
+            name,
+            version: VERSION,
+            settings: { accounts: selectedAccounts, incomeCategories: [] },
+            budgets: {},
+          })
         }
       >
         Create
