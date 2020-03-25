@@ -1,19 +1,20 @@
 import React, { Fragment } from 'react';
 import BudgetInput from './BudgetInput';
 import { BudgetCategoryRow } from './useBudgets';
+import { NumberFormatter } from '../lib';
 
-type OnChangeHandler = (ev: React.ChangeEvent<HTMLInputElement>) => void;
+type OnChangeHandler = (ev: { value: number; id: number }) => void;
 type CategoriesProps = {
   rows: BudgetCategoryRow[];
   onChange: OnChangeHandler;
-  round: (amount: string) => number;
+  numberFormatter: NumberFormatter;
   indent?: number;
 };
 
 export default function Categories({
   rows,
   onChange,
-  round,
+  numberFormatter,
   indent = 0,
 }: CategoriesProps) {
   return (
@@ -27,21 +28,21 @@ export default function Categories({
                 {id ? (
                   <BudgetInput
                     value={budgeted}
-                    round={round}
-                    name={id.toString()}
+                    numberFormatter={numberFormatter}
+                    categoryId={id}
                     onChange={onChange}
                   />
                 ) : (
-                  budgeted
+                  numberFormatter.format(budgeted)
                 )}
               </td>
-              <td>{spend}</td>
-              <td>{balance}</td>
+              <td>{numberFormatter.format(spend)}</td>
+              <td>{numberFormatter.format(balance)}</td>
             </tr>
             {children && (
               <Categories
                 rows={children}
-                round={round}
+                numberFormatter={numberFormatter}
                 indent={indent + 1}
                 onChange={onChange}
               />

@@ -28,7 +28,8 @@ const incomeCategoryShape = t.type(
 );
 const settingsShape = t.type(
   {
-    accuracy: t.number,
+    numberLocale: t.string,
+    fractionDigits: t.number,
     accounts: t.array(t.string),
     incomeCategories: t.array(incomeCategoryShape),
   },

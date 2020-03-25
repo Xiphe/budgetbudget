@@ -75,9 +75,10 @@ export default function NewBudget({ onCreate }: Props) {
             name,
             version: VERSION,
             settings: {
+              numberLocale: 'de-DE',
               accounts: selectedAccounts,
               incomeCategories: [],
-              accuracy: 100,
+              fractionDigits: 2,
             },
             budgets: {},
           })

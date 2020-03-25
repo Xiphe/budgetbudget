@@ -17,7 +17,12 @@ export default function useInit(
         type: ACTION_INIT,
         payload: {
           version: VERSION,
-          settings: { accounts: [], incomeCategories: [], accuracy: 100 },
+          settings: {
+            accounts: [],
+            incomeCategories: [],
+            fractionDigits: 2,
+            numberLocale: 'de-DE',
+          },
           budgets: {},
         },
       });

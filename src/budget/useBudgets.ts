@@ -11,7 +11,7 @@ import {
   Balance,
   isCategory,
 } from '../moneymoney/Types';
-import { formatDateKey, useRound } from '../lib';
+import { formatDateKey, roundWithFractions } from '../lib';
 import { getCategories, calculateBalances } from '../moneymoney';
 
 export type BudgetRow = { budgeted: number; spend: number; balance: number };
@@ -135,11 +135,13 @@ export default function useBudgets(
   {
     budgets,
     startAmount,
-    settings: { incomeCategories, accuracy },
+    settings: { incomeCategories, fractionDigits },
   }: BudgetState,
   currency: Currency,
 ) {
-  const round = useRound(accuracy);
+  const round = useMemo(() => roundWithFractions(fractionDigits), [
+    fractionDigits,
+  ]);
   const categories = useMemo(() => getCategories(transactions), [transactions]);
   const startAmountInCurrency = useMemo<number>(
     () => ((startAmount || []).find(([_, c]) => c === currency) || [])[0] || 0,
@@ -212,8 +214,8 @@ export default function useBudgets(
     last,
     lastDate,
     balances,
-    categories,
     round,
+    categories,
     budgetsForCurrency,
     incomeCategories,
     incomeCategoryIds,

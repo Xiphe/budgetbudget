@@ -1,4 +1,4 @@
-import React, { Dispatch, useState } from 'react';
+import React, { Dispatch, useState, useMemo } from 'react';
 import { BudgetState } from './Types';
 import { Action } from './budgetReducer';
 import { useTransactions } from '../moneymoney';
@@ -8,7 +8,7 @@ import Month from './Month';
 import format from 'date-fns/format';
 import subMonths from 'date-fns/subMonths';
 import addMonths from 'date-fns/addMonths';
-import { formatDateKey } from '../lib';
+import { formatDateKey, createNumberFormatter } from '../lib';
 
 type Props = {
   state: BudgetState;
@@ -17,6 +17,11 @@ type Props = {
 
 export default function Months({ state, dispatch }: Props) {
   const currency = 'EUR';
+  const { fractionDigits, numberLocale } = state.settings;
+  const numberFormatter = useMemo(
+    () => createNumberFormatter(fractionDigits, numberLocale),
+    [fractionDigits, numberLocale],
+  );
   const [month, setMonth] = useState<Date>(new Date());
   const [transactions, retry] = useTransactions(state.settings.accounts);
   // console.time('useBudgets');
@@ -67,7 +72,7 @@ export default function Months({ state, dispatch }: Props) {
         </button>
       </h2>
       <Month
-        settings={state.settings}
+        numberFormatter={numberFormatter}
         month={month}
         budget={budget}
         dispatch={dispatch}
