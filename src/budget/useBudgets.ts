@@ -21,7 +21,7 @@ export type BudgetCategoryRow = BudgetRow & {
   transactions?: Transaction[];
   children?: BudgetCategoryRow[];
 };
-type BudgetListEntry = {
+export type BudgetListEntry = {
   available: AmountWithTransactions;
   total: BudgetRow;
   uncategorized: AmountWithTransactions;
