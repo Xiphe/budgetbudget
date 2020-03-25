@@ -8,7 +8,7 @@ const currencyShape = t.union([t.literal('EUR'), t.literal('USD')]);
 const amountShape = t.tuple([t.number, currencyShape]);
 const budgetShape = t.type({
   categories: t.record(
-    t.number,
+    t.string,
     t.type({
       amount: t.number,
     }),
@@ -26,6 +26,14 @@ const incomeCategoryShape = t.type(
   },
   'incomeCategories',
 );
+const settingsShape = t.type(
+  {
+    accuracy: t.number,
+    accounts: t.array(t.string),
+    incomeCategories: t.array(incomeCategoryShape),
+  },
+  'settings',
+);
 const budgetStateShape = t.intersection(
   [
     t.partial(
@@ -38,14 +46,8 @@ const budgetStateShape = t.intersection(
     t.type(
       {
         version: t.string,
-        budgets: t.record(t.string, t.union([t.undefined, budgetShape])),
-        settings: t.type(
-          {
-            accounts: t.array(t.string),
-            incomeCategories: t.array(incomeCategoryShape),
-          },
-          'settings',
-        ),
+        budgets: t.record(t.string, t.union([t.undefined, budgetsShape])),
+        settings: settingsShape,
       },
       'required',
     ),
@@ -57,6 +59,7 @@ export type BudgetState = t.TypeOf<typeof budgetStateShape>;
 export type Budget = t.TypeOf<typeof budgetShape>;
 export type Budgets = t.TypeOf<typeof budgetsShape>;
 export type IncomeCategory = t.TypeOf<typeof incomeCategoryShape>;
+export type Settings = t.TypeOf<typeof settingsShape>;
 
 export function validateBudgetState(data: unknown): BudgetState {
   const c = budgetStateShape.decode(data);

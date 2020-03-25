@@ -17,7 +17,7 @@ export default function useInit(
         type: ACTION_INIT,
         payload: {
           version: VERSION,
-          settings: { accounts: [], incomeCategories: [] },
+          settings: { accounts: [], incomeCategories: [], accuracy: 100 },
           budgets: {},
         },
       });

@@ -16,13 +16,14 @@ type Props = {
 };
 
 export default function Months({ state, dispatch }: Props) {
+  const currency = 'EUR';
   const [month, setMonth] = useState<Date>(new Date());
   const [transactions, retry] = useTransactions(state.settings.accounts);
   // console.time('useBudgets');
   const budgets = useBudgets(
     !transactions || transactions instanceof Error ? undefined : transactions,
     state,
-    'EUR',
+    currency,
   );
   // console.timeEnd('useBudgets');
 
@@ -65,7 +66,13 @@ export default function Months({ state, dispatch }: Props) {
           </span>
         </button>
       </h2>
-      <Month month={month} budget={budget} />
+      <Month
+        settings={state.settings}
+        month={month}
+        budget={budget}
+        dispatch={dispatch}
+        currency={currency}
+      />
     </>
   );
 }

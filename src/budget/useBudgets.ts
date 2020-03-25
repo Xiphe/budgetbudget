@@ -11,7 +11,7 @@ import {
   Balance,
   isCategory,
 } from '../moneymoney/Types';
-import { formatDateKey } from '../lib';
+import { formatDateKey, useRound } from '../lib';
 import { getCategories, calculateBalances } from '../moneymoney';
 
 export type BudgetRow = { budgeted: number; spend: number; balance: number };
@@ -55,6 +55,7 @@ function getCategoryRows(
   balance: undefined | Balance,
   budget: undefined | Budget,
   ignoreCategories: number[],
+  round: (value: number) => number,
   parentRows: BudgetRow[],
 ): BudgetCategoryRow[] {
   return trees
@@ -66,6 +67,7 @@ function getCategoryRows(
           balance,
           budget,
           ignoreCategories,
+          round,
           parentRows.concat(row),
         );
         if (!children.length) {
@@ -90,14 +92,14 @@ function getCategoryRows(
           transactions: [],
         };
         parentRows.forEach((row) => {
-          row.budgeted += budgeted;
-          row.spend += spend.amount;
-          row.balance += spend.amount - budgeted;
+          row.budgeted = round(row.budgeted + budgeted);
+          row.spend = round(row.spend + spend.amount);
+          row.balance = round(row.budgeted + row.spend);
         });
         return {
-          budgeted,
-          spend: spend.amount,
-          balance: spend.amount - budgeted,
+          budgeted: round(budgeted),
+          spend: round(spend.amount),
+          balance: round(budgeted + spend.amount),
           transactions: spend.transactions,
           id: tree.id,
           name: tree.name,
@@ -130,9 +132,14 @@ function assignAvailable(
 
 export default function useBudgets(
   transactions: Transaction[] = EMPTY_TRANSACTIONS,
-  { budgets, startAmount, settings: { incomeCategories } }: BudgetState,
+  {
+    budgets,
+    startAmount,
+    settings: { incomeCategories, accuracy },
+  }: BudgetState,
   currency: Currency,
 ) {
+  const round = useRound(accuracy);
   const categories = useMemo(() => getCategories(transactions), [transactions]);
   const startAmountInCurrency = useMemo<number>(
     () => ((startAmount || []).find(([_, c]) => c === currency) || [])[0] || 0,
@@ -146,12 +153,11 @@ export default function useBudgets(
     transactions,
     currency,
   ]);
-  const budgetsForCurrency = useMemo(() => budgets[currency] || {}, [
+  const budgetsForCurrency = useMemo<Budgets>(() => budgets[currency] || {}, [
     budgets,
     currency,
   ]);
   const [first, last, lastDate] = useFirstLast(balances, budgetsForCurrency);
-  // console.log(balances);
 
   return useMemo(() => {
     if (!first || !last || !lastDate) {
@@ -167,7 +173,7 @@ export default function useBudgets(
     let current: string = first;
     while (true) {
       const balance = balances[current];
-      const budget = budgets[current];
+      const budget = budgetsForCurrency[current];
       if (balance) {
         assignAvailable(incomeCategories, available, balance);
       }
@@ -185,6 +191,7 @@ export default function useBudgets(
           balance,
           budget,
           incomeCategoryIds,
+          round,
           [total],
         ),
         uncategorized: (balance && balance.uncategorised) || {
@@ -206,7 +213,8 @@ export default function useBudgets(
     lastDate,
     balances,
     categories,
-    budgets,
+    round,
+    budgetsForCurrency,
     incomeCategories,
     incomeCategoryIds,
     startAmountInCurrency,
