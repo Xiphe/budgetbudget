@@ -2,7 +2,8 @@
   "name": "moneymoneymonthlybudgets",
   "version": "0.0.0-development",
   "description": "work with monthly budgets alongside moneymoney",
-  "main": "start-electron.js",
+  "main": "main.js",
+  "type": "module",
   "scripts": {
     "start": "export PORT=$(get-port 7654) && concurrently npm:start:cra npm:start:electron",
     "start:cra": "BROWSER=none react-scripts start",
@@ -33,6 +34,7 @@
     "react": "16.13.0",
     "react-dom": "16.13.0",
     "react-scripts": "3.4.0",
+    "ts-node": "8.8.1",
     "typescript": "3.8.3",
     "wait-on": "4.0.1"
   },
