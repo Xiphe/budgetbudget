@@ -53,9 +53,9 @@ export default function Month({
         <thead>
           <tr>
             <th>Name</th>
-            <th>Budgeted: {budget.total.budgeted}</th>
-            <th>Spend: {budget.total.spend}</th>
-            <th>Balance: {budget.total.balance}</th>
+            <th>Budgeted: {numberFormatter.format(budget.total.budgeted)}</th>
+            <th>Spend: {numberFormatter.format(budget.total.spend)}</th>
+            <th>Balance: {numberFormatter.format(budget.total.balance)}</th>
           </tr>
         </thead>
         <tbody>
