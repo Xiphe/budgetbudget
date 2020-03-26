@@ -57,7 +57,6 @@ function isAccount(account: any): account is InteropAccount {
 }
 
 export default async function getAccounts(retry = 0): Promise<Account[]> {
-  console.log('GET ACCOUNTS', retry);
   try {
     const parsedStdout = parse(
       await osascript('tell application "MoneyMoney" to export accounts'),
