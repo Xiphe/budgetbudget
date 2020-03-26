@@ -7,6 +7,27 @@
       content="script-src 'self' 'unsafe-inline';"
     />
     <title>Monthly Budgets</title>
+    <script>
+      const nativeTheme = window.require('electron').remote.nativeTheme;
+      function setScheme() {
+        const {
+          shouldUseDarkColors,
+          // TODO: implement
+          // shouldUseHighContrastColors,
+          // shouldUseInvertedColorScheme,
+        } = nativeTheme;
+        document.querySelector('html').dataset.theme = shouldUseDarkColors
+          ? 'dark'
+          : 'light';
+      }
+      setScheme();
+      nativeTheme.on('updated', setScheme);
+    </script>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont;
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

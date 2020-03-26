@@ -35,6 +35,7 @@ function createWindow(file) {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    vibrancy: 'sidebar',
     webPreferences: {
       nodeIntegration: true,
     },

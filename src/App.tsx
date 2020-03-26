@@ -1,9 +1,11 @@
+import './theme.scss';
 import React, { Suspense } from 'react';
 import { useInit } from './lib';
 import { Loading } from './components';
 import Budget from './budget';
+import styles from './App.module.scss';
 
-export default function App() {
+function Init() {
   const init = useInit();
   if (!init) {
     return <Loading />;
@@ -17,5 +19,12 @@ export default function App() {
     <Suspense fallback={<Loading />}>
       <Budget init={init} />
     </Suspense>
+  );
+}
+export default function App() {
+  return (
+    <div className={styles.app}>
+      <Init />
+    </div>
   );
 }
