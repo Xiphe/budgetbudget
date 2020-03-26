@@ -4,8 +4,11 @@ function isCategoryGroup(cat: CategoryTree): cat is CategoryGroup {
   return Array.isArray((cat as CategoryGroup).children);
 }
 
-export default function getCategories(transactions: Transaction[]) {
-  let knownIds: number[] = [];
+export default function getCategories(
+  transactions: Transaction[],
+  ignoreIds: number[] = [],
+) {
+  const knownIds = [...ignoreIds];
   return transactions.reduce((memo, { categoryId, category }) => {
     if (!category || !categoryId || knownIds.includes(categoryId)) {
       return memo;

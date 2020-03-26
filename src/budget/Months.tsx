@@ -1,7 +1,7 @@
 import React, { Dispatch, useState, useMemo } from 'react';
 import { BudgetState } from './Types';
 import { Action } from './budgetReducer';
-import { useTransactions } from '../moneymoney';
+import { useTransactions, Transaction, getCategories } from '../moneymoney';
 import { Loading } from '../components';
 import useBudgets from './useBudgets';
 import Month from './Month';
@@ -15,18 +15,36 @@ type Props = {
   dispatch: Dispatch<Action>;
 };
 
+function transactionsLoaded(
+  transactions: Transaction[] | Error | null,
+): transactions is Transaction[] {
+  return Array.isArray(transactions);
+}
+
 export default function Months({ state, dispatch }: Props) {
   const currency = 'EUR';
-  const { fractionDigits, numberLocale } = state.settings;
+  const { fractionDigits, numberLocale, incomeCategories } = state.settings;
   const numberFormatter = useMemo(
     () => createNumberFormatter(fractionDigits, numberLocale),
     [fractionDigits, numberLocale],
   );
   const [month, setMonth] = useState<Date>(new Date());
   const [transactions, retry] = useTransactions(state.settings.accounts);
+  const incomeCategoryIds = useMemo(
+    () => incomeCategories.map(({ id }) => id),
+    [incomeCategories],
+  );
+  const categories = useMemo(
+    () =>
+      transactionsLoaded(transactions)
+        ? getCategories(transactions, incomeCategoryIds)
+        : undefined,
+    [transactions, incomeCategoryIds],
+  );
   // console.time('useBudgets');
   const budgets = useBudgets(
-    !transactions || transactions instanceof Error ? undefined : transactions,
+    transactionsLoaded(transactions) ? transactions : undefined,
+    categories,
     state,
     currency,
   );

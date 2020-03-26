@@ -12,7 +12,7 @@ import {
   isCategory,
 } from '../moneymoney/Types';
 import { formatDateKey, roundWithFractions } from '../lib';
-import { getCategories, calculateBalances } from '../moneymoney';
+import { calculateBalances } from '../moneymoney';
 
 export type BudgetRow = { budgeted: number; spend: number; balance: number };
 export type BudgetCategoryRow = BudgetRow & {
@@ -54,7 +54,6 @@ function getCategoryRows(
   trees: CategoryTree[],
   balance: undefined | Balance,
   budget: undefined | Budget,
-  ignoreCategories: number[],
   round: (value: number) => number,
   parentRows: BudgetRow[],
 ): BudgetCategoryRow[] {
@@ -66,7 +65,6 @@ function getCategoryRows(
           tree.children,
           balance,
           budget,
-          ignoreCategories,
           round,
           parentRows.concat(row),
         );
@@ -79,8 +77,6 @@ function getCategoryRows(
           name: tree.name,
           children,
         };
-      } else if (ignoreCategories.includes(tree.id)) {
-        return null;
       } else {
         const budgeted = (
           (budget && budget.categories[tree.id]) || {
@@ -132,6 +128,7 @@ function assignAvailable(
 
 export default function useBudgets(
   transactions: Transaction[] = EMPTY_TRANSACTIONS,
+  categories: CategoryTree[] = [],
   {
     budgets,
     startAmount,
@@ -142,14 +139,9 @@ export default function useBudgets(
   const round = useMemo(() => roundWithFractions(fractionDigits), [
     fractionDigits,
   ]);
-  const categories = useMemo(() => getCategories(transactions), [transactions]);
   const startAmountInCurrency = useMemo<number>(
     () => ((startAmount || []).find(([_, c]) => c === currency) || [])[0] || 0,
     [startAmount, currency],
-  );
-  const incomeCategoryIds = useMemo(
-    () => incomeCategories.map(({ id }) => id),
-    [incomeCategories],
   );
   const balances = useMemo(() => calculateBalances(transactions, currency), [
     transactions,
@@ -188,14 +180,9 @@ export default function useBudgets(
       budgetList[current] = {
         total,
         available: availableThisMonth,
-        categories: getCategoryRows(
-          categories,
-          balance,
-          budget,
-          incomeCategoryIds,
-          round,
-          [total],
-        ),
+        categories: getCategoryRows(categories, balance, budget, round, [
+          total,
+        ]),
         uncategorized: (balance && balance.uncategorised) || {
           amount: 0,
           transactions: [],
@@ -218,7 +205,6 @@ export default function useBudgets(
     categories,
     budgetsForCurrency,
     incomeCategories,
-    incomeCategoryIds,
     startAmountInCurrency,
   ]);
 }
