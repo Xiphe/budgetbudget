@@ -8,20 +8,24 @@
     />
     <title>Monthly Budgets</title>
     <script>
-      const nativeTheme = window.require('electron').remote.nativeTheme;
+      const {
+        remote: { nativeTheme },
+        ipcRenderer,
+      } = window.require('electron');
       function setScheme() {
         const {
           shouldUseDarkColors,
-          // TODO: implement
-          // shouldUseHighContrastColors,
-          // shouldUseInvertedColorScheme,
+          shouldUseHighContrastColors,
         } = nativeTheme;
-        document.querySelector('html').dataset.theme = shouldUseDarkColors
-          ? 'dark'
-          : 'light';
+        document.querySelector('html').dataset.theme = [
+          shouldUseDarkColors ? 'dark' : 'light',
+          shouldUseHighContrastColors && 'high-contrast',
+        ]
+          .filter(Boolean)
+          .join('-');
       }
       setScheme();
-      nativeTheme.on('updated', setScheme);
+      ipcRenderer.on('UPDATE_SCHEME', setScheme);
     </script>
     <style>
       body {

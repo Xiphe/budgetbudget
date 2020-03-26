@@ -1,4 +1,11 @@
-const { app, dialog, BrowserWindow, Menu, ipcMain } = require('electron');
+const {
+  app,
+  dialog,
+  BrowserWindow,
+  Menu,
+  ipcMain,
+  nativeTheme,
+} = require('electron');
 
 const windows = {};
 const newWindows = [];
@@ -7,6 +14,12 @@ function getFile(sender) {
   return (Object.entries(windows).find(
     ([_, { webContents }]) => webContents === sender,
   ) || [])[0];
+}
+
+function broadcast(data) {
+  newWindows.concat(Object.values(windows)).forEach((win) => {
+    win.send(data);
+  });
 }
 
 function unregisterWindow(sender) {
@@ -87,6 +100,10 @@ ipcMain.on('FILE_EDITED', (ev, edited) => {
 ipcMain.handle('MENU_FILE_OPEN', openFile);
 ipcMain.handle('MENU_FILE_NEW', () => {
   createWindow();
+});
+
+nativeTheme.on('updated', () => {
+  broadcast('UPDATE_SCHEME');
 });
 
 async function save(newFile, sender) {
