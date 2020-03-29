@@ -1,0 +1,6 @@
+.content {
+  position: relative;
+  float: right;
+  width: calc(100% - var(--sidebar-width));
+  height: calc(100% - var(--header-height));
+}

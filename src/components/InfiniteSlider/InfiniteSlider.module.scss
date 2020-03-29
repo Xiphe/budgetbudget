@@ -1,0 +1,15 @@
+.slider {
+  height: 100%;
+  width: 100%;
+  scroll-snap-type: x mandatory;
+  display: flex;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: scroll;
+
+  > * {
+    scroll-snap-align: start;
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}

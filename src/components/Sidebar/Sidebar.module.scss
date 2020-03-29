@@ -1,0 +1,6 @@
+.sidebar {
+  height: calc(100% - var(--header-height));
+  width: var(--sidebar-width);
+  background: olive;
+  float: left;
+}
