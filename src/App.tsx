@@ -2,29 +2,22 @@ import './theme.scss';
 import React, { Suspense } from 'react';
 import { useInit } from './lib';
 import { Loading } from './components';
-import Budget from './budget';
+import Budget from './views/Budget';
 import styles from './App.module.scss';
 
-function Init() {
-  const init = useInit();
-  if (!init) {
-    return <Loading />;
-  }
-
-  if (init instanceof Error) {
-    return <p>Error: {init.message}</p>;
-  }
-
-  return (
-    <Suspense fallback={<Loading />}>
-      <Budget init={init} />
-    </Suspense>
-  );
-}
 export default function App() {
+  const init = useInit();
   return (
     <div className={styles.app}>
-      <Init />
+      <Suspense fallback={<Loading />}>
+        {!init ? (
+          <Loading />
+        ) : init instanceof Error ? (
+          <p>Error: {init.message}</p>
+        ) : (
+          <Budget init={init} />
+        )}
+      </Suspense>
     </div>
   );
 }

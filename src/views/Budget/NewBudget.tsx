@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { BudgetState, VERSION } from './Types';
-import { useAccounts } from '../moneymoney';
-import { Loading } from '../components';
+import { BudgetState, VERSION } from '../../budget';
+import { useAccounts } from '../../moneymoney';
+import { Loading } from '../../components';
 
 type Props = {
   onCreate: (budget: BudgetState) => void;
