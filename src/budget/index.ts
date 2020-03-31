@@ -2,7 +2,7 @@ import { BudgetState as BudgetStateT } from './Types';
 import { Action as ActionT } from './budgetReducer';
 import { BudgetListEntry as BudgetListEntryT } from './useBudgets';
 
-export { ACTION_INIT } from './budgetReducer';
+export { ACTION_INIT, ACTION_SET_CATEGORY_VALUE } from './budgetReducer';
 export { VERSION } from './Types';
 export { default } from './useBudgetState';
 export { EMPTY_BUDGET } from './useBudgets';

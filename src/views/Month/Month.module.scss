@@ -51,3 +51,12 @@
   height: 50em;
   background: gray;
 }
+.budgetRow {
+  height: var(--budget-row-height);
+  span {
+    text-align: right;
+    display: inline-block;
+    width: calc(100% / 3);
+    font-family: var(--font-mono);
+  }
+}

@@ -7,6 +7,7 @@ import Categories from './Categories';
 import { Props } from './Types';
 import styles from './Month.module.scss';
 import { EMPTY_BUDGET } from '../../budget';
+import useSetBudgeted from './useSetBudgeted';
 
 export default function MonthContainer({
   budget = EMPTY_BUDGET,
@@ -16,13 +17,20 @@ export default function MonthContainer({
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = React.useState(false);
   React.useEffect(() => isVisible(ref.current!, setVisible), [isVisible]);
+  const setBudgeted = useSetBudgeted(rest);
 
   return (
     <div ref={ref} className={styles.month}>
       <Header>
         {visible ? <Overview {...rest} budget={budget} /> : <Loading />}
       </Header>
-      {visible ? <Categories {...rest} budget={budget} /> : null}
+      {visible ? (
+        <Categories
+          {...rest}
+          budgetCategories={budget.categories}
+          setBudgeted={setBudgeted}
+        />
+      ) : null}
     </div>
   );
 }

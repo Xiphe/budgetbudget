@@ -11,8 +11,15 @@ type Props = {
   dispatch: Dispatch<Action>;
 };
 
-export default function Budget({ state }: Props) {
-  const { error, retry, budgets, numberFormatter } = useBudgetData(state);
+export default function Budget({ state, dispatch }: Props) {
+  const {
+    error,
+    retry,
+    budgets,
+    numberFormatter,
+    currency,
+    categories,
+  } = useBudgetData(state);
 
   if (error) {
     return (
@@ -23,16 +30,24 @@ export default function Budget({ state }: Props) {
     );
   }
 
+  console.log(categories);
+
   return (
     <UiProvider>
       <Header />
       <Content>
-        <BudgetSlider sticky={<CategorySidebar />}>
+        <BudgetSlider
+          sticky={<CategorySidebar categories={categories || []} />}
+        >
           {({ key, date }) => (
             <Month
               key={key}
+              monthKey={key}
               date={date}
+              currency={currency}
+              dispatch={dispatch}
               budget={budgets[key]}
+              categories={categories || []}
               numberFormatter={numberFormatter}
             />
           )}
