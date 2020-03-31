@@ -34,6 +34,23 @@ export type BudgetList = {
 const EMPTY_TRANSACTIONS: Transaction[] = [];
 const EMPTY_BUDGETS: BudgetList = {};
 
+export const EMPTY_BUDGET: BudgetListEntry = {
+  total: {
+    budgeted: 0,
+    spend: 0,
+    balance: 0,
+  },
+  available: {
+    amount: 0,
+    transactions: [],
+  },
+  uncategorized: {
+    amount: 0,
+    transactions: [],
+  },
+  categories: [],
+};
+
 function emptyBudgetRow(): BudgetRow {
   return { budgeted: 0, spend: 0, balance: 0 };
 }

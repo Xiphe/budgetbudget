@@ -1,11 +1,17 @@
 import React from 'react';
 import { Loading } from '../../components';
-import Header from './Header';
-import Overview, { Props } from './Overview';
-import styles from './Month.module.scss';
 import { useIsVisible } from '../../lib';
+import Header from './Header';
+import Overview from './Overview';
+import Categories from './Categories';
+import { Props } from './Types';
+import styles from './Month.module.scss';
+import { EMPTY_BUDGET } from '../../budget';
 
-export default function MonthContainer(props: Props) {
+export default function MonthContainer({
+  budget = EMPTY_BUDGET,
+  ...rest
+}: Partial<Pick<Props, 'budget'>> & Omit<Props, 'budget'>) {
   const isVisible = useIsVisible();
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = React.useState(false);
@@ -13,8 +19,10 @@ export default function MonthContainer(props: Props) {
 
   return (
     <div ref={ref} className={styles.month}>
-      <Header>{visible ? <Overview {...props} /> : <Loading />}</Header>
-      <div className={styles.body} />
+      <Header>
+        {visible ? <Overview {...rest} budget={budget} /> : <Loading />}
+      </Header>
+      {visible ? <Categories {...rest} budget={budget} /> : null}
     </div>
   );
 }
