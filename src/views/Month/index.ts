@@ -1,1 +1,1 @@
-export { default } from './Month';
+export { default } from './MonthContainer';

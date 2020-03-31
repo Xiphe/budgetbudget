@@ -8,8 +8,12 @@
 
   > * {
     scroll-snap-align: start;
+    scroll-margin: var(--sticky-width);
   }
+}
 
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
+.stickyLeft {
+  position: sticky;
+  left: 0;
+  z-index: 10;
 }

@@ -1,5 +1,53 @@
 .month {
-  height: 100%;
+  min-height: calc(100vh - var(--header-height));
   min-width: calc(calc(100vw - var(--sidebar-width)) / 2);
   max-width: calc(calc(100vw - var(--sidebar-width)) / 2);
+  border-right: 0.2em solid rgba(255, 255, 255, 0.2);
+  border-left: 0.2em solid rgba(255, 255, 255, 0.2);
+}
+.title {
+  text-align: center;
+  margin: 0.5rem 0;
+}
+.header {
+  position: sticky;
+  top: 0px;
+  height: var(--month-header-height);
+  overflow: hidden;
+  transition: height 200ms ease-out;
+  background: rgba(255, 255, 255, 0.2);
+}
+.headTable {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  div:nth-child(odd) {
+    text-align: right;
+    padding-right: 0.5rem;
+    font-family: var(--font-mono);
+    &.bigBudget {
+      padding-right: 0.4rem;
+    }
+  }
+  div:nth-child(even) {
+    line-height: 1.45em;
+    padding-left: 0.5rem;
+    &.bigBudget {
+      padding-left: 0.4rem;
+    }
+  }
+  div.bigBudget {
+    line-height: 1.1em;
+  }
+}
+
+.bigBudget {
+  font-size: 1.5em;
+}
+.negative {
+  color: var(--negative-color);
+}
+.body {
+  height: 50em;
+  background: gray;
 }

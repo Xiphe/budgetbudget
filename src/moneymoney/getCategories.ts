@@ -7,7 +7,7 @@ function isCategoryGroup(cat: CategoryTree): cat is CategoryGroup {
 export default function getCategories(
   transactions: Transaction[],
   ignoreIds: number[] = [],
-) {
+): CategoryTree[] {
   const knownIds = [...ignoreIds];
   return transactions.reduce((memo, { categoryId, category }) => {
     if (!category || !categoryId || knownIds.includes(categoryId)) {
