@@ -51,16 +51,18 @@
   height: 50em;
   background: gray;
 }
+@mixin budgetRowEntry() {
+  text-align: right;
+  display: inline-block;
+  width: calc(100% / 3);
+}
 .budgetRow {
   height: var(--budget-row-height);
   span {
-    text-align: right;
-    display: inline-block;
-    width: calc(100% / 3);
+    @include budgetRowEntry();
     font-family: var(--font-mono);
   }
 }
-
 .budgetInput {
   font-family: var(--font-mono);
   font-size: 1em;
@@ -69,4 +71,17 @@
   background: transparent;
   color: var(--main-color);
   border: none;
+}
+.budgetTotals {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  div {
+    @include budgetRowEntry();
+    span {
+      font-weight: bold;
+      font-family: var(--font-mono);
+    }
+  }
 }

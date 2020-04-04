@@ -36,6 +36,23 @@ export default function Overview({
           {budgeted >= 0 ? 'To Budget' : 'Overbudgeted'}
         </div>
       </div>
+      <div className={classNames(styles.budgetTotals)}>
+        <div>
+          Budgeted
+          <br />
+          <span>{numberFormatter.format(total.budgeted)}</span>
+        </div>
+        <div>
+          Spend
+          <br />
+          <span>{numberFormatter.format(total.spend)}</span>
+        </div>
+        <div>
+          Balance
+          <br />
+          <span>{numberFormatter.format(total.balance)}</span>
+        </div>
+      </div>
     </>
   );
 }
