@@ -1,3 +1,10 @@
 .row {
+  line-height: var(--budget-row-height);
   height: var(--budget-row-height);
+  padding-left: calc(5px + var(--indent) * 10px);
+  background-color: rgba(var(--dim-colors), calc(0.2 - var(--indent) * 0.05));
+  border-bottom: 1px solid rgba(var(--dim-colors), 0.075);
+}
+.categoryRow {
+  background-color: transparent;
 }

@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import classNames from 'classnames';
 import { Sidebar } from '../../components';
 import Header from '../Month/Header';
 import { CategoryTree, isCategory } from '../../moneymoney';
@@ -6,26 +7,32 @@ import styles from './CategorySidebar.module.scss';
 
 type Props = {
   categories: CategoryTree[];
+  indent?: number;
 };
 
-function SidebarCategories({ categories }: Props) {
+function SidebarCategories({ categories, indent = 0 }: Props) {
   return (
     <>
       {categories.map((tree) => {
-        if (isCategory(tree)) {
-          return (
-            <div className={styles.row} key={tree.id}>
+        return (
+          <Fragment key={isCategory(tree) ? tree.id : tree.name}>
+            <div
+              style={{ '--indent': indent } as any}
+              className={classNames(
+                styles.row,
+                isCategory(tree) && styles.categoryRow,
+              )}
+            >
               {tree.name}
             </div>
-          );
-        } else {
-          return (
-            <Fragment key={tree.name}>
-              <div className={styles.row}>{tree.name}</div>
-              <SidebarCategories categories={tree.children} />
-            </Fragment>
-          );
-        }
+            {!isCategory(tree) && (
+              <SidebarCategories
+                categories={tree.children}
+                indent={indent + 1}
+              />
+            )}
+          </Fragment>
+        );
       })}
     </>
   );

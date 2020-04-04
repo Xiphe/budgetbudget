@@ -1,13 +1,15 @@
 [data-theme^='light'] {
+  --dim-colors: 0, 0, 0;
   --main-color: rgb(35, 35, 35);
   --background-color: #fff;
 }
 [data-theme^='dark'] {
+  --dim-colors: 255, 255, 255;
   --main-color: #fff;
   --background-color: #000;
 }
 :root {
-  --budget-row-height: 1.5rem;
+  --budget-row-height: 1.6rem;
   --sidebar-width: 15rem;
   --header-height: 5rem;
   --font-mono: 'Roboto Mono';
