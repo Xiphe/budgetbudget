@@ -43,7 +43,6 @@ export default function Categories({
           ({ name }) => name === tree.name,
         );
 
-        console.log(tree, budgetCategory);
         return (
           <Fragment key={tree.name}>
             <div className={styles.budgetRow}>
