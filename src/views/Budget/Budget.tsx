@@ -1,4 +1,5 @@
 import React, { Dispatch } from 'react';
+import isAfter from 'date-fns/isAfter';
 import { BudgetState, Action, useBudgetData } from '../../budget';
 import { Header, Content } from '../../components';
 import Month from '../Month';
@@ -16,6 +17,8 @@ export default function Budget({ state, dispatch }: Props) {
     error,
     retry,
     budgets,
+    lastDate,
+    futureBudget,
     numberFormatter,
     currency,
     categories,
@@ -44,7 +47,10 @@ export default function Budget({ state, dispatch }: Props) {
               date={date}
               currency={currency}
               dispatch={dispatch}
-              budget={budgets[key]}
+              budget={
+                budgets[key] ||
+                (lastDate && isAfter(date, lastDate) ? futureBudget : undefined)
+              }
               categories={categories || []}
               numberFormatter={numberFormatter}
             />

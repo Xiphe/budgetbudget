@@ -1,4 +1,4 @@
-import { Transaction, CURRENCIES, Currency } from './Types';
+import { Transaction, Currency } from './Types';
 import { parse, PlistObject } from 'plist';
 import { delay, osascript } from '../lib';
 import isDbLocked from './isDbLocked';
@@ -15,7 +15,6 @@ function isTransaction(transaction: any): transaction is InteropTransaction {
     transaction.bookingDate instanceof Date &&
     transaction.valueDate instanceof Date &&
     typeof transaction.currency === 'string' &&
-    CURRENCIES.includes(transaction.currency) &&
     typeof transaction.name === 'string' &&
     typeof transaction.id === 'number'
   ) {

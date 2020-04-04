@@ -7,7 +7,6 @@ import {
   CategoryTree,
   Transaction,
   Currency,
-  AmountWithTransactions,
   Balance,
   isCategory,
 } from '../moneymoney/Types';
@@ -22,13 +21,19 @@ export type BudgetCategoryRow = BudgetRow & {
   children?: BudgetCategoryRow[];
 };
 export type BudgetListEntry = {
-  available: AmountWithTransactions;
+  available: AmountWithPartialTransactions;
+  overspendPrevMonth: number;
+  budgeted: number;
   total: BudgetRow;
-  uncategorized: AmountWithTransactions;
+  uncategorized: AmountWithPartialTransactions;
   categories: BudgetCategoryRow[];
 };
 export type BudgetList = {
   [key: string]: undefined | BudgetListEntry;
+};
+type AmountWithPartialTransactions = {
+  amount: number;
+  transactions: Pick<Transaction, 'amount' | 'name' | 'purpose'>[];
 };
 
 const EMPTY_TRANSACTIONS: Transaction[] = [];
@@ -40,10 +45,12 @@ export const EMPTY_BUDGET: BudgetListEntry = {
     spend: 0,
     balance: 0,
   },
+  budgeted: 0,
   available: {
     amount: 0,
     transactions: [],
   },
+  overspendPrevMonth: 0,
   uncategorized: {
     amount: 0,
     transactions: [],
@@ -67,11 +74,14 @@ function useFirstLast(balances: Balances, budgets: Budgets) {
   }, [balances, budgets]);
 }
 
+type OverspendCounter = { total: number; [key: number]: number };
+
 function getCategoryRows(
   trees: CategoryTree[],
   balance: undefined | Balance,
   budget: undefined | Budget,
   round: (value: number) => number,
+  overspend: OverspendCounter,
   parentRows: BudgetRow[],
 ): BudgetCategoryRow[] {
   return trees
@@ -83,6 +93,7 @@ function getCategoryRows(
           balance,
           budget,
           round,
+          overspend,
           parentRows.concat(row),
         );
         if (!children.length) {
@@ -109,10 +120,16 @@ function getCategoryRows(
           row.spend = round(row.spend + spend.amount);
           row.balance = round(row.budgeted + row.spend);
         });
+        const budgetCategoryBalance = round(budgeted + spend.amount);
+
+        if (budgetCategoryBalance < 0) {
+          overspend.total += budgetCategoryBalance;
+        }
+
         return {
           budgeted: round(budgeted),
           spend: round(spend.amount),
-          balance: round(budgeted + spend.amount),
+          balance: budgetCategoryBalance,
           transactions: spend.transactions,
           id: tree.id,
           name: tree.name,
@@ -124,7 +141,7 @@ function getCategoryRows(
 
 function assignAvailable(
   incomeCategories: IncomeCategory[],
-  available: AmountWithTransactions[],
+  available: AmountWithPartialTransactions[],
   balance: Balance,
 ) {
   incomeCategories.forEach(({ id, availableIn }) => {
@@ -141,6 +158,29 @@ function assignAvailable(
       ].transactions.concat(balance.categories[id].transactions);
     }
   });
+}
+
+function addBudgeted(
+  budgeted: number,
+  currency: string,
+  available: AmountWithPartialTransactions = {
+    amount: 0,
+    transactions: [],
+  },
+): AmountWithPartialTransactions {
+  if (budgeted === 0) {
+    return available;
+  }
+  return {
+    amount: available.amount + budgeted,
+    transactions: [
+      {
+        amount: [budgeted, currency],
+        name: `${budgeted > 0 ? 'Not budgeted' : 'Overbudgeted'} last month`,
+      },
+      ...available.transactions,
+    ],
+  };
 }
 
 export default function useBudgets(
@@ -170,49 +210,85 @@ export default function useBudgets(
   ]);
   const [first, last, lastDate] = useFirstLast(balances, budgetsForCurrency);
 
-  return useMemo(() => {
+  return useMemo((): [BudgetList, BudgetListEntry, Date | undefined] => {
     if (!first || !last || !lastDate) {
-      return EMPTY_BUDGETS;
+      return [EMPTY_BUDGETS, EMPTY_BUDGET, lastDate];
     }
     const budgetList: BudgetList = {};
-    const available: AmountWithTransactions[] = [
+    const available: AmountWithPartialTransactions[] = [
       {
         amount: startAmountInCurrency,
         transactions: [],
       },
     ];
+    let overspend: OverspendCounter = { total: 0 };
+    let budgeted: number = 0;
     let current: string = first;
     while (true) {
+      const { total: overspendPrevMonth, ...rolloverOverspend } = overspend;
+      overspend = { total: 0 };
       const balance = balances[current];
       const budget = budgetsForCurrency[current];
       if (balance) {
         assignAvailable(incomeCategories, available, balance);
       }
-      const availableThisMonth = available.splice(0, 1)[0] || {
-        amount: 0,
-        transactions: [],
-      };
+      const availableThisMonth = addBudgeted(
+        budgeted,
+        currency,
+        available.shift(),
+      );
+
       const total = emptyBudgetRow();
+      const budgetCategories = getCategoryRows(
+        categories,
+        balance,
+        budget,
+        round,
+        overspend,
+        [total],
+      );
+
+      budgeted =
+        availableThisMonth.amount - total.budgeted + overspendPrevMonth;
 
       budgetList[current] = {
         total,
         available: availableThisMonth,
-        categories: getCategoryRows(categories, balance, budget, round, [
-          total,
-        ]),
+        overspendPrevMonth,
+        budgeted,
+        categories: budgetCategories,
         uncategorized: (balance && balance.uncategorised) || {
           amount: 0,
           transactions: [],
         },
       };
+
       const nextMonth = addMonths(new Date(current), 1);
-      if (isAfter(nextMonth, lastDate) && !available.length) {
+      if (
+        isAfter(nextMonth, lastDate) &&
+        !available.length &&
+        overspend.total === 0 &&
+        Object.keys(overspend).length === 1
+      ) {
         break;
       }
       current = formatDateKey(nextMonth);
     }
 
-    return budgetList;
+    const lastEntry = budgetList[current];
+
+    return [
+      budgetList,
+      {
+        total: emptyBudgetRow(),
+        available: addBudgeted(lastEntry!.budgeted, currency),
+        overspendPrevMonth: 0,
+        uncategorized: { amount: 0, transactions: [] },
+        budgeted: lastEntry!.budgeted,
+        categories: [],
+      },
+      lastDate,
+    ];
   }, [
     first,
     last,
@@ -220,6 +296,7 @@ export default function useBudgets(
     balances,
     round,
     categories,
+    currency,
     budgetsForCurrency,
     incomeCategories,
     startAmountInCurrency,

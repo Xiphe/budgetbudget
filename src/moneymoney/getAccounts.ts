@@ -1,4 +1,4 @@
-import { Account, CURRENCIES } from './Types';
+import { Account } from './Types';
 import { osascript, delay } from '../lib';
 import { parse } from 'plist';
 import isDbLocked from './isDbLocked';
@@ -47,7 +47,7 @@ function isAccount(account: any): account is InteropAccount {
         Array.isArray(balance) &&
         balance.length === 2 &&
         typeof balance[0] === 'number' &&
-        CURRENCIES.includes(balance[1]),
+        typeof balance[1] === 'string',
     )
   ) {
     return true;

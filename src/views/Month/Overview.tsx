@@ -9,18 +9,16 @@ import { Props } from './Types';
 export default function Overview({
   date,
   numberFormatter,
-  budget: { available, total },
+  budget: { available, overspendPrevMonth, total, budgeted },
 }: Props) {
   const { registerBigHeader } = useUi();
-  const toBudget = available.amount - total.budgeted;
-
-  useEffect(() => (toBudget !== 0 ? registerBigHeader() : undefined), [
-    toBudget,
+  useEffect(() => (budgeted !== 0 ? registerBigHeader() : undefined), [
+    budgeted,
     registerBigHeader,
   ]);
   const budgetClasses = classNames(
-    toBudget !== 0 && styles.bigBudget,
-    toBudget < 0 && styles.negative,
+    budgeted !== 0 && styles.bigBudget,
+    budgeted < 0 && styles.negative,
   );
 
   return (
@@ -29,13 +27,13 @@ export default function Overview({
       <div className={styles.headTable}>
         <div>{numberFormatter.format(available.amount)}</div>
         <div>Available Funds</div>
-        <div>TODO</div>
+        <div>{numberFormatter.format(overspendPrevMonth)}</div>
         <div>Overspend in {format(subMonths(date, 1), 'MMM')}</div>
         <div>{numberFormatter.format(total.budgeted)}</div>
         <div>Budgeted</div>
-        <div className={budgetClasses}>{numberFormatter.format(toBudget)}</div>
+        <div className={budgetClasses}>{numberFormatter.format(budgeted)}</div>
         <div className={budgetClasses}>
-          {toBudget >= 0 ? 'To Budget' : 'Overbudgeted'}
+          {budgeted >= 0 ? 'To Budget' : 'Overbudgeted'}
         </div>
       </div>
     </>
