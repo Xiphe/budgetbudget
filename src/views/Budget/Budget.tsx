@@ -30,8 +30,6 @@ export default function Budget({ state, dispatch }: Props) {
     );
   }
 
-  console.log(categories);
-
   return (
     <UiProvider>
       <Header />

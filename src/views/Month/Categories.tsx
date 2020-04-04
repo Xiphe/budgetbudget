@@ -3,39 +3,76 @@ import { isCategory } from '../../moneymoney';
 import { BudgetCategoryRow } from '../../budget/useBudgets';
 import { Props } from './Types';
 import styles from './Month.module.scss';
+import { NumberFormatter } from '../../lib';
+import BudgetInput from './BudgetInput';
 
 type CategoriesProps = Omit<Props, 'budget'> & {
   budgetCategories?: BudgetCategoryRow[];
   setBudgeted: (budget: { id: number; amount: number }) => void;
 };
 
+type BudgetRowProps = {
+  setBudgeted?: CategoriesProps['setBudgeted'];
+  numberFormatter: NumberFormatter;
+  budgetCategory?: BudgetCategoryRow;
+  categoryId?: number;
+};
+
+function BudgetRow({
+  numberFormatter,
+  budgetCategory,
+  setBudgeted,
+  categoryId,
+}: BudgetRowProps) {
+  const { format } = numberFormatter;
+  return (
+    <div className={styles.budgetRow}>
+      {!budgetCategory ? (
+        <>
+          <span>{format(0)}</span>
+          <span>{format(0)}</span>
+          <span>{format(0)}</span>
+        </>
+      ) : (
+        <>
+          <span>
+            {setBudgeted && categoryId !== undefined ? (
+              <BudgetInput
+                onChange={setBudgeted}
+                value={budgetCategory.budgeted}
+                categoryId={categoryId}
+                numberFormatter={numberFormatter}
+              />
+            ) : (
+              format(budgetCategory.budgeted)
+            )}
+          </span>
+          <span>{format(budgetCategory.spend)}</span>
+          <span>{format(budgetCategory.balance)}</span>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function Categories({
   categories,
   budgetCategories = [],
   ...rest
 }: CategoriesProps) {
-  const {
-    numberFormatter: { format },
-  } = rest;
+  const { numberFormatter, setBudgeted } = rest;
   return (
     <>
       {categories.map((tree) => {
         if (isCategory(tree)) {
-          const budgetCategory = budgetCategories.find(
-            ({ id }) => id === tree.id,
-          );
           return (
-            <div className={styles.budgetRow} key={tree.id}>
-              {!budgetCategory ? (
-                <>HELLO</>
-              ) : (
-                <>
-                  <span>{format(budgetCategory.budgeted)}</span>
-                  <span>{format(budgetCategory.spend)}</span>
-                  <span>{format(budgetCategory.balance)}</span>
-                </>
-              )}
-            </div>
+            <BudgetRow
+              key={tree.id}
+              setBudgeted={setBudgeted}
+              budgetCategory={budgetCategories.find(({ id }) => id === tree.id)}
+              numberFormatter={numberFormatter}
+              categoryId={tree.id}
+            />
           );
         }
 
@@ -45,17 +82,10 @@ export default function Categories({
 
         return (
           <Fragment key={tree.name}>
-            <div className={styles.budgetRow}>
-              {!budgetCategory ? (
-                <>HELLO</>
-              ) : (
-                <>
-                  <span>{format(budgetCategory.budgeted)}</span>
-                  <span>{format(budgetCategory.spend)}</span>
-                  <span>{format(budgetCategory.balance)}</span>
-                </>
-              )}
-            </div>
+            <BudgetRow
+              budgetCategory={budgetCategory}
+              numberFormatter={numberFormatter}
+            />
             <Categories
               categories={tree.children}
               budgetCategories={

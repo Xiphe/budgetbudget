@@ -60,3 +60,13 @@
     font-family: var(--font-mono);
   }
 }
+
+.budgetInput {
+  font-family: var(--font-mono);
+  font-size: 1em;
+  text-align: right;
+  width: 100%;
+  background: transparent;
+  color: var(--main-color);
+  border: none;
+}
