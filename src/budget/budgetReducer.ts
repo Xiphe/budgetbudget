@@ -2,6 +2,9 @@ import { BudgetState, Category } from './Types';
 
 export const ACTION_INIT = Symbol('INIT');
 export const ACTION_SET_CATEGORY_VALUE = Symbol('ACTION_SET_CATEGORY_VALUE');
+export const ACTION_SET_CATEGORY_ROLLOVER = Symbol(
+  'ACTION_SET_CATEGORY_ROLLOVER',
+);
 
 type CurrencyMonthCategory = {
   currency: string;
@@ -15,12 +18,20 @@ type SetCategoryValueAction = {
     amount: number;
   };
 };
-
+type SetCategoryRolloverAction = {
+  type: typeof ACTION_SET_CATEGORY_ROLLOVER;
+  payload: CurrencyMonthCategory & {
+    rollover: boolean;
+  };
+};
 type InitAction = {
   type: typeof ACTION_INIT;
   payload: BudgetState;
 };
-export type Action = InitAction | SetCategoryValueAction;
+export type Action =
+  | InitAction
+  | SetCategoryValueAction
+  | SetCategoryRolloverAction;
 
 function updateCategory(
   state: BudgetState,
@@ -62,6 +73,11 @@ export default function budgetReducer(
   }
 
   switch (action.type) {
+    case ACTION_SET_CATEGORY_ROLLOVER:
+      return updateCategory(state, action.payload, (category) => ({
+        ...category,
+        rollover: action.payload.rollover,
+      }));
     case ACTION_SET_CATEGORY_VALUE:
       return updateCategory(state, action.payload, (category) => ({
         ...category,

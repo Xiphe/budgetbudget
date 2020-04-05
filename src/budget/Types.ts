@@ -6,9 +6,14 @@ export const VERSION = '0.0.1';
 
 const currencyShape = t.union([t.literal('EUR'), t.literal('USD')]);
 const amountShape = t.tuple([t.number, currencyShape]);
-const categoryShape = t.type({
-  amount: t.number,
-});
+const categoryShape = t.intersection([
+  t.type({
+    amount: t.number,
+  }),
+  t.partial({
+    rollover: t.boolean,
+  }),
+]);
 const budgetShape = t.type({
   categories: t.record(t.string, t.union([categoryShape, t.undefined])),
 });

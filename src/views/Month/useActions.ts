@@ -1,5 +1,8 @@
 import { useMemo } from 'react';
-import { ACTION_SET_CATEGORY_VALUE } from '../../budget';
+import {
+  ACTION_SET_CATEGORY_VALUE,
+  ACTION_SET_CATEGORY_ROLLOVER,
+} from '../../budget';
 import { Props } from './Types';
 
 export default function useSetBudgeted({
@@ -15,6 +18,17 @@ export default function useSetBudgeted({
           payload: {
             currency,
             amount,
+            monthKey,
+            categoryId: id,
+          },
+        });
+      },
+      toggleRollover({ id, rollover }: { id: number; rollover: boolean }) {
+        dispatch({
+          type: ACTION_SET_CATEGORY_ROLLOVER,
+          payload: {
+            rollover,
+            currency,
             monthKey,
             categoryId: id,
           },

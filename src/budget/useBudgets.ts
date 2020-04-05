@@ -15,6 +15,7 @@ import { calculateBalances } from '../moneymoney';
 
 export type BudgetRow = { budgeted: number; spend: number; balance: number };
 export type BudgetCategoryRow = BudgetRow & {
+  overspendRollover?: boolean;
   name: string;
   id?: number;
   transactions?: Transaction[];
@@ -75,8 +76,9 @@ function useFirstLast(balances: Balances, budgets: Budgets) {
 }
 
 type Rollover = { total: number; [key: number]: number };
-
+type OverspendRollover = { [key: number]: boolean };
 type GetCategoryRowsArgs = {
+  overspendRolloverState: OverspendRollover;
   trees: CategoryTree[];
   balance?: Balance;
   budget?: Budget;
@@ -86,6 +88,7 @@ type GetCategoryRowsArgs = {
   parentRows: BudgetRow[];
 };
 function getCategoryRows({
+  overspendRolloverState,
   trees,
   balance,
   budget,
@@ -99,6 +102,7 @@ function getCategoryRows({
       if (!isCategory(tree)) {
         const row = emptyBudgetRow();
         const children = getCategoryRows({
+          overspendRolloverState,
           trees: tree.children,
           balance,
           budget,
@@ -117,15 +121,20 @@ function getCategoryRows({
           children,
         };
       } else {
-        const budgeted = (
-          (budget && budget.categories[tree.id]) || {
-            amount: 0,
-          }
-        ).amount;
+        const budgetCat = (budget && budget.categories[tree.id]) || {
+          amount: 0,
+        };
+        const budgeted = budgetCat.amount;
         const spend = (balance && balance.categories[tree.id]) || {
           amount: 0,
           transactions: [],
         };
+        const overspendRolloverSetting = budgetCat.rollover;
+        const overspendRollover =
+          overspendRolloverSetting !== undefined
+            ? overspendRolloverSetting
+            : overspendRolloverState[tree.id] || false;
+        overspendRolloverState[tree.id] = overspendRollover;
 
         const budgetCategoryBalance = round(
           budgeted + spend.amount + (rolloverCategories[tree.id] || 0),
@@ -136,13 +145,14 @@ function getCategoryRows({
           row.balance = round(row.balance + budgetCategoryBalance);
         });
 
-        if (budgetCategoryBalance > 0) {
+        if (budgetCategoryBalance > 0 || overspendRollover) {
           rollover[tree.id] = budgetCategoryBalance;
         } else if (budgetCategoryBalance < 0) {
           rollover.total += budgetCategoryBalance;
         }
 
         return {
+          overspendRollover,
           budgeted: round(budgeted),
           spend: round(spend.amount),
           balance: budgetCategoryBalance,
@@ -205,6 +215,7 @@ type GetLastEntryArgs = {
   rollover: Rollover;
   trees: CategoryTree[];
   round: (value: number) => number;
+  overspendRolloverState: OverspendRollover;
 };
 function getLastEntry({
   entry,
@@ -212,10 +223,12 @@ function getLastEntry({
   rollover,
   trees,
   round,
+  overspendRolloverState,
 }: GetLastEntryArgs) {
   const total = emptyBudgetRow();
   const { total: _, ...rolloverCategories } = rollover;
   const budgetCategories = getCategoryRows({
+    overspendRolloverState,
     trees,
     round,
     rolloverCategories,
@@ -272,6 +285,7 @@ export default function useBudgets(
       },
     ];
     let rollover: Rollover = { total: 0 };
+    const overspendRolloverState: OverspendRollover = {};
     let budgeted: number = 0;
     let current: string = first;
     while (true) {
@@ -290,6 +304,7 @@ export default function useBudgets(
 
       const total = emptyBudgetRow();
       const budgetCategories = getCategoryRows({
+        overspendRolloverState,
         trees: categories,
         balance,
         budget,
@@ -328,6 +343,7 @@ export default function useBudgets(
     return [
       budgetList,
       getLastEntry({
+        overspendRolloverState,
         entry: budgetList[current]!,
         currency,
         rollover,

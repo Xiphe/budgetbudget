@@ -1,11 +1,11 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import classNames from 'classnames';
 import { isCategory } from '../../moneymoney';
 import { BudgetCategoryRow } from '../../budget/useBudgets';
 import { Row } from '../../components';
 import { Props } from './Types';
 import styles from './Month.module.scss';
-import { NumberFormatter } from '../../lib';
+import { NumberFormatter, Menu, MenuItem } from '../../lib';
 import { ActionCreators } from './useActions';
 import BudgetInput from './BudgetInput';
 
@@ -22,19 +22,41 @@ type BudgetRowProps = {
   categoryId?: number;
   indent: number;
 };
-
+function noop() {}
 function BudgetRow({
   numberFormatter,
   budgetCategory,
-  actions: { setBudgeted },
+  actions: { setBudgeted, toggleRollover },
   indent,
   categoryId,
 }: BudgetRowProps) {
   const { format } = numberFormatter;
   const budgeted = budgetCategory ? budgetCategory.budgeted : 0;
+  const rollover = budgetCategory ? budgetCategory.overspendRollover : false;
   const spend = budgetCategory ? budgetCategory.spend : 0;
   const balance = budgetCategory ? budgetCategory.balance : 0;
   const isLeaf = categoryId !== undefined;
+  const showContextMenu = useCallback(
+    (ev) => {
+      if (!categoryId) {
+        return;
+      }
+      ev.preventDefault();
+      const menu = new Menu();
+      menu.append(
+        new MenuItem({
+          label: rollover
+            ? 'Stop overspending rollover'
+            : 'Rollover overspending',
+          click() {
+            toggleRollover({ id: categoryId, rollover: !rollover });
+          },
+        }),
+      );
+      menu.popup();
+    },
+    [categoryId, toggleRollover, rollover],
+  );
 
   return (
     <Row
@@ -61,6 +83,7 @@ function BudgetRow({
         {format(spend)}
       </span>
       <span
+        onContextMenu={isLeaf ? showContextMenu : noop}
         className={classNames(
           balance === 0 && styles.zero,
           balance < 0 && styles.negativeBalance,
