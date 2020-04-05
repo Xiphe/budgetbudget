@@ -6,13 +6,11 @@ export const VERSION = '0.0.1';
 
 const currencyShape = t.union([t.literal('EUR'), t.literal('USD')]);
 const amountShape = t.tuple([t.number, currencyShape]);
+const categoryShape = t.type({
+  amount: t.number,
+});
 const budgetShape = t.type({
-  categories: t.record(
-    t.string,
-    t.type({
-      amount: t.number,
-    }),
-  ),
+  categories: t.record(t.string, t.union([categoryShape, t.undefined])),
 });
 const budgetsShape = t.record(
   t.string,
@@ -56,6 +54,7 @@ const budgetStateShape = t.intersection(
   'budget',
 );
 
+export type Category = t.TypeOf<typeof categoryShape>;
 export type BudgetState = t.TypeOf<typeof budgetStateShape>;
 export type Budget = t.TypeOf<typeof budgetShape>;
 export type Budgets = t.TypeOf<typeof budgetsShape>;
