@@ -74,28 +74,39 @@ function useFirstLast(balances: Balances, budgets: Budgets) {
   }, [balances, budgets]);
 }
 
-type OverspendCounter = { total: number; [key: number]: number };
+type Rollover = { total: number; [key: number]: number };
 
-function getCategoryRows(
-  trees: CategoryTree[],
-  balance: undefined | Balance,
-  budget: undefined | Budget,
-  round: (value: number) => number,
-  overspend: OverspendCounter,
-  parentRows: BudgetRow[],
-): BudgetCategoryRow[] {
+type GetCategoryRowsArgs = {
+  trees: CategoryTree[];
+  balance?: Balance;
+  budget?: Budget;
+  round: (value: number) => number;
+  rolloverCategories: Omit<Rollover, 'total'>;
+  rollover: Rollover;
+  parentRows: BudgetRow[];
+};
+function getCategoryRows({
+  trees,
+  balance,
+  budget,
+  round,
+  rolloverCategories,
+  rollover,
+  parentRows,
+}: GetCategoryRowsArgs): BudgetCategoryRow[] {
   return trees
     .map((tree): BudgetCategoryRow | null => {
       if (!isCategory(tree)) {
         const row = emptyBudgetRow();
-        const children = getCategoryRows(
-          tree.children,
+        const children = getCategoryRows({
+          trees: tree.children,
           balance,
           budget,
           round,
-          overspend,
-          parentRows.concat(row),
-        );
+          rolloverCategories,
+          rollover,
+          parentRows: parentRows.concat(row),
+        });
         if (!children.length) {
           return null;
         }
@@ -115,15 +126,20 @@ function getCategoryRows(
           amount: 0,
           transactions: [],
         };
+
+        const budgetCategoryBalance = round(
+          budgeted + spend.amount + (rolloverCategories[tree.id] || 0),
+        );
         parentRows.forEach((row) => {
           row.budgeted = round(row.budgeted + budgeted);
           row.spend = round(row.spend + spend.amount);
-          row.balance = round(row.budgeted + row.spend);
+          row.balance = round(row.balance + budgetCategoryBalance);
         });
-        const budgetCategoryBalance = round(budgeted + spend.amount);
 
-        if (budgetCategoryBalance < 0) {
-          overspend.total += budgetCategoryBalance;
+        if (budgetCategoryBalance > 0) {
+          rollover[tree.id] = budgetCategoryBalance;
+        } else if (budgetCategoryBalance < 0) {
+          rollover.total += budgetCategoryBalance;
         }
 
         return {
@@ -183,6 +199,40 @@ function addBudgeted(
   };
 }
 
+type GetLastEntryArgs = {
+  entry: BudgetListEntry;
+  currency: string;
+  rollover: Rollover;
+  trees: CategoryTree[];
+  round: (value: number) => number;
+};
+function getLastEntry({
+  entry,
+  currency,
+  rollover,
+  trees,
+  round,
+}: GetLastEntryArgs) {
+  const total = emptyBudgetRow();
+  const { total: _, ...rolloverCategories } = rollover;
+  const budgetCategories = getCategoryRows({
+    trees,
+    round,
+    rolloverCategories,
+    rollover,
+    parentRows: [total],
+  });
+
+  return {
+    total: total,
+    available: addBudgeted(entry.budgeted, currency),
+    overspendPrevMonth: 0,
+    uncategorized: { amount: 0, transactions: [] },
+    budgeted: entry.budgeted,
+    categories: budgetCategories,
+  };
+}
+
 export default function useBudgets(
   transactions: Transaction[] = EMPTY_TRANSACTIONS,
   categories: CategoryTree[] = [],
@@ -221,12 +271,12 @@ export default function useBudgets(
         transactions: [],
       },
     ];
-    let overspend: OverspendCounter = { total: 0 };
+    let rollover: Rollover = { total: 0 };
     let budgeted: number = 0;
     let current: string = first;
     while (true) {
-      const { total: overspendPrevMonth, ...rolloverOverspend } = overspend;
-      overspend = { total: 0 };
+      const { total: overspendPrevMonth, ...rolloverCategories } = rollover;
+      rollover = { total: 0 };
       const balance = balances[current];
       const budget = budgetsForCurrency[current];
       if (balance) {
@@ -239,14 +289,15 @@ export default function useBudgets(
       );
 
       const total = emptyBudgetRow();
-      const budgetCategories = getCategoryRows(
-        categories,
+      const budgetCategories = getCategoryRows({
+        trees: categories,
         balance,
         budget,
         round,
-        overspend,
-        [total],
-      );
+        rolloverCategories,
+        rollover,
+        parentRows: [total],
+      });
 
       budgeted =
         availableThisMonth.amount - total.budgeted + overspendPrevMonth;
@@ -267,26 +318,22 @@ export default function useBudgets(
       if (
         isAfter(nextMonth, lastDate) &&
         !available.length &&
-        overspend.total === 0 &&
-        Object.keys(overspend).length === 1
+        rollover.total === 0
       ) {
         break;
       }
       current = formatDateKey(nextMonth);
     }
 
-    const lastEntry = budgetList[current];
-
     return [
       budgetList,
-      {
-        total: emptyBudgetRow(),
-        available: addBudgeted(lastEntry!.budgeted, currency),
-        overspendPrevMonth: 0,
-        uncategorized: { amount: 0, transactions: [] },
-        budgeted: lastEntry!.budgeted,
-        categories: [],
-      },
+      getLastEntry({
+        entry: budgetList[current]!,
+        currency,
+        rollover,
+        trees: categories,
+        round,
+      }),
       lastDate,
     ];
   }, [
