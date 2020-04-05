@@ -30,6 +30,9 @@ function BudgetRow({
   categoryId,
 }: BudgetRowProps) {
   const { format } = numberFormatter;
+  const budgeted = budgetCategory ? budgetCategory.budgeted : 0;
+  const spend = budgetCategory ? budgetCategory.spend : 0;
+  const balance = budgetCategory ? budgetCategory.balance : 0;
   return (
     <Row
       className={classNames(
@@ -39,43 +42,29 @@ function BudgetRow({
       indent={indent}
       leaf={categoryId !== undefined}
     >
-      {!budgetCategory ? (
-        <>
-          <span className={styles.zero}>{format(0)}</span>
-          <span className={styles.zero}>{format(0)}</span>
-          <span className={styles.zero}>{format(0)}</span>
-        </>
-      ) : (
-        <>
-          <span
-            className={classNames(budgetCategory.budgeted === 0 && styles.zero)}
-          >
-            {setBudgeted && categoryId !== undefined ? (
-              <BudgetInput
-                onChange={setBudgeted}
-                value={budgetCategory.budgeted}
-                categoryId={categoryId}
-                numberFormatter={numberFormatter}
-              />
-            ) : (
-              format(budgetCategory.budgeted)
-            )}
-          </span>
-          <span
-            className={classNames(budgetCategory.spend === 0 && styles.zero)}
-          >
-            {format(budgetCategory.spend)}
-          </span>
-          <span
-            className={classNames(
-              budgetCategory.balance === 0 && styles.zero,
-              budgetCategory.balance < 0 && styles.negativeBalance,
-            )}
-          >
-            {format(budgetCategory.balance)}
-          </span>
-        </>
-      )}
+      <span className={classNames(budgeted === 0 && styles.zero)}>
+        {setBudgeted && categoryId !== undefined ? (
+          <BudgetInput
+            onChange={setBudgeted}
+            value={budgeted}
+            categoryId={categoryId}
+            numberFormatter={numberFormatter}
+          />
+        ) : (
+          format(budgeted)
+        )}
+      </span>
+      <span className={classNames(spend === 0 && styles.zero)}>
+        {format(spend)}
+      </span>
+      <span
+        className={classNames(
+          balance === 0 && styles.zero,
+          balance < 0 && styles.negativeBalance,
+        )}
+      >
+        {format(balance)}
+      </span>
     </Row>
   );
 }
