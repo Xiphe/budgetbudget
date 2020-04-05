@@ -1,12 +1,8 @@
-import { writeFile as wft } from 'fs';
-import { Menu, IpcRenderer } from 'electron';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { ipcRenderer, writeFile } from '../lib';
+import { Menu } from 'electron';
 import { MENU_ID_SAVE, MENU_ID_SAVE_AS } from './useMenu';
 import { BudgetState } from './Types';
-import { useState, useEffect, useCallback, useRef } from 'react';
-
-const electron = window.require('electron');
-const ipcRenderer: IpcRenderer = electron.ipcRenderer;
-const writeFile: typeof wft = window.require('fs').writeFile;
 
 export default function useSave(menu: Menu, state: BudgetState | null) {
   const [saved, setSaved] = useState<BudgetState | null | Error>(null);

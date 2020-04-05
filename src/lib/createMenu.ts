@@ -1,7 +1,6 @@
-import { MenuItemConstructorOptions, IpcRenderer } from 'electron';
+import { MenuItemConstructorOptions } from 'electron';
+import { ipcRenderer } from './electron';
 
-const electron = window.require('electron');
-const ipcRenderer: IpcRenderer = electron.ipcRenderer;
 type MenuConfig = MenuItemConstructorOptions;
 
 export function createMenu(entries: MenuConfig[] = []): MenuConfig[] {

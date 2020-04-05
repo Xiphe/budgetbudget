@@ -1,5 +1,5 @@
-import { IpcRenderer } from 'electron';
 import { useState, useEffect } from 'react';
+import { ipcRenderer } from './electron';
 
 export const INIT_NEW = Symbol('INIT_NEW');
 export default function useInit(): Error | string | null | typeof INIT_NEW {
@@ -7,7 +7,6 @@ export default function useInit(): Error | string | null | typeof INIT_NEW {
   const [error, setError] = useState<null | Error>(null);
   useEffect(() => {
     let canceled = false;
-    var ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer;
     ipcRenderer.invoke('INIT').then((res: unknown) => {
       if (canceled) {
         return;

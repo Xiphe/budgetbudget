@@ -7,5 +7,7 @@ export { default as createNumberFormatter } from './createNumberFormatter';
 export { default as useInit, INIT_NEW } from './useInit';
 export { createMenu, createFileMenu } from './createMenu';
 export * from './guards';
+export * from './electron';
+export * from './fs';
 export * from './useIsVisible';
 export type NumberFormatter = NumberFormatterT;

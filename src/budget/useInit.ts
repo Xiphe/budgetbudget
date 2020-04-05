@@ -1,9 +1,7 @@
-import { readFile as rft } from 'fs';
 import { useEffect, useState, Dispatch } from 'react';
-import { INIT_NEW } from '../lib';
+import { INIT_NEW, readFile } from '../lib';
 import { ACTION_INIT, Action } from './budgetReducer';
 import { validateBudgetState, VERSION } from './Types';
-const readFile: typeof rft = window.require('fs').readFile;
 
 export default function useInit(
   init: string | typeof INIT_NEW,
