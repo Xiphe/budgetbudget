@@ -1,5 +1,7 @@
 .sidebar {
-  width: var(--sidebar-width);
+  background-color: var(--background-color);
+  width: calc(var(--sidebar-width) - 1px);
+  border-right: 1px solid var(--border-color);
   min-height: 100%;
   float: left;
 }

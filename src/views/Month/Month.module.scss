@@ -2,8 +2,7 @@
   min-height: calc(100vh - var(--header-height));
   min-width: calc(calc(100vw - var(--sidebar-width)) / 2);
   max-width: calc(calc(100vw - var(--sidebar-width)) / 2);
-  border-right: 0.2em solid rgba(255, 255, 255, 0.2);
-  border-left: 0.2em solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid var(--border-color);
 }
 .title {
   text-align: center;
@@ -15,7 +14,17 @@
   height: var(--month-header-height);
   overflow: hidden;
   transition: height 200ms ease-out;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--background-color);
+}
+.headerBorder {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border: none;
+  margin: 0;
+  border-bottom: 1px solid var(--border-color);
 }
 .headTable {
   width: 100%;
@@ -57,31 +66,61 @@
   width: calc(100% / 3);
 }
 .budgetRow {
-  height: var(--budget-row-height);
+  padding: 0 0.5rem;
   span {
     @include budgetRowEntry();
+    font-weight: 300;
+    transition: color 400ms ease-in;
     font-family: var(--font-mono);
+  }
+}
+.budgetRowGroup {
+  span {
+    font-weight: bold;
   }
 }
 .budgetInput {
   font-family: var(--font-mono);
+  height: var(--row-height);
+  margin: 0;
+  border-radius: 1px;
+  font-weight: 300;
   font-size: 1em;
   text-align: right;
   width: 100%;
   background: transparent;
   color: var(--main-color);
   border: none;
+  position: relative;
+  cursor: default;
+  &:focus {
+    cursor: text;
+    z-index: 15;
+    outline: none;
+    box-shadow: 0 0 0 3px var(--highlight-color),
+      0 0 10px 3px rgba(0, 0, 0, 0.4);
+    background-color: var(--background-color);
+  }
 }
 .budgetTotals {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 2px;
+  color: var(--secondary-color);
   div {
     @include budgetRowEntry();
     span {
+      color: var(--main-color);
       font-weight: bold;
       font-family: var(--font-mono);
     }
   }
+}
+.negativeBalance {
+  color: var(--negative-color);
+}
+.zero,
+.zero input {
+  color: var(--secondary-color);
 }

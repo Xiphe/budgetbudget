@@ -1,6 +1,8 @@
 import React, { Fragment } from 'react';
+import classNames from 'classnames';
 import { isCategory } from '../../moneymoney';
 import { BudgetCategoryRow } from '../../budget/useBudgets';
+import { Row } from '../../components';
 import { Props } from './Types';
 import styles from './Month.module.scss';
 import { NumberFormatter } from '../../lib';
@@ -8,6 +10,7 @@ import BudgetInput from './BudgetInput';
 
 type CategoriesProps = Omit<Props, 'budget'> & {
   budgetCategories?: BudgetCategoryRow[];
+  indent?: number;
   setBudgeted: (budget: { id: number; amount: number }) => void;
 };
 
@@ -16,26 +19,37 @@ type BudgetRowProps = {
   numberFormatter: NumberFormatter;
   budgetCategory?: BudgetCategoryRow;
   categoryId?: number;
+  indent: number;
 };
 
 function BudgetRow({
   numberFormatter,
   budgetCategory,
   setBudgeted,
+  indent,
   categoryId,
 }: BudgetRowProps) {
   const { format } = numberFormatter;
   return (
-    <div className={styles.budgetRow}>
+    <Row
+      className={classNames(
+        styles.budgetRow,
+        categoryId === undefined && styles.budgetRowGroup,
+      )}
+      indent={indent}
+      leaf={categoryId !== undefined}
+    >
       {!budgetCategory ? (
         <>
-          <span>{format(0)}</span>
-          <span>{format(0)}</span>
-          <span>{format(0)}</span>
+          <span className={styles.zero}>{format(0)}</span>
+          <span className={styles.zero}>{format(0)}</span>
+          <span className={styles.zero}>{format(0)}</span>
         </>
       ) : (
         <>
-          <span>
+          <span
+            className={classNames(budgetCategory.budgeted === 0 && styles.zero)}
+          >
             {setBudgeted && categoryId !== undefined ? (
               <BudgetInput
                 onChange={setBudgeted}
@@ -47,17 +61,29 @@ function BudgetRow({
               format(budgetCategory.budgeted)
             )}
           </span>
-          <span>{format(budgetCategory.spend)}</span>
-          <span>{format(budgetCategory.balance)}</span>
+          <span
+            className={classNames(budgetCategory.spend === 0 && styles.zero)}
+          >
+            {format(budgetCategory.spend)}
+          </span>
+          <span
+            className={classNames(
+              budgetCategory.balance === 0 && styles.zero,
+              budgetCategory.balance < 0 && styles.negativeBalance,
+            )}
+          >
+            {format(budgetCategory.balance)}
+          </span>
         </>
       )}
-    </div>
+    </Row>
   );
 }
 
 export default function Categories({
   categories,
   budgetCategories = [],
+  indent = 0,
   ...rest
 }: CategoriesProps) {
   const { numberFormatter, setBudgeted } = rest;
@@ -68,6 +94,7 @@ export default function Categories({
           return (
             <BudgetRow
               key={tree.id}
+              indent={indent}
               setBudgeted={setBudgeted}
               budgetCategory={budgetCategories.find(({ id }) => id === tree.id)}
               numberFormatter={numberFormatter}
@@ -83,10 +110,12 @@ export default function Categories({
         return (
           <Fragment key={tree.name}>
             <BudgetRow
+              indent={indent}
               budgetCategory={budgetCategory}
               numberFormatter={numberFormatter}
             />
             <Categories
+              indent={indent + 1}
               categories={tree.children}
               budgetCategories={
                 budgetCategory ? budgetCategory.children : undefined

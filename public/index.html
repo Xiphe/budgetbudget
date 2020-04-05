@@ -10,9 +10,25 @@
     <link href="/fonts/index.css" rel="stylesheet" />
     <script>
       const {
-        remote: { nativeTheme },
+        remote: { nativeTheme, systemPreferences },
         ipcRenderer,
       } = window.require('electron');
+      function setColors() {
+        const accentColor = systemPreferences.getAccentColor();
+        const highlightColor = `rgb(${(
+          systemPreferences.getUserDefault('AppleHighlightColor', 'string') ||
+          '9 92 220'
+        )
+          .split(' ')
+          .slice(0, 3)
+          .map((i) => Math.round(Number(i) * 255))
+          .join(', ')})`;
+
+        document.querySelector(
+          'html',
+        ).style.cssText = `--highlight-color: ${highlightColor}; --accent-color: #${accentColor};`;
+      }
+
       function setScheme() {
         const {
           shouldUseDarkColors,
@@ -26,6 +42,8 @@
           .join('-');
       }
       setScheme();
+      setColors();
+      ipcRenderer.on('UPDATE_COLOR_PREFERENCES', setColors);
       ipcRenderer.on('UPDATE_SCHEME', setScheme);
     </script>
     <style>

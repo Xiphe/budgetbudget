@@ -1,17 +1,22 @@
 [data-theme^='light'] {
   --dim-colors: 0, 0, 0;
   --main-color: rgb(35, 35, 35);
-  --background-color: #fff;
+  --background-color: #f5f2f2;
+  --secondary-color: #b3b1b7;
 }
 [data-theme^='dark'] {
   --dim-colors: 255, 255, 255;
   --main-color: #fff;
-  --background-color: #000;
+  --secondary-color: #676466;
+  --background-color: rgb(36, 36, 36);
 }
 :root {
-  --budget-row-height: 1.6rem;
+  --row-height: 1.6rem;
   --sidebar-width: 15rem;
-  --header-height: 5rem;
+  --header-height: 0rem;
   --font-mono: 'Roboto Mono';
-  --negative-color: #b00;
+  --negative-color: var(--accent-color);
+}
+#root {
+  --border-color: rgba(var(--dim-colors), 0.075);
 }
