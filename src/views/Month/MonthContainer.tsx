@@ -7,7 +7,7 @@ import Categories from './Categories';
 import { Props } from './Types';
 import styles from './Month.module.scss';
 import { EMPTY_BUDGET } from '../../budget';
-import useSetBudgeted from './useSetBudgeted';
+import useActions from './useActions';
 
 export default function MonthContainer({
   budget = EMPTY_BUDGET,
@@ -17,7 +17,7 @@ export default function MonthContainer({
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = React.useState(false);
   React.useEffect(() => isVisible(ref.current!, setVisible), [isVisible]);
-  const setBudgeted = useSetBudgeted(rest);
+  const actions = useActions(rest);
 
   return (
     <div ref={ref} className={styles.month}>
@@ -28,7 +28,7 @@ export default function MonthContainer({
         <Categories
           {...rest}
           budgetCategories={budget.categories}
-          setBudgeted={setBudgeted}
+          actions={actions}
         />
       ) : null}
     </div>

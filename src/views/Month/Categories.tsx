@@ -6,16 +6,17 @@ import { Row } from '../../components';
 import { Props } from './Types';
 import styles from './Month.module.scss';
 import { NumberFormatter } from '../../lib';
+import { ActionCreators } from './useActions';
 import BudgetInput from './BudgetInput';
 
 type CategoriesProps = Omit<Props, 'budget'> & {
   budgetCategories?: BudgetCategoryRow[];
   indent?: number;
-  setBudgeted: (budget: { id: number; amount: number }) => void;
+  actions: ActionCreators;
 };
 
 type BudgetRowProps = {
-  setBudgeted?: CategoriesProps['setBudgeted'];
+  actions: CategoriesProps['actions'];
   numberFormatter: NumberFormatter;
   budgetCategory?: BudgetCategoryRow;
   categoryId?: number;
@@ -25,7 +26,7 @@ type BudgetRowProps = {
 function BudgetRow({
   numberFormatter,
   budgetCategory,
-  setBudgeted,
+  actions: { setBudgeted },
   indent,
   categoryId,
 }: BudgetRowProps) {
@@ -33,6 +34,8 @@ function BudgetRow({
   const budgeted = budgetCategory ? budgetCategory.budgeted : 0;
   const spend = budgetCategory ? budgetCategory.spend : 0;
   const balance = budgetCategory ? budgetCategory.balance : 0;
+  const isLeaf = categoryId !== undefined;
+
   return (
     <Row
       className={classNames(
@@ -40,10 +43,10 @@ function BudgetRow({
         categoryId === undefined && styles.budgetRowGroup,
       )}
       indent={indent}
-      leaf={categoryId !== undefined}
+      leaf={isLeaf}
     >
       <span className={classNames(budgeted === 0 && styles.zero)}>
-        {setBudgeted && categoryId !== undefined ? (
+        {categoryId !== undefined ? (
           <BudgetInput
             onChange={setBudgeted}
             value={budgeted}
@@ -75,7 +78,7 @@ export default function Categories({
   indent = 0,
   ...rest
 }: CategoriesProps) {
-  const { numberFormatter, setBudgeted } = rest;
+  const { numberFormatter, actions } = rest;
   return (
     <>
       {categories.map((tree) => {
@@ -84,7 +87,7 @@ export default function Categories({
             <BudgetRow
               key={tree.id}
               indent={indent}
-              setBudgeted={setBudgeted}
+              actions={actions}
               budgetCategory={budgetCategories.find(({ id }) => id === tree.id)}
               numberFormatter={numberFormatter}
               categoryId={tree.id}
@@ -100,6 +103,7 @@ export default function Categories({
           <Fragment key={tree.name}>
             <BudgetRow
               indent={indent}
+              actions={actions}
               budgetCategory={budgetCategory}
               numberFormatter={numberFormatter}
             />
