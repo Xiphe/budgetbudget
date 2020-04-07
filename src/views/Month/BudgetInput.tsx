@@ -19,25 +19,21 @@ export default function BudgetInput({
   numberFormatter: { fractionDelimiter, format, parse, fractionStep },
   categoryId,
 }: Props) {
-  const [focus, setFocus] = useState<boolean>(false);
   const [stringValue, setStringValue] = useState<string | null>(null);
-  const value =
-    stringValue !== null ? stringValue : format(numberValue, !focus);
+  const value = stringValue !== null ? stringValue : format(numberValue);
   const handleChange = (ev: ChangeEvent<HTMLInputElement>) => {
     const value = ev.target.value;
-    const isNan = value === '' || value.slice(-1) === fractionDelimiter;
-    setStringValue(isNan ? value : null);
+    setStringValue(value);
     onChange({
       id: categoryId,
-      amount: value === '' ? 0 : parse(value),
+      amount: parse(value),
     });
   };
   const handleBlur = (ev: FocusEvent<HTMLInputElement>) => {
     setStringValue(null);
-    setFocus(false);
   };
   const handleFocus = (ev: FocusEvent<HTMLInputElement>) => {
-    setFocus(true);
+    setStringValue(format(numberValue, { thousandDelimiter: false }));
   };
   const handleKeyDown = (ev: React.KeyboardEvent<HTMLInputElement>) => {
     if (ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp') {

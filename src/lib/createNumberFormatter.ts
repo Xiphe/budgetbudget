@@ -1,3 +1,7 @@
+type FormatOptions = {
+  thousandDelimiter?: boolean;
+  withFractions?: boolean;
+};
 export default function createNumberFormatter(
   fractionDigits: number,
   locale: string,
@@ -14,15 +18,26 @@ export default function createNumberFormatter(
   return {
     fractionStep,
     fractionDelimiter,
-    format(value: number, strict: boolean = true): string {
-      if (!strict) {
-        return formatter.format(value).replace(cleanPattern, '');
+    format(
+      value: number,
+      { thousandDelimiter = true, withFractions = true }: FormatOptions = {},
+    ): string {
+      const val = (withFractions ? formatterWithFraction : formatter).format(
+        value,
+      );
+
+      if (!thousandDelimiter) {
+        return val.replace(cleanPattern, '');
       }
-      return formatterWithFraction.format(value);
+
+      return val;
     },
     parse(value: string) {
       return parseFloat(
-        value.replace(cleanPattern, '').replace(fractionDelimiter, '.'),
+        value
+          .replace(cleanPattern, '')
+          .replace(fractionDelimiter, '.')
+          .replace(/\.$/, '') || '0',
       );
     },
   };
