@@ -1,5 +1,5 @@
 {
-  "name": "moneymoneymonthlybudgets",
+  "name": "budgetbudget",
   "version": "0.0.0-development",
   "description": "work with monthly budgets alongside moneymoney",
   "main": "main.js",
@@ -51,7 +51,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Xiphe/moneymoneymonthlybudgets.git"
+    "url": "git+https://github.com/Xiphe/budgetbudget.git"
   },
   "private": true,
   "author": "Hannes Diercks <node@xiphe.net> (https://xiphe.net/)",
