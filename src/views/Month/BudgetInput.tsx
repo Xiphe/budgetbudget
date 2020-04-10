@@ -1,5 +1,5 @@
-import React, { ChangeEvent, FocusEvent, useState } from 'react';
-import { NumberFormatter } from '../../lib';
+import React, { ChangeEvent, useCallback } from 'react';
+import { NumberFormatter, useInputProps } from '../../lib';
 import styles from './Month.module.scss';
 
 type Props = {
@@ -15,26 +15,26 @@ function isHTMLInputElement(elm: any): elm is HTMLInputElement {
 
 export default function BudgetInput({
   onChange,
-  value: numberValue,
+  value,
   numberFormatter: { fractionDelimiter, format, parse, fractionStep },
   categoryId,
 }: Props) {
-  const [stringValue, setStringValue] = useState<string | null>(null);
-  const value = stringValue !== null ? stringValue : format(numberValue);
-  const handleChange = (ev: ChangeEvent<HTMLInputElement>) => {
-    const value = ev.target.value;
-    setStringValue(value);
-    onChange({
-      id: categoryId,
-      amount: parse(value),
-    });
-  };
-  const handleBlur = (ev: FocusEvent<HTMLInputElement>) => {
-    setStringValue(null);
-  };
-  const handleFocus = (ev: FocusEvent<HTMLInputElement>) => {
-    setStringValue(format(numberValue, { thousandDelimiter: false }));
-  };
+  const { error: _, ...inputProps } = useInputProps<
+    number,
+    ChangeEvent<HTMLInputElement>
+  >({
+    value,
+    onChange: useCallback(
+      (value) => onChange({ id: categoryId, amount: value }),
+      [categoryId, onChange],
+    ),
+    validate: useCallback((ev) => parse(ev.target.value), [parse]),
+    toInputFormat: useCallback(
+      (value) => format(value, { thousandDelimiter: false }),
+      [format],
+    ),
+    format,
+  });
   const handleKeyDown = (ev: React.KeyboardEvent<HTMLInputElement>) => {
     if (ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp') {
       return;
@@ -45,30 +45,22 @@ export default function BudgetInput({
     }
     ev.preventDefault();
     ev.stopPropagation();
-    const fractionI = value.indexOf(fractionDelimiter);
+    const fractionI = inputProps.value.indexOf(fractionDelimiter);
     const { selectionEnd, selectionStart } = target;
     const step =
       fractionI === -1 || (selectionStart || 0) <= fractionI ? 1 : fractionStep;
-    const newValue =
-      ev.key === 'ArrowDown' ? numberValue - step : numberValue + step;
-    target.value = format(newValue);
+    const newValue = ev.key === 'ArrowDown' ? value - step : value + step;
+    target.value = format(newValue, { thousandDelimiter: false });
     target.setSelectionRange(selectionStart || 0, selectionEnd || 0);
-    setStringValue(null);
-    onChange({
-      amount: newValue,
-      id: categoryId,
-    });
+    inputProps.onChange(ev as any);
   };
 
   return (
     <input
+      {...inputProps}
       className={styles.budgetInput}
       type="string"
-      value={value}
       onKeyDown={handleKeyDown}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      onFocus={handleFocus}
     />
   );
 }
