@@ -1,7 +1,6 @@
 import { Account } from './Types';
-import { osascript, delay } from '../lib';
+import { ipcRenderer } from '../lib';
 import { parse } from 'plist';
-import isDbLocked from './isDbLocked';
 
 type InteropAccount = Omit<Account, 'balance'> & {
   balance: Account['balance'][];
@@ -56,25 +55,12 @@ function isAccount(account: any): account is InteropAccount {
   throw new Error(`Account schema mismatch on ${JSON.stringify(account)}`);
 }
 
-export default async function getAccounts(retry = 0): Promise<Account[]> {
-  try {
-    const parsedStdout = parse(
-      await osascript('tell application "MoneyMoney" to export accounts'),
-    );
+export default async function getAccounts(): Promise<Account[]> {
+  const parsedStdout = parse(await ipcRenderer.invoke('MM_EXPORT_ACCOUNTS'));
 
-    if (!Array.isArray(parsedStdout)) {
-      throw new Error('Unexpectedly got non-array as accounts');
-    }
-
-    return normalizeAccounts(parsedStdout.filter(isAccount).filter(isVisible));
-  } catch (err) {
-    if (isDbLocked(err)) {
-      if (retry < 3) {
-        await delay(retry * 500);
-        return getAccounts(retry + 1);
-      }
-      throw new Error('MoneyMoney database is locked');
-    }
-    throw err;
+  if (!Array.isArray(parsedStdout)) {
+    throw new Error('Unexpectedly got non-array as accounts');
   }
+
+  return normalizeAccounts(parsedStdout.filter(isAccount).filter(isVisible));
 }

@@ -1,7 +1,6 @@
 import { Transaction, Currency } from './Types';
 import { parse, PlistObject } from 'plist';
-import { delay, osascript } from '../lib';
-import isDbLocked from './isDbLocked';
+import { ipcRenderer } from '../lib';
 
 type InteropTransaction = Omit<Transaction, 'accountNumber' | 'amount'> & {
   amount: number;
@@ -71,34 +70,25 @@ async function getAccountTransactions(
   accountNumber: string,
   retry = 0,
 ): Promise<Transaction[]> {
-  try {
-    const resp = parse(
-      await osascript(
-        `tell application "MoneyMoney" to export transactions from account "${accountNumber}" from date "1.1.1980" as "plist"`,
-      ),
-    );
+  const resp = parse(
+    await ipcRenderer.invoke(
+      'MM_EXPORT_TRANSACTIONS',
+      accountNumber,
+      '1.1.1980',
+    ),
+  );
 
-    if (!isPlistObject(resp)) {
-      throw new Error('Unexpectedly got non-object as transaction list');
-    }
-
-    if (!isArray(resp.transactions)) {
-      throw new Error('Unexpectedly got non-array as transactions');
-    }
-
-    return resp.transactions
-      .filter(isTransaction)
-      .map(toTransaction(accountNumber));
-  } catch (err) {
-    if (isDbLocked(err)) {
-      if (retry < 3) {
-        await delay(retry * 500);
-        return getAccountTransactions(accountNumber, retry + 1);
-      }
-      throw new Error('MoneyMoney database is locked');
-    }
-    throw err;
+  if (!isPlistObject(resp)) {
+    throw new Error('Unexpectedly got non-object as transaction list');
   }
+
+  if (!isArray(resp.transactions)) {
+    throw new Error('Unexpectedly got non-array as transactions');
+  }
+
+  return resp.transactions
+    .filter(isTransaction)
+    .map(toTransaction(accountNumber));
 }
 
 export default async function getTransactions(

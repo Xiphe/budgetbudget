@@ -1,6 +1,4 @@
 import { NumberFormatter as NumberFormatterT } from './createNumberFormatter';
-export { default as delay } from './delay';
-export { default as osascript } from './osascript';
 export { default as formatDateKey } from './formatDateKey';
 export { default as roundWithFractions } from './roundWithFractions';
 export { default as createNumberFormatter } from './createNumberFormatter';

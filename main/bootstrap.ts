@@ -9,12 +9,14 @@ import createWindowManager from './windowManager';
 import createOpenFile from './openFile';
 import { createDefaultMenu } from './defaultMenu';
 import registerSave from './registerSave';
+import moneymoneyHandlers from './moneymoney/handlers';
 
 export default function bootstrap() {
   const windowManager = createWindowManager(ipcMain);
   const openFile = createOpenFile(ipcMain, windowManager.createWindow);
   const defaultMenu = createDefaultMenu(windowManager.createWindow, openFile);
   registerSave(ipcMain, windowManager);
+  moneymoneyHandlers(ipcMain);
 
   nativeTheme.on('updated', () => {
     windowManager.broadcast('UPDATE_SCHEME');

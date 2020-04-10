@@ -1,4 +1,4 @@
-import exec from './exec';
+import { exec } from 'child_process';
 const MB = 1024 * 1024;
 
 type ErrWithStdErr = Error & {
@@ -11,10 +11,12 @@ function addStdErr(err: Error, stderr?: string): ErrWithStdErr {
   return err;
 }
 
-export default function osascript(script: string) {
+export default function osascript(scriptFile: string, ...args: string[]) {
   return new Promise<string>((resolve, reject) => {
     exec(
-      `osascript -e "${script.replace(/"/g, '\\"')}"`,
+      `osascript ${scriptFile} ${args
+        .map((arg) => `"${arg.replace(/"/g, '\\"')}"`)
+        .join(' ')}`,
       { maxBuffer: 100 * MB },
       (err, stdout, stderr) => {
         if (err) {
