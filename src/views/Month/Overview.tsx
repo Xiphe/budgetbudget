@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import format from 'date-fns/format';
 import subMonths from 'date-fns/subMonths';
-import { useUi } from '../Budget';
+import { useRegisterHeaderHeight } from '../../lib';
 import styles from './Month.module.scss';
 import { Props } from './Types';
 
@@ -11,18 +11,31 @@ export default function Overview({
   numberFormatter,
   budget: { available, overspendPrevMonth, total, budgeted },
 }: Props) {
-  const { registerBigHeader } = useUi();
-  useEffect(() => (budgeted !== 0 ? registerBigHeader() : undefined), [
-    budgeted,
-    registerBigHeader,
-  ]);
+  const ref = useRef<HTMLDivElement | null>(null);
+  const registerHeaderHeight = useRegisterHeaderHeight();
+  useEffect(() => {
+    let cleanup: () => void = () => {};
+    const registerHeight = () => {
+      cleanup();
+      cleanup = registerHeaderHeight(
+        Math.ceil(ref.current!.getBoundingClientRect().height),
+      );
+    };
+    const observer = new ResizeObserver(registerHeight);
+    observer.observe(ref.current!);
+
+    return () => {
+      observer.disconnect();
+      cleanup();
+    };
+  }, [registerHeaderHeight]);
   const budgetClasses = classNames(
     budgeted !== 0 && styles.bigBudget,
     budgeted < 0 && styles.negative,
   );
 
   return (
-    <>
+    <div ref={ref}>
       <h3 className={styles.title}>{format(date, 'MMMM')}</h3>
       <div className={styles.headTable}>
         <div>{numberFormatter.format(available.amount)}</div>
@@ -53,6 +66,6 @@ export default function Overview({
           <span>{numberFormatter.format(total.balance)}</span>
         </div>
       </div>
-    </>
+    </div>
   );
 }

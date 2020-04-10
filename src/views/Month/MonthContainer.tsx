@@ -21,16 +21,18 @@ export default function MonthContainer({
 
   return (
     <div ref={ref} className={styles.month}>
-      <Header>
-        {visible ? <Overview {...rest} budget={budget} /> : <Loading />}
-      </Header>
-      {visible ? (
-        <Categories
-          {...rest}
-          budgetCategories={budget.categories}
-          actions={actions}
-        />
-      ) : null}
+      <div>
+        <Header>
+          {visible ? <Overview {...rest} budget={budget} /> : <Loading />}
+        </Header>
+        {visible ? (
+          <Categories
+            {...rest}
+            budgetCategories={budget.categories}
+            actions={actions}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

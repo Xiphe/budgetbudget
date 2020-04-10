@@ -3,10 +3,9 @@ import { Helmet } from 'react-helmet';
 import isAfter from 'date-fns/isAfter';
 import { BudgetState, Action, useBudgetData } from '../../budget';
 import { Header, Content, Loading } from '../../components';
-import { appName } from '../../lib';
+import { appName, HeaderHeightProvider } from '../../lib';
 import Month from '../Month';
 import BudgetSlider from './BudgetSlider';
-import { UiProvider } from './UiContext';
 import CategorySidebar from '../CategorySidebar/CategorySidebar';
 
 type Props = {
@@ -54,7 +53,7 @@ export default function Budget({ state, dispatch }: Props) {
   }
 
   return (
-    <UiProvider>
+    <HeaderHeightProvider>
       {title}
       <Header />
       <Content>
@@ -78,6 +77,6 @@ export default function Budget({ state, dispatch }: Props) {
           )}
         </BudgetSlider>
       </Content>
-    </UiProvider>
+    </HeaderHeightProvider>
   );
 }
