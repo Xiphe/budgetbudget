@@ -16,6 +16,7 @@ type Props = {
 
 export default function Budget({ state, dispatch }: Props) {
   const {
+    loading,
     error,
     retry,
     budgets,
@@ -40,6 +41,15 @@ export default function Budget({ state, dispatch }: Props) {
         <p>Error: {error.message}</p>
         {retry && <button onClick={retry}>retry</button>}
       </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <>
+        {title}
+        <Loading />
+      </>
     );
   }
 

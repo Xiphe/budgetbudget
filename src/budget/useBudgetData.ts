@@ -40,6 +40,7 @@ export default function useBudgetData(state: BudgetState) {
   );
 
   return {
+    loading: !transactionsLoaded(transactions),
     currency,
     error: transactions instanceof Error ? transactions : null,
     retry: transactions instanceof Error ? retryLoadTransactions : null,
