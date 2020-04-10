@@ -36,3 +36,21 @@ export function createFileMenu(entries: MenuConfig[] = []): MenuConfig[] {
 
   return config.filter(isMenuConfig);
 }
+
+export function createEditMenu(): MenuConfig {
+  return {
+    label: 'Edit',
+    submenu: [
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      { role: 'delete' },
+      { role: 'selectAll' },
+      { type: 'separator' },
+      {
+        label: 'Speech',
+        submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
+      },
+    ],
+  };
+}

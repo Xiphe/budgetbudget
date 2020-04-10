@@ -1,5 +1,11 @@
 import { useEffect, useMemo } from 'react';
-import { createMenu, createFileMenu, ipcRenderer, Menu } from '../lib';
+import {
+  createMenu,
+  createFileMenu,
+  createEditMenu,
+  ipcRenderer,
+  Menu,
+} from '../lib';
 
 export const MENU_ID_SAVE = 'MENU_SAVE';
 export const MENU_ID_SAVE_AS = 'MENU_SAVE_AS';
@@ -30,6 +36,7 @@ function buildMenu() {
           },
         ]),
       },
+      createEditMenu(),
     ]),
   );
 }
