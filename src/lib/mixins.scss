@@ -1,0 +1,13 @@
+@mixin focusOutline {
+  box-shadow: 0 0 0 3px rgba(var(--accent-colors), 0.5),
+    0 0 0 3px var(--input-outline-dim),
+    0 0 10px 3px rgba(0, 0, 0, var(--element-shadow-alpha));
+}
+@mixin input {
+  border-radius: 1px;
+  &:focus {
+    cursor: text;
+    outline: none;
+    @include focusOutline();
+  }
+}

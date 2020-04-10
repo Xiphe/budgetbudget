@@ -1,3 +1,5 @@
+@import '../../lib/mixins.scss';
+
 .month {
   min-height: calc(100vh - var(--header-height));
   min-width: calc(calc(100vw - var(--sidebar-width)) / 2 + 1px);
@@ -96,11 +98,10 @@
   position: relative;
   cursor: default;
   &:focus {
+    @include focusOutline();
     cursor: text;
     z-index: 15;
     outline: none;
-    box-shadow: 0 0 0 3px var(--highlight-color),
-      0 0 10px 3px rgba(0, 0, 0, 0.4);
     background-color: var(--background-color);
   }
 }

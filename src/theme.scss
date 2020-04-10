@@ -1,22 +1,29 @@
 [data-theme^='light'] {
   --dim-colors: 0, 0, 0;
   --main-color: rgb(35, 35, 35);
-  --background-color: #f5f2f2;
+  --background-color: rgb(236, 236, 236);
   --secondary-color: #b3b1b7;
+  --input-background: white;
+  --input-outline-dim: rgb(236, 236, 236);
+  --element-shadow-alpha: 0.1;
 }
 [data-theme^='dark'] {
   --dim-colors: 255, 255, 255;
   --main-color: #fff;
   --secondary-color: #676466;
   --background-color: rgb(36, 36, 36);
+  --input-background: rgba(var(--dim-colors), 0.15);
+  --input-outline-dim: rgb(110, 110, 110);
+  --element-shadow-alpha: 0.4;
 }
 :root {
   --row-height: 1.6rem;
   --sidebar-width: 15rem;
   --header-height: 0rem;
   --font-mono: 'Roboto Mono';
-  --negative-color: var(--accent-color);
+  --negative-color: rgb(var(--accent-colors));
 }
 #root {
+  --input-border-color: rgba(var(--dim-colors), 0.15);
   --border-color: rgba(var(--dim-colors), 0.075);
 }

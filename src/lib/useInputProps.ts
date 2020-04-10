@@ -1,4 +1,4 @@
-import { useState, useCallback, ChangeEvent } from 'react';
+import { useState, useCallback } from 'react';
 
 function noop(v: any) {
   return v;
@@ -11,10 +11,10 @@ type UseInputConfig<V, E> = {
   validate: (ev: E) => V;
 };
 const EMPTY = Symbol('EMPTY');
-export const SET_INTERNAL = Symbol('SET_INTERNAL');
+
 export default function useInputProps<
   V extends any,
-  E extends ChangeEvent<HTMLInputElement>
+  E extends { target: { value: any } }
 >({
   value,
   onChange,

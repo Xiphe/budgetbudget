@@ -1,14 +1,46 @@
 import { MenuItemConstructorOptions } from 'electron';
-import { ipcRenderer } from './electron';
+import { ipcRenderer, appName } from './electron';
 
 type MenuConfig = MenuItemConstructorOptions;
+export type CreateMenuCallbacks = {
+  setShowSettings?: (show: boolean) => void;
+};
 
-export function createMenu(entries: MenuConfig[] = []): MenuConfig[] {
-  return [{ role: 'appMenu' }, ...entries];
+function isMenuConfig(
+  entry: MenuConfig | boolean | undefined,
+): entry is MenuConfig {
+  return Boolean(entry);
 }
 
-function isMenuConfig(entry: MenuConfig | boolean): entry is MenuConfig {
-  return Boolean(entry);
+export function createMenu(
+  entries: MenuConfig[] = [],
+  { setShowSettings }: CreateMenuCallbacks = {},
+): MenuConfig[] {
+  const submenu: (MenuConfig | false | undefined)[] = [
+    { role: 'about' },
+    { type: 'separator' },
+    setShowSettings && {
+      label: 'Settings',
+      accelerator: 'CommandOrControl+,',
+      click: () => setShowSettings(true),
+    },
+    { type: 'separator' },
+    { role: 'services' },
+    { type: 'separator' },
+    { role: 'hide' },
+    { role: 'hideOthers' },
+    { role: 'unhide' },
+    { type: 'separator' },
+    { role: 'quit' },
+  ];
+
+  return [
+    {
+      label: appName,
+      submenu: submenu.filter(isMenuConfig),
+    },
+    ...entries,
+  ];
 }
 
 export function createFileMenu(entries: MenuConfig[] = []): MenuConfig[] {

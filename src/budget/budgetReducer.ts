@@ -1,6 +1,16 @@
 import { BudgetState, Category } from './Types';
 
 export const ACTION_INIT = Symbol('INIT');
+export const ACTION_SET_NAME = Symbol('SET_NAME');
+export const ACTION_SETTINGS_SET_NUMBER_LOCALE = Symbol(
+  'ACTION_SETTINGS_SET_NUMBER_LOCALE',
+);
+export const ACTION_SETTINGS_SET_FRACTION_DIGITS = Symbol(
+  'ACTION_SETTINGS_SET_FRACTION_DIGITS',
+);
+export const ACTION_SETTINGS_SET_SELECTED_ACCOUNTS = Symbol(
+  'ACTION_SETTINGS_SET_SELECTED_ACCOUNTS',
+);
 export const ACTION_SET_CATEGORY_VALUE = Symbol('ACTION_SET_CATEGORY_VALUE');
 export const ACTION_SET_CATEGORY_ROLLOVER = Symbol(
   'ACTION_SET_CATEGORY_ROLLOVER',
@@ -24,6 +34,22 @@ type SetCategoryRolloverAction = {
     rollover: boolean;
   };
 };
+type SetNameAction = {
+  type: typeof ACTION_SET_NAME;
+  payload: string;
+};
+type SetSettingsNumberLocale = {
+  type: typeof ACTION_SETTINGS_SET_NUMBER_LOCALE;
+  payload: string;
+};
+type SetSettingsFractionDigits = {
+  type: typeof ACTION_SETTINGS_SET_FRACTION_DIGITS;
+  payload: number;
+};
+type SetSettingsSelectedAccounts = {
+  type: typeof ACTION_SETTINGS_SET_SELECTED_ACCOUNTS;
+  payload: string[];
+};
 type InitAction = {
   type: typeof ACTION_INIT;
   payload: BudgetState;
@@ -31,7 +57,11 @@ type InitAction = {
 export type Action =
   | InitAction
   | SetCategoryValueAction
-  | SetCategoryRolloverAction;
+  | SetCategoryRolloverAction
+  | SetNameAction
+  | SetSettingsNumberLocale
+  | SetSettingsFractionDigits
+  | SetSettingsSelectedAccounts;
 
 function updateCategory(
   state: BudgetState,
@@ -83,5 +113,34 @@ export default function budgetReducer(
         ...category,
         amount: action.payload.amount,
       }));
+    case ACTION_SET_NAME:
+      return {
+        ...state,
+        name: action.payload,
+      };
+    case ACTION_SETTINGS_SET_NUMBER_LOCALE:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          numberLocale: action.payload,
+        },
+      };
+    case ACTION_SETTINGS_SET_FRACTION_DIGITS:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          fractionDigits: action.payload,
+        },
+      };
+    case ACTION_SETTINGS_SET_SELECTED_ACCOUNTS:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          accounts: action.payload,
+        },
+      };
   }
 }

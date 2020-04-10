@@ -14,19 +14,24 @@
         ipcRenderer,
       } = window.require('electron');
       function setColors() {
-        const accentColor = systemPreferences.getAccentColor();
-        const highlightColor = `rgb(${(
+        const accentColorHex = systemPreferences.getAccentColor();
+        const highlightColors = `${(
           systemPreferences.getUserDefault('AppleHighlightColor', 'string') ||
           '9 92 220'
         )
           .split(' ')
           .slice(0, 3)
           .map((i) => Math.round(Number(i) * 255))
-          .join(', ')})`;
+          .join(', ')}`;
+        const accentColors = [
+          parseInt(accentColorHex.substring(0, 2), 16),
+          parseInt(accentColorHex.substring(2, 4), 16),
+          parseInt(accentColorHex.substring(4, 6), 16),
+        ].join(', ');
 
         document.querySelector(
           'html',
-        ).style.cssText = `--highlight-color: ${highlightColor}; --accent-color: #${accentColor};`;
+        ).style.cssText = `--highlight-colors: ${highlightColors}; --accent-colors: ${accentColors};`;
       }
 
       function setScheme() {
@@ -48,12 +53,17 @@
     </script>
     <style>
       html {
+        background-color: var(--background-color);
         font-size: 0.85em;
       }
       body {
         margin: 0;
         padding: 0;
         font-family: 'Roboto';
+      }
+      hr {
+        border: none;
+        border-bottom: 1px solid var(--border-color);
       }
       * {
         box-sizing: border-box;

@@ -1,4 +1,5 @@
 import { IpcMain } from 'electron';
+import { exec } from 'child_process';
 import osascript from './osascript';
 
 function isDbLocked(err: any) {
@@ -43,4 +44,8 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
       return osascript(__dirname + '/exportTransactions.applescript', ...args);
     }),
   );
+
+  ipcMain.on('MM_OPEN', () => {
+    exec('open -a MoneyMoney');
+  });
 }

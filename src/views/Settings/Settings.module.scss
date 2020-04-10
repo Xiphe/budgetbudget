@@ -1,0 +1,52 @@
+@import '../../lib/mixins';
+
+.headline {
+  margin-top: 0;
+  padding-top: 1em;
+}
+.setting {
+  margin: 1rem 0;
+  display: flex;
+  line-height: 1.5em;
+}
+.input {
+  background: var(--input-background);
+  color: var(--main-color);
+  border: 0.5px solid var(--input-border-color);
+  font-size: 1em;
+  padding: 0.1em 0.5em;
+  @include input();
+}
+.error {
+  font-style: italic;
+  height: 1rem;
+  color: var(--secondary-color);
+  margin: 0.3rem 0 0;
+}
+.label {
+  width: 30vw;
+  text-align: right;
+}
+.inputWrap {
+  width: calc(70vw - 1rem);
+  margin-left: 1rem;
+}
+.accountList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  input {
+    border-radius: 3px;
+    transform: translate(0px, -0.1em);
+    margin: 0 0.4rem 0 0;
+    &:checked {
+      background-color: rgba(var(--accent-colors), 1);
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+}
+.accountsLoadingError {
+  margin-top: 0;
+}

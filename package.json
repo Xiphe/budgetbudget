@@ -30,6 +30,7 @@
     "concurrently": "5.1.0",
     "date-fns": "2.11.0",
     "electron": "8.1.1",
+    "focus-visible": "5.1.0",
     "fp-ts": "2.5.3",
     "get-port-cli": "2.0.0",
     "io-ts": "2.1.2",
