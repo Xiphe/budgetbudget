@@ -1,5 +1,6 @@
 {
   "name": "budgetbudget",
+  "productName": "BudgetBudget",
   "version": "0.0.0-development",
   "description": "work with monthly budgets alongside moneymoney",
   "main": "main.js",
@@ -24,6 +25,7 @@
     "@types/pouchdb": "6.4.0",
     "@types/react": "16.9.23",
     "@types/react-dom": "16.9.5",
+    "@types/react-helmet": "5.0.15",
     "classnames": "2.2.6",
     "concurrently": "5.1.0",
     "date-fns": "2.11.0",
@@ -37,6 +39,7 @@
     "pouchdb": "7.2.1",
     "react": "16.13.0",
     "react-dom": "16.13.0",
+    "react-helmet": "6.0.0",
     "react-scripts": "3.4.0",
     "ts-node": "8.8.1",
     "typescript": "3.8.3",

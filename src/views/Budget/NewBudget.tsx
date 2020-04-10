@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { BudgetState, VERSION } from '../../budget';
 import { useAccounts } from '../../moneymoney';
 import { Loading } from '../../components';
+import { appName } from '../../lib';
 
 type Props = {
   onCreate: (budget: BudgetState) => void;
@@ -57,6 +59,9 @@ export default function NewBudget({ onCreate }: Props) {
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   return (
     <>
+      <Helmet>
+        <title>New Budget - {appName}</title>
+      </Helmet>
       <h1>Creating a new Budget</h1>
       <label>
         Name

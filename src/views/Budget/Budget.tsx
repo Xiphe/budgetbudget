@@ -1,7 +1,9 @@
 import React, { Dispatch } from 'react';
+import { Helmet } from 'react-helmet';
 import isAfter from 'date-fns/isAfter';
 import { BudgetState, Action, useBudgetData } from '../../budget';
-import { Header, Content } from '../../components';
+import { Header, Content, Loading } from '../../components';
+import { appName } from '../../lib';
 import Month from '../Month';
 import BudgetSlider from './BudgetSlider';
 import { UiProvider } from './UiContext';
@@ -23,10 +25,18 @@ export default function Budget({ state, dispatch }: Props) {
     currency,
     categories,
   } = useBudgetData(state);
+  const title = (
+    <Helmet>
+      <title>
+        {state.name} - {appName}
+      </title>
+    </Helmet>
+  );
 
   if (error) {
     return (
       <div>
+        {title}
         <p>Error: {error.message}</p>
         {retry && <button onClick={retry}>retry</button>}
       </div>
@@ -35,6 +45,7 @@ export default function Budget({ state, dispatch }: Props) {
 
   return (
     <UiProvider>
+      {title}
       <Header />
       <Content>
         <BudgetSlider
