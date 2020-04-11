@@ -6,13 +6,9 @@ import Overview from './Overview';
 import Categories from './Categories';
 import { Props } from './Types';
 import styles from './Month.module.scss';
-import { EMPTY_BUDGET } from '../../budget';
 import useActions from './useActions';
 
-export default function MonthContainer({
-  budget = EMPTY_BUDGET,
-  ...rest
-}: Partial<Pick<Props, 'budget'>> & Omit<Props, 'budget'>) {
+export default function MonthContainer({ budget, ...rest }: Props) {
   const isVisible = useIsVisible();
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = React.useState(false);

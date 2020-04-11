@@ -9,7 +9,7 @@ import { Props } from './Types';
 export default function Overview({
   date,
   numberFormatter,
-  budget: { available, overspendPrevMonth, total, budgeted },
+  budget: { available, overspendPrevMonth, total, toBudget },
 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   const registerHeaderHeight = useRegisterHeaderHeight();
@@ -30,8 +30,8 @@ export default function Overview({
     };
   }, [registerHeaderHeight]);
   const budgetClasses = classNames(
-    budgeted !== 0 && styles.bigBudget,
-    budgeted < 0 && styles.negative,
+    toBudget !== 0 && styles.bigBudget,
+    toBudget < 0 && styles.negative,
   );
 
   return (
@@ -44,9 +44,9 @@ export default function Overview({
         <div>Overspend in {format(subMonths(date, 1), 'MMM')}</div>
         <div>{numberFormatter.format(total.budgeted)}</div>
         <div>Budgeted</div>
-        <div className={budgetClasses}>{numberFormatter.format(budgeted)}</div>
+        <div className={budgetClasses}>{numberFormatter.format(toBudget)}</div>
         <div className={budgetClasses}>
-          {budgeted >= 0 ? 'To Budget' : 'Overbudgeted'}
+          {toBudget >= 0 ? 'To Budget' : 'Overbudgeted'}
         </div>
       </div>
       <div className={classNames(styles.budgetTotals)}>

@@ -4,8 +4,6 @@ import { ThrowReporter } from 'io-ts/lib/ThrowReporter';
 
 export const VERSION = '0.0.1';
 
-const currencyShape = t.union([t.literal('EUR'), t.literal('USD')]);
-const amountShape = t.tuple([t.number, currencyShape]);
 const categoryShape = t.intersection([
   t.type({
     amount: t.number,

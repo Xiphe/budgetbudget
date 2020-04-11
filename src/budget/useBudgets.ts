@@ -24,7 +24,7 @@ export type BudgetCategoryRow = BudgetRow & {
 export type BudgetListEntry = {
   available: AmountWithPartialTransactions;
   overspendPrevMonth: number;
-  budgeted: number;
+  toBudget: number;
   total: BudgetRow;
   uncategorized: AmountWithPartialTransactions;
   categories: BudgetCategoryRow[];
@@ -46,7 +46,7 @@ export const EMPTY_BUDGET: BudgetListEntry = {
     spend: 0,
     balance: 0,
   },
-  budgeted: 0,
+  toBudget: 0,
   available: {
     amount: 0,
     transactions: [],
@@ -185,22 +185,22 @@ function assignAvailable(
 }
 
 function addBudgeted(
-  budgeted: number,
+  toBudget: number,
   currency: string,
   available: AmountWithPartialTransactions = {
     amount: 0,
     transactions: [],
   },
 ): AmountWithPartialTransactions {
-  if (budgeted === 0) {
+  if (toBudget === 0) {
     return available;
   }
   return {
-    amount: available.amount + budgeted,
+    amount: available.amount + toBudget,
     transactions: [
       {
-        amount: [budgeted, currency],
-        name: `${budgeted > 0 ? 'Not budgeted' : 'Overbudgeted'} last month`,
+        amount: [toBudget, currency],
+        name: `${toBudget > 0 ? 'Not budgeted' : 'Overbudgeted'} last month`,
       },
       ...available.transactions,
     ],
@@ -236,10 +236,10 @@ function getLastEntry({
 
   return {
     total: total,
-    available: addBudgeted(entry.budgeted, currency),
+    available: addBudgeted(entry.toBudget, currency),
     overspendPrevMonth: 0,
     uncategorized: { amount: 0, transactions: [] },
-    budgeted: entry.budgeted,
+    toBudget: entry.toBudget,
     categories: budgetCategories,
   };
 }
@@ -265,10 +265,25 @@ export default function useBudgets(
     currency,
   ]);
   const [first, last, lastDate] = useFirstLast(balances, budgetsForCurrency);
-
-  return useMemo((): [BudgetList, BudgetListEntry, Date | undefined] => {
+  const pastBudget = useMemo(
+    () => ({
+      ...EMPTY_BUDGET,
+      available: {
+        amount: startBalance,
+        transactions: [],
+      },
+      toBudget: startBalance,
+    }),
+    [startBalance],
+  );
+  return useMemo((): [
+    BudgetList,
+    BudgetListEntry,
+    BudgetListEntry,
+    Date | undefined,
+  ] => {
     if (!first || !last || !lastDate) {
-      return [EMPTY_BUDGETS, EMPTY_BUDGET, lastDate];
+      return [EMPTY_BUDGETS, EMPTY_BUDGET, EMPTY_BUDGET, lastDate];
     }
     const budgetList: BudgetList = {};
     const available: AmountWithPartialTransactions[] = [
@@ -279,7 +294,7 @@ export default function useBudgets(
     ];
     let rollover: Rollover = { total: 0 };
     const overspendRolloverState: OverspendRollover = {};
-    let budgeted: number = 0;
+    let toBudget: number = 0;
     let current: string = first;
     while (true) {
       const { total: overspendPrevMonth, ...rolloverCategories } = rollover;
@@ -290,7 +305,7 @@ export default function useBudgets(
         assignAvailable(incomeCategories, available, balance);
       }
       const availableThisMonth = addBudgeted(
-        budgeted,
+        toBudget,
         currency,
         available.shift(),
       );
@@ -307,14 +322,14 @@ export default function useBudgets(
         parentRows: [total],
       });
 
-      budgeted =
+      toBudget =
         availableThisMonth.amount - total.budgeted + overspendPrevMonth;
 
       budgetList[current] = {
         total,
         available: availableThisMonth,
         overspendPrevMonth,
-        budgeted,
+        toBudget,
         categories: budgetCategories,
         uncategorized: (balance && balance.uncategorised) || {
           amount: 0,
@@ -343,6 +358,7 @@ export default function useBudgets(
         trees: categories,
         round,
       }),
+      pastBudget,
       lastDate,
     ];
   }, [
@@ -356,5 +372,6 @@ export default function useBudgets(
     budgetsForCurrency,
     incomeCategories,
     startBalance,
+    pastBudget,
   ]);
 }

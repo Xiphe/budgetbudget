@@ -39,7 +39,7 @@ export default function useBudgetData(state: BudgetState) {
         : undefined,
     [transactions, incomeCategoryIds],
   );
-  const [budgets, futureBudget, lastDate] = useBudgets(
+  const [budgets, futureBudget, pastBudget, lastDate] = useBudgets(
     transactionsLoaded(transactions) ? transactions : undefined,
     categories,
     state,
@@ -53,6 +53,7 @@ export default function useBudgetData(state: BudgetState) {
     retry: transactions instanceof Error ? retryLoadTransactions : null,
     budgets,
     lastDate,
+    pastBudget,
     categories,
     futureBudget,
     numberFormatter,

@@ -20,6 +20,7 @@ export default function Budget({ state, dispatch }: Props) {
     retry,
     budgets,
     lastDate,
+    pastBudget,
     futureBudget,
     numberFormatter,
     currency,
@@ -69,7 +70,9 @@ export default function Budget({ state, dispatch }: Props) {
               dispatch={dispatch}
               budget={
                 budgets[key] ||
-                (lastDate && isAfter(date, lastDate) ? futureBudget : undefined)
+                (lastDate && isAfter(date, lastDate)
+                  ? futureBudget
+                  : pastBudget)
               }
               categories={categories || []}
               numberFormatter={numberFormatter}
