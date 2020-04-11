@@ -12,6 +12,7 @@ import {
   FractionDigitsSetting,
   StartDateSetting,
   StartBalanceSetting,
+  CurrencySetting,
 } from './SettingTypes';
 
 type Props = {
@@ -33,6 +34,7 @@ export default function Settings(props: Props) {
       </Helmet>
       <h1 className={styles.headline}>Settings</h1>
       <NameSetting {...props} />
+      <CurrencySetting {...props} />
       <hr />
       <Setting label="Accounts">
         <AccountSetting {...props} />

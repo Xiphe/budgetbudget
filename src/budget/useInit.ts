@@ -17,6 +17,7 @@ export default function useInit(
           version: VERSION,
           settings: {
             accounts: [],
+            currency: 'EUR',
             incomeCategories: [],
             fractionDigits: 2,
             startDate: 0,
