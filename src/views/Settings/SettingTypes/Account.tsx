@@ -1,0 +1,100 @@
+import React, { useCallback } from 'react';
+import { ipcRenderer, useInputProps } from '../../../lib';
+import { Loading, Button } from '../../../components';
+import { useAccounts } from '../../../moneymoney';
+import styles from '../Settings.module.scss';
+import { Props } from './Types';
+import { ACTION_SETTINGS_SET_SELECTED_ACCOUNTS } from '../../../budget';
+
+function cleanMessage(message: string) {
+  const match = message.match(/Error invoking remote method .* Error: (.*)/);
+  if (match) {
+    return match[1];
+  }
+  return message;
+}
+function isDatabaseLocked(message: string) {
+  return message.includes('MoneyMoney database is locked');
+}
+
+export default function AccountSettings({
+  dispatch,
+  state: {
+    settings: { accounts },
+  },
+}: Props) {
+  const { value, onChange, error, ...rest } = useInputProps({
+    value: accounts,
+    onChange: useCallback(
+      (payload: string[]) => {
+        dispatch({ type: ACTION_SETTINGS_SET_SELECTED_ACCOUNTS, payload });
+      },
+      [dispatch],
+    ),
+    validate: useCallback(
+      ({ target: { value } }: { target: { value: string[] } }) => {
+        if (value.length === 0) {
+          throw new Error('Please select at least one account');
+        }
+
+        return value;
+      },
+      [],
+    ),
+  });
+  const [allAccounts, retry] = useAccounts();
+
+  if (!allAccounts) {
+    return <Loading />;
+  }
+
+  if (allAccounts instanceof Error) {
+    return (
+      <div>
+        <p className={styles.accountsLoadingError}>
+          {cleanMessage(allAccounts.message)}
+        </p>
+        {isDatabaseLocked(allAccounts.message) && (
+          <Button onClick={() => ipcRenderer.send('MM_OPEN')}>
+            Open MoneyMoney
+          </Button>
+        )}
+        <Button onClick={retry} primary>
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <ul className={styles.accountList}>
+        {allAccounts.map(({ number, name }) => (
+          <li key={number}>
+            <label>
+              <input
+                type="checkbox"
+                checked={value.includes(number)}
+                onChange={() => {
+                  const i = value.indexOf(number);
+                  if (i === -1) {
+                    onChange({ target: { value: value.concat(number) } });
+                  } else {
+                    onChange({
+                      target: {
+                        value: value.filter((n: string) => n !== number),
+                      },
+                    });
+                  }
+                }}
+                {...rest}
+              />
+              {name}
+            </label>
+          </li>
+        ))}
+      </ul>
+      {error && <p className={styles.error}>{error}</p>}
+    </>
+  );
+}
