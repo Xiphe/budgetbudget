@@ -9,7 +9,7 @@ import { Props } from './Types';
 export default function Overview({
   date,
   numberFormatter,
-  budget: { available, overspendPrevMonth, total, toBudget },
+  budget: { available, overspendPrevMonth, total, toBudget, uncategorized },
 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   const registerHeaderHeight = useRegisterHeaderHeight();
@@ -42,6 +42,12 @@ export default function Overview({
         <div>Available Funds</div>
         <div>{numberFormatter.format(overspendPrevMonth)}</div>
         <div>Overspend in {format(subMonths(date, 1), 'MMM')}</div>
+        {uncategorized.amount !== 0 && (
+          <>
+            <div>{numberFormatter.format(uncategorized.amount)}</div>
+            <div>Uncategorized</div>
+          </>
+        )}
         <div>{numberFormatter.format(total.budgeted)}</div>
         <div>Budgeted</div>
         <div className={budgetClasses}>{numberFormatter.format(toBudget)}</div>

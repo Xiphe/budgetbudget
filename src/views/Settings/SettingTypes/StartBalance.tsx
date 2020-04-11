@@ -35,7 +35,7 @@ function useReCalculate(
           getAccounts(currency),
         ]);
         const transactionsSum = transactions.reduce(
-          (memo, { amount, category }) => (category ? memo + amount : memo),
+          (memo, { amount }) => memo + amount,
           0,
         );
         const accountsSum = allAccounts.reduce(

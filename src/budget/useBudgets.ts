@@ -309,8 +309,15 @@ export default function useBudgets(
         parentRows: [total],
       });
 
+      const uncategorized = (balance && balance.uncategorised) || {
+        amount: 0,
+        transactions: [],
+      };
       toBudget =
-        availableThisMonth.amount - total.budgeted + overspendPrevMonth;
+        availableThisMonth.amount -
+        total.budgeted +
+        overspendPrevMonth +
+        uncategorized.amount;
 
       budgetList[current] = {
         total,
@@ -318,10 +325,7 @@ export default function useBudgets(
         overspendPrevMonth,
         toBudget,
         categories: budgetCategories,
-        uncategorized: (balance && balance.uncategorised) || {
-          amount: 0,
-          transactions: [],
-        },
+        uncategorized,
       };
 
       const nextMonth = addMonths(new Date(current), 1);
