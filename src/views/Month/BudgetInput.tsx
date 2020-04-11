@@ -49,9 +49,14 @@ export default function BudgetInput({
     const { selectionEnd, selectionStart } = target;
     const step =
       fractionI === -1 || (selectionStart || 0) <= fractionI ? 1 : fractionStep;
+    const valueLength = inputProps.value.length;
     const newValue = ev.key === 'ArrowDown' ? value - step : value + step;
     target.value = format(newValue, { thousandDelimiter: false });
-    target.setSelectionRange(selectionStart || 0, selectionEnd || 0);
+    const valueDiff = target.value.length - valueLength;
+    target.setSelectionRange(
+      (selectionStart || 0) + valueDiff,
+      (selectionEnd || 0) + valueDiff,
+    );
     inputProps.onChange(ev as any);
   };
 
