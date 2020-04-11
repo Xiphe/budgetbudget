@@ -11,6 +11,7 @@ import {
   NumberLocaleSetting,
   FractionDigitsSetting,
   StartDateSetting,
+  StartBalanceSetting,
 } from './SettingTypes';
 
 type Props = {
@@ -44,6 +45,7 @@ export default function Settings(props: Props) {
       <FractionDigitsSetting {...props} />
       <hr />
       <StartDateSetting {...props} />
+      <StartBalanceSetting {...props} numberFormatter={numberFormatter} />
     </Content>
   );
 }

@@ -81,6 +81,7 @@ export default function NewBudget({ onCreate }: Props) {
             version: VERSION,
             settings: {
               startDate: 0,
+              startBalance: 0,
               numberLocale: 'de-DE',
               accounts: selectedAccounts,
               incomeCategories: [],

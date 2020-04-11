@@ -11,6 +11,9 @@ export const ACTION_SETTINGS_SET_FRACTION_DIGITS = Symbol(
 export const ACTION_SETTINGS_SET_SELECTED_ACCOUNTS = Symbol(
   'ACTION_SETTINGS_SET_SELECTED_ACCOUNTS',
 );
+export const ACTION_SETTINGS_SET_START_BALANCE = Symbol(
+  'ACTION_SETTINGS_SET_START_BALANCE',
+);
 export const ACTION_SETTINGS_SET_START_DATE = Symbol(
   'ACTION_SETTINGS_SET_START_DATE',
 );
@@ -57,6 +60,10 @@ type SetSettingsStartDate = {
   type: typeof ACTION_SETTINGS_SET_START_DATE;
   payload: number;
 };
+type SetSettingsStartBalance = {
+  type: typeof ACTION_SETTINGS_SET_START_BALANCE;
+  payload: number;
+};
 type InitAction = {
   type: typeof ACTION_INIT;
   payload: BudgetState;
@@ -69,7 +76,8 @@ export type Action =
   | SetSettingsNumberLocale
   | SetSettingsFractionDigits
   | SetSettingsSelectedAccounts
-  | SetSettingsStartDate;
+  | SetSettingsStartDate
+  | SetSettingsStartBalance;
 
 function updateCategory(
   state: BudgetState,
@@ -156,6 +164,14 @@ export default function budgetReducer(
         settings: {
           ...state.settings,
           startDate: action.payload,
+        },
+      };
+    case ACTION_SETTINGS_SET_START_BALANCE:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          startBalance: action.payload,
         },
       };
   }

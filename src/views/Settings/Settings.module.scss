@@ -18,6 +18,9 @@
   height: 1.6em;
   padding: 0.1em 0.5em;
   @include input();
+  &[disabled] {
+    opacity: 0.3;
+  }
 }
 .error {
   font-style: italic;
@@ -57,4 +60,7 @@
   &::-webkit-calendar-picker-indicator {
     display: none;
   }
+}
+.recalculateButton {
+  margin-left: 1em;
 }

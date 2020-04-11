@@ -25,7 +25,7 @@ export default function useBudgetData(state: BudgetState) {
     [fractionDigits, numberLocale],
   );
   const [transactions, retryLoadTransactions] = useTransactions(
-    useMemo(() => new Date(startDate).toLocaleDateString(), [startDate]),
+    startDate,
     accounts,
   );
   const incomeCategoryIds = useMemo(

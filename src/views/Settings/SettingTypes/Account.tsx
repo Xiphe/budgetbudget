@@ -1,21 +1,14 @@
 import React, { useCallback } from 'react';
 import { ipcRenderer, useInputProps } from '../../../lib';
 import { Loading, Button } from '../../../components';
-import { useAccounts } from '../../../moneymoney';
+import {
+  useAccounts,
+  cleanMessage,
+  isDatabaseLocked,
+} from '../../../moneymoney';
 import styles from '../Settings.module.scss';
 import { Props } from './Types';
 import { ACTION_SETTINGS_SET_SELECTED_ACCOUNTS } from '../../../budget';
-
-function cleanMessage(message: string) {
-  const match = message.match(/Error invoking remote method .* Error: (.*)/);
-  if (match) {
-    return match[1];
-  }
-  return message;
-}
-function isDatabaseLocked(message: string) {
-  return message.includes('MoneyMoney database is locked');
-}
 
 export default function AccountSettings({
   dispatch,

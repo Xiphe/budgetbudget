@@ -93,8 +93,9 @@ async function getAccountTransactions(
 
 export default async function getTransactions(
   accountNumbers: string[],
-  startDate: string,
+  startDateTimestamp: number,
 ): Promise<Transaction[]> {
+  const startDate = new Date(startDateTimestamp).toLocaleDateString();
   return (
     await Promise.all(
       accountNumbers.map((accountNumber) =>

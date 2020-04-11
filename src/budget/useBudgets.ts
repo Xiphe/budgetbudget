@@ -67,9 +67,7 @@ function useFirstLast(balances: Balances, budgets: Budgets) {
   return useMemo<
     [string | undefined, string | undefined, Date | undefined]
   >(() => {
-    const sorted = Object.keys(balances)
-      .concat(Object.keys(budgets))
-      .sort();
+    const sorted = Object.keys(balances).concat(Object.keys(budgets)).sort();
     const last = sorted[sorted.length - 1];
     return [sorted[0], last, last ? new Date(last) : undefined];
   }, [balances, budgets]);
@@ -251,18 +249,13 @@ export default function useBudgets(
   categories: CategoryTree[] = [],
   {
     budgets,
-    startAmount,
-    settings: { incomeCategories, fractionDigits },
+    settings: { incomeCategories, fractionDigits, startBalance },
   }: BudgetState,
   currency: Currency,
 ) {
   const round = useMemo(() => roundWithFractions(fractionDigits), [
     fractionDigits,
   ]);
-  const startAmountInCurrency = useMemo<number>(
-    () => ((startAmount || []).find(([_, c]) => c === currency) || [])[0] || 0,
-    [startAmount, currency],
-  );
   const balances = useMemo(() => calculateBalances(transactions, currency), [
     transactions,
     currency,
@@ -280,7 +273,7 @@ export default function useBudgets(
     const budgetList: BudgetList = {};
     const available: AmountWithPartialTransactions[] = [
       {
-        amount: startAmountInCurrency,
+        amount: startBalance,
         transactions: [],
       },
     ];
@@ -362,6 +355,6 @@ export default function useBudgets(
     currency,
     budgetsForCurrency,
     incomeCategories,
-    startAmountInCurrency,
+    startBalance,
   ]);
 }

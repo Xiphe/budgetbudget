@@ -20,6 +20,7 @@ export default function useInit(
             incomeCategories: [],
             fractionDigits: 2,
             startDate: 0,
+            startBalance: 0,
             numberLocale: 'de-DE',
           },
           budgets: {},
