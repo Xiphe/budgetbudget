@@ -37,7 +37,7 @@ export default function createNumberFormatter(
         value
           .replace(cleanPattern, '')
           .replace(fractionDelimiter, '.')
-          .replace(/\.$/, '') || '0',
+          .replace(/[-+.]$/, '') || '0',
       );
     },
   };
