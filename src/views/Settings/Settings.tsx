@@ -78,6 +78,8 @@ export default function Settings({ state, dispatch }: Props) {
       const value = parseInt(ev.target.value, 10);
       if (value.toString() !== ev.target.value) {
         throw new Error('Please enter a valid number');
+      } else if (value < 0) {
+        throw new Error('Please enter a positive number or 0');
       }
 
       return value;
@@ -132,7 +134,12 @@ export default function Settings({ state, dispatch }: Props) {
         />
       </Setting>
       <Setting label="Fraction Digits">
-        <Input {...fractionDigitsProps} type="number" placeholder="2, 3, ..." />
+        <Input
+          {...fractionDigitsProps}
+          type="number"
+          min="0"
+          placeholder="2, 3, ..."
+        />
       </Setting>
     </Content>
   );
