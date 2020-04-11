@@ -14,6 +14,8 @@
   color: var(--main-color);
   border: 0.5px solid var(--input-border-color);
   font-size: 1em;
+  line-height: 1.4em;
+  height: 1.6em;
   padding: 0.1em 0.5em;
   @include input();
 }
@@ -49,4 +51,10 @@
 }
 .accountsLoadingError {
   margin-top: 0;
+}
+.dateInput {
+  font-family: var(--font);
+  &::-webkit-calendar-picker-indicator {
+    display: none;
+  }
 }

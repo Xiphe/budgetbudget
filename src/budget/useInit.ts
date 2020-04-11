@@ -19,6 +19,7 @@ export default function useInit(
             accounts: [],
             incomeCategories: [],
             fractionDigits: 2,
+            startDate: 0,
             numberLocale: 'de-DE',
           },
           budgets: {},

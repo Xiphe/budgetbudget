@@ -1,9 +1,11 @@
 import React, { Dispatch, useCallback, ChangeEvent, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
+import format from 'date-fns/format';
 import {
   BudgetState,
   Action,
   ACTION_SETTINGS_SET_SELECTED_ACCOUNTS,
+  ACTION_SETTINGS_SET_START_DATE,
 } from '../../budget';
 import { Content } from '../../components';
 import { appName, useInputProps, createNumberFormatter } from '../../lib';
@@ -22,15 +24,17 @@ type Props = {
   dispatch: Dispatch<Action>;
 };
 
+const timeStampToDate = (value: number) => format(value, 'yyyy-MM-dd');
 export default function Settings({ state, dispatch }: Props) {
   const {
     name,
-    settings: { numberLocale, fractionDigits, accounts },
+    settings: { numberLocale, fractionDigits, accounts, startDate },
   } = state;
   const numberFormatter = useMemo(
     () => createNumberFormatter(fractionDigits, numberLocale),
     [fractionDigits, numberLocale],
   );
+  const someDateString = useMemo(() => new Date().toLocaleDateString(), []);
   const nameInputProps = useInputProps({
     value: name || '',
     onChange: useCallback(
@@ -104,6 +108,28 @@ export default function Settings({ state, dispatch }: Props) {
       [],
     ),
   });
+  const startDateSelectProps = useInputProps({
+    value: startDate,
+    format: timeStampToDate,
+    toInputFormat: timeStampToDate,
+    onChange: useCallback(
+      (payload: number) => {
+        dispatch({ type: ACTION_SETTINGS_SET_START_DATE, payload });
+      },
+      [dispatch],
+    ),
+    validate: useCallback((ev: ChangeEvent<HTMLInputElement>) => {
+      try {
+        const date = new Date(ev.target.value).getTime();
+        if (isNaN(date) || typeof date !== 'number') {
+          throw new Error('invalid');
+        }
+        return date;
+      } catch (err) {
+        throw new Error('Please provide a valid date');
+      }
+    }, []),
+  });
 
   return (
     <Content padding={true}>
@@ -139,6 +165,15 @@ export default function Settings({ state, dispatch }: Props) {
           type="number"
           min="0"
           placeholder="2, 3, ..."
+        />
+      </Setting>
+      <hr />
+      <Setting label="Start Date">
+        <Input
+          className={styles.dateInput}
+          {...startDateSelectProps}
+          type="date"
+          placeholder={`${someDateString}, ...`}
         />
       </Setting>
     </Content>

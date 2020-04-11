@@ -68,13 +68,13 @@ function isArray(val: any): val is any[] {
 
 async function getAccountTransactions(
   accountNumber: string,
-  retry = 0,
+  startDate: string,
 ): Promise<Transaction[]> {
   const resp = parse(
     await ipcRenderer.invoke(
       'MM_EXPORT_TRANSACTIONS',
       accountNumber,
-      '1.1.1980',
+      startDate,
     ),
   );
 
@@ -93,9 +93,13 @@ async function getAccountTransactions(
 
 export default async function getTransactions(
   accountNumbers: string[],
+  startDate: string,
 ): Promise<Transaction[]> {
-  return (await Promise.all(accountNumbers.map(getAccountTransactions))).reduce(
-    (memo, transactions) => memo.concat(transactions),
-    [],
-  );
+  return (
+    await Promise.all(
+      accountNumbers.map((accountNumber) =>
+        getAccountTransactions(accountNumber, startDate),
+      ),
+    )
+  ).reduce((memo, transactions) => memo.concat(transactions), []);
 }

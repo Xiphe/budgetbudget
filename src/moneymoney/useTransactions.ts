@@ -3,6 +3,7 @@ import { Transaction } from './Types';
 import { useState, useEffect, useCallback } from 'react';
 
 export default function useBalancesAndCategories(
+  startDate: string,
   accountNumbers?: string[],
 ): [Transaction[] | null | Error, () => void] {
   const [state, setState] = useState<Transaction[] | null | Error>(null);
@@ -16,14 +17,14 @@ export default function useBalancesAndCategories(
         setState(data);
       }
     };
-    getTransactions(accountNumbers)
+    getTransactions(accountNumbers, startDate)
       .then(setUnlessCanceled)
       .catch(setUnlessCanceled);
 
     return () => {
       canceled = true;
     };
-  }, [state, accountNumbers]);
+  }, [state, accountNumbers, startDate]);
   useEffect(() => {
     setState(null);
   }, [accountNumbers]);

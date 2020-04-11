@@ -12,14 +12,21 @@ function transactionsLoaded(
 
 export default function useBudgetData(state: BudgetState) {
   const currency = 'EUR'; /* TODO: make editable */
-  const { fractionDigits, numberLocale, incomeCategories } = state.settings;
+  const {
+    fractionDigits,
+    numberLocale,
+    incomeCategories,
+    accounts,
+    startDate,
+  } = state.settings;
 
   const numberFormatter = useMemo(
     () => createNumberFormatter(fractionDigits, numberLocale),
     [fractionDigits, numberLocale],
   );
   const [transactions, retryLoadTransactions] = useTransactions(
-    state.settings.accounts,
+    useMemo(() => new Date(startDate).toLocaleDateString(), [startDate]),
+    accounts,
   );
   const incomeCategoryIds = useMemo(
     () => incomeCategories.map(({ id }) => id),

@@ -11,6 +11,9 @@ export const ACTION_SETTINGS_SET_FRACTION_DIGITS = Symbol(
 export const ACTION_SETTINGS_SET_SELECTED_ACCOUNTS = Symbol(
   'ACTION_SETTINGS_SET_SELECTED_ACCOUNTS',
 );
+export const ACTION_SETTINGS_SET_START_DATE = Symbol(
+  'ACTION_SETTINGS_SET_START_DATE',
+);
 export const ACTION_SET_CATEGORY_VALUE = Symbol('ACTION_SET_CATEGORY_VALUE');
 export const ACTION_SET_CATEGORY_ROLLOVER = Symbol(
   'ACTION_SET_CATEGORY_ROLLOVER',
@@ -50,6 +53,10 @@ type SetSettingsSelectedAccounts = {
   type: typeof ACTION_SETTINGS_SET_SELECTED_ACCOUNTS;
   payload: string[];
 };
+type SetSettingsStartDate = {
+  type: typeof ACTION_SETTINGS_SET_START_DATE;
+  payload: number;
+};
 type InitAction = {
   type: typeof ACTION_INIT;
   payload: BudgetState;
@@ -61,7 +68,8 @@ export type Action =
   | SetNameAction
   | SetSettingsNumberLocale
   | SetSettingsFractionDigits
-  | SetSettingsSelectedAccounts;
+  | SetSettingsSelectedAccounts
+  | SetSettingsStartDate;
 
 function updateCategory(
   state: BudgetState,
@@ -140,6 +148,14 @@ export default function budgetReducer(
         settings: {
           ...state.settings,
           accounts: action.payload,
+        },
+      };
+    case ACTION_SETTINGS_SET_START_DATE:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          startDate: action.payload,
         },
       };
   }
