@@ -23,7 +23,6 @@ export default function Budget({ state, dispatch }: Props) {
     pastBudget,
     futureBudget,
     numberFormatter,
-    currency,
     categories,
   } = useBudgetData(state);
   const title = (
@@ -66,7 +65,6 @@ export default function Budget({ state, dispatch }: Props) {
               key={key}
               monthKey={key}
               date={date}
-              currency={currency}
               dispatch={dispatch}
               budget={
                 budgets[key] ||

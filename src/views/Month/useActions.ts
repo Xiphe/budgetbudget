@@ -8,15 +8,13 @@ import { Props } from './Types';
 export default function useSetBudgeted({
   monthKey,
   dispatch,
-  currency,
-}: Pick<Props, 'monthKey' | 'dispatch' | 'currency'>) {
+}: Pick<Props, 'monthKey' | 'dispatch'>) {
   return useMemo(
     () => ({
       setBudgeted({ amount, id }: { amount: number; id: number }) {
         dispatch({
           type: ACTION_SET_CATEGORY_VALUE,
           payload: {
-            currency,
             amount,
             monthKey,
             categoryId: id,
@@ -28,14 +26,13 @@ export default function useSetBudgeted({
           type: ACTION_SET_CATEGORY_ROLLOVER,
           payload: {
             rollover,
-            currency,
             monthKey,
             categoryId: id,
           },
         });
       },
     }),
-    [monthKey, dispatch, currency],
+    [monthKey, dispatch],
   );
 }
 export type ActionCreators = ReturnType<typeof useSetBudgeted>;

@@ -1,57 +1,6 @@
-import { Transaction, Currency } from './Types';
+import { Transaction, validateTransaction } from './Types';
 import { parse, PlistObject } from 'plist';
 import { ipcRenderer } from '../lib';
-
-type InteropTransaction = Omit<Transaction, 'accountNumber' | 'amount'> & {
-  amount: number;
-  currency: Currency;
-};
-
-function isTransaction(transaction: any): transaction is InteropTransaction {
-  if (
-    typeof transaction.amount === 'number' &&
-    typeof transaction.booked === 'boolean' &&
-    transaction.bookingDate instanceof Date &&
-    transaction.valueDate instanceof Date &&
-    typeof transaction.currency === 'string' &&
-    typeof transaction.name === 'string' &&
-    typeof transaction.id === 'number'
-  ) {
-    return true;
-  }
-
-  throw new Error(
-    `Transaction schema mismatch on ${JSON.stringify(transaction)}`,
-  );
-}
-
-function toTransaction(accountNumber: string) {
-  return ({
-    id,
-    amount,
-    booked,
-    bookingDate,
-    valueDate,
-    currency,
-    name,
-    purpose,
-    category,
-    categoryId,
-  }: InteropTransaction): Transaction => {
-    return {
-      id,
-      amount: [amount, currency],
-      accountNumber,
-      booked,
-      bookingDate,
-      valueDate,
-      name,
-      purpose,
-      category,
-      categoryId,
-    };
-  };
-}
 
 function isPlistObject(val: any): val is PlistObject {
   return (
@@ -68,6 +17,7 @@ function isArray(val: any): val is any[] {
 
 async function getAccountTransactions(
   accountNumber: string,
+  currency: string,
   startDate: string,
 ): Promise<Transaction[]> {
   const resp = parse(
@@ -86,20 +36,25 @@ async function getAccountTransactions(
     throw new Error('Unexpectedly got non-array as transactions');
   }
 
-  return resp.transactions
-    .filter(isTransaction)
-    .map(toTransaction(accountNumber));
+  return resp.transactions.filter((data: unknown) => {
+    if (typeof data !== 'object' || data === null) {
+      throw new Error('Unexpectedly got non-object as transaction');
+    }
+    const transaction = validateTransaction({ accountNumber, ...data });
+    return transaction.currency === currency;
+  });
 }
 
 export default async function getTransactions(
   accountNumbers: string[],
+  currency: string,
   startDateTimestamp: number,
 ): Promise<Transaction[]> {
   const startDate = new Date(startDateTimestamp).toLocaleDateString();
   return (
     await Promise.all(
       accountNumbers.map((accountNumber) =>
-        getAccountTransactions(accountNumber, startDate),
+        getAccountTransactions(accountNumber, currency, startDate),
       ),
     )
   ).reduce((memo, transactions) => memo.concat(transactions), []);

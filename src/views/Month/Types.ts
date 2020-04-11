@@ -10,5 +10,4 @@ export type Props = {
   categories: CategoryTree[];
   numberFormatter: NumberFormatter;
   budget: BudgetListEntry;
-  currency: string;
 };

@@ -2,8 +2,13 @@ import getAccounts from './getAccounts';
 import { Account } from './Types';
 import { useState, useEffect, useCallback } from 'react';
 
-export default function useAccounts(): [Account[] | null | Error, () => void] {
+export default function useAccounts(
+  currency: string,
+): [Account[] | null | Error, () => void] {
   const [accounts, setAccounts] = useState<Account[] | null | Error>(null);
+  useEffect(() => {
+    setAccounts(null);
+  }, [currency]);
   useEffect(() => {
     if (accounts !== null) {
       return;
@@ -14,14 +19,12 @@ export default function useAccounts(): [Account[] | null | Error, () => void] {
         setAccounts(data);
       }
     };
-    getAccounts()
-      .then(setUnlessCanceled)
-      .catch(setUnlessCanceled);
+    getAccounts(currency).then(setUnlessCanceled).catch(setUnlessCanceled);
 
     return () => {
       canceled = true;
     };
-  }, [accounts]);
+  }, [accounts, currency]);
 
   return [accounts, useCallback(() => setAccounts(null), [])];
 }

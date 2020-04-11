@@ -13,7 +13,7 @@ import { ACTION_SETTINGS_SET_SELECTED_ACCOUNTS } from '../../../budget';
 export default function AccountSettings({
   dispatch,
   state: {
-    settings: { accounts },
+    settings: { accounts, currency },
   },
 }: Props) {
   const { value, onChange, error, ...rest } = useInputProps({
@@ -35,7 +35,7 @@ export default function AccountSettings({
       [],
     ),
   });
-  const [allAccounts, retry] = useAccounts();
+  const [allAccounts, retry] = useAccounts(currency);
 
   if (!allAccounts) {
     return <Loading />;

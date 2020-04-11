@@ -11,12 +11,12 @@ function transactionsLoaded(
 }
 
 export default function useBudgetData(state: BudgetState) {
-  const currency = 'EUR'; /* TODO: make editable */
   const {
     fractionDigits,
     numberLocale,
     incomeCategories,
     accounts,
+    currency,
     startDate,
   } = state.settings;
 
@@ -26,6 +26,7 @@ export default function useBudgetData(state: BudgetState) {
   );
   const [transactions, retryLoadTransactions] = useTransactions(
     startDate,
+    currency,
     accounts,
   );
   const incomeCategoryIds = useMemo(
@@ -43,12 +44,10 @@ export default function useBudgetData(state: BudgetState) {
     transactionsLoaded(transactions) ? transactions : undefined,
     categories,
     state,
-    currency,
   );
 
   return {
     loading: !transactionsLoaded(transactions),
-    currency,
     error: transactions instanceof Error ? transactions : null,
     retry: transactions instanceof Error ? retryLoadTransactions : null,
     budgets,

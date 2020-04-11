@@ -25,21 +25,20 @@ export const ACTION_SET_CATEGORY_ROLLOVER = Symbol(
   'ACTION_SET_CATEGORY_ROLLOVER',
 );
 
-type CurrencyMonthCategory = {
-  currency: string;
+type MonthCategory = {
   categoryId: number;
   monthKey: string;
 };
 
 type SetCategoryValueAction = {
   type: typeof ACTION_SET_CATEGORY_VALUE;
-  payload: CurrencyMonthCategory & {
+  payload: MonthCategory & {
     amount: number;
   };
 };
 type SetCategoryRolloverAction = {
   type: typeof ACTION_SET_CATEGORY_ROLLOVER;
-  payload: CurrencyMonthCategory & {
+  payload: MonthCategory & {
     rollover: boolean;
   };
 };
@@ -89,24 +88,20 @@ export type Action =
 
 function updateCategory(
   state: BudgetState,
-  { currency, monthKey, categoryId }: CurrencyMonthCategory,
+  { monthKey, categoryId }: MonthCategory,
   update: (category: Category) => Category,
 ): BudgetState {
-  const budgetInCurrency = state.budgets[currency] || {};
-  const monthlyBudget = budgetInCurrency[monthKey] || { categories: {} };
+  const monthlyBudget = state.budgets[monthKey] || { categories: {} };
   const category = monthlyBudget.categories[categoryId] || { amount: 0 };
   return {
     ...state,
     budgets: {
       ...state.budgets,
-      [currency]: {
-        ...budgetInCurrency,
-        [monthKey]: {
-          ...monthlyBudget,
-          categories: {
-            ...monthlyBudget.categories,
-            [categoryId]: update(category),
-          },
+      [monthKey]: {
+        ...monthlyBudget,
+        categories: {
+          ...monthlyBudget.categories,
+          [categoryId]: update(category),
         },
       },
     },

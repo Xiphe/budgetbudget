@@ -50,7 +50,7 @@ const budgetStateShape = t.intersection(
     t.type(
       {
         version: t.string,
-        budgets: t.record(t.string, t.union([t.undefined, budgetsShape])),
+        budgets: budgetsShape,
         settings: settingsShape,
       },
       'required',

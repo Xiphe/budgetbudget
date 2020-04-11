@@ -1,20 +1,10 @@
-import {
-  Transaction,
-  AmountWithTransactions,
-  Balances,
-  Currency,
-} from './Types';
+import { Transaction, AmountWithTransactions, Balances } from './Types';
 import { formatDateKey } from '../lib';
 
 export default function calculateBalances(
   transactions: Transaction[],
-  currency: Currency,
 ): Balances {
   return transactions.reduce((memo, transaction) => {
-    if (transaction.amount[1] !== currency) {
-      return memo;
-    }
-
     const key = formatDateKey(transaction.bookingDate);
     let balance = memo[key];
     if (!balance) {
@@ -29,7 +19,7 @@ export default function calculateBalances(
       memo[key] = balance;
     }
 
-    balance.total += transaction.amount[0];
+    balance.total += transaction.amount;
 
     const categoryId = transaction.categoryId;
 
@@ -45,7 +35,7 @@ export default function calculateBalances(
       }
       amount = balance.categories[categoryId];
     }
-    amount.amount += transaction.amount[0];
+    amount.amount += transaction.amount;
     amount.transactions.push(transaction);
 
     return memo;

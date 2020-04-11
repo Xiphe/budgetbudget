@@ -14,7 +14,7 @@ type AccountSelectProps = {
   onChange: (value: string[]) => void;
 };
 function AccountSelect({ value, onChange }: AccountSelectProps) {
-  const [accounts, retry] = useAccounts();
+  const [accounts, retry] = useAccounts('EUR');
 
   if (!accounts) {
     return <Loading />;

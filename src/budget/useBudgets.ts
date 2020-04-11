@@ -6,7 +6,6 @@ import {
   Balances,
   CategoryTree,
   Transaction,
-  Currency,
   Balance,
   isCategory,
 } from '../moneymoney/Types';
@@ -186,7 +185,6 @@ function assignAvailable(
 
 function addBudgeted(
   toBudget: number,
-  currency: string,
   available: AmountWithPartialTransactions = {
     amount: 0,
     transactions: [],
@@ -199,7 +197,7 @@ function addBudgeted(
     amount: available.amount + toBudget,
     transactions: [
       {
-        amount: [toBudget, currency],
+        amount: toBudget,
         name: `${toBudget > 0 ? 'Not budgeted' : 'Overbudgeted'} last month`,
       },
       ...available.transactions,
@@ -209,7 +207,6 @@ function addBudgeted(
 
 type GetLastEntryArgs = {
   entry: BudgetListEntry;
-  currency: string;
   rollover: Rollover;
   trees: CategoryTree[];
   round: (value: number) => number;
@@ -217,7 +214,6 @@ type GetLastEntryArgs = {
 };
 function getLastEntry({
   entry,
-  currency,
   rollover,
   trees,
   round,
@@ -236,7 +232,7 @@ function getLastEntry({
 
   return {
     total: total,
-    available: addBudgeted(entry.toBudget, currency),
+    available: addBudgeted(entry.toBudget),
     overspendPrevMonth: 0,
     uncategorized: { amount: 0, transactions: [] },
     toBudget: entry.toBudget,
@@ -251,20 +247,15 @@ export default function useBudgets(
     budgets,
     settings: { incomeCategories, fractionDigits, startBalance },
   }: BudgetState,
-  currency: Currency,
 ) {
   const round = useMemo(() => roundWithFractions(fractionDigits), [
     fractionDigits,
   ]);
-  const balances = useMemo(() => calculateBalances(transactions, currency), [
+  const balances = useMemo(() => calculateBalances(transactions), [
     transactions,
-    currency,
   ]);
-  const budgetsForCurrency = useMemo<Budgets>(() => budgets[currency] || {}, [
-    budgets,
-    currency,
-  ]);
-  const [first, last, lastDate] = useFirstLast(balances, budgetsForCurrency);
+
+  const [first, last, lastDate] = useFirstLast(balances, budgets);
   const pastBudget = useMemo(
     () => ({
       ...EMPTY_BUDGET,
@@ -300,15 +291,11 @@ export default function useBudgets(
       const { total: overspendPrevMonth, ...rolloverCategories } = rollover;
       rollover = { total: 0 };
       const balance = balances[current];
-      const budget = budgetsForCurrency[current];
+      const budget = budgets[current];
       if (balance) {
         assignAvailable(incomeCategories, available, balance);
       }
-      const availableThisMonth = addBudgeted(
-        toBudget,
-        currency,
-        available.shift(),
-      );
+      const availableThisMonth = addBudgeted(toBudget, available.shift());
 
       const total = emptyBudgetRow();
       const budgetCategories = getCategoryRows({
@@ -353,7 +340,6 @@ export default function useBudgets(
       getLastEntry({
         overspendRolloverState,
         entry: budgetList[current]!,
-        currency,
         rollover,
         trees: categories,
         round,
@@ -368,8 +354,7 @@ export default function useBudgets(
     balances,
     round,
     categories,
-    currency,
-    budgetsForCurrency,
+    budgets,
     incomeCategories,
     startBalance,
     pastBudget,

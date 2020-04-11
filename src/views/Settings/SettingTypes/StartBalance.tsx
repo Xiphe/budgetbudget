@@ -16,7 +16,7 @@ function useReCalculate(
   accounts: string[],
   startDate: number,
   update: (value: number) => void,
-  currency = 'EUR',
+  currency: string,
 ): [boolean | Error, () => void] {
   const [loading, setLoading] = useState<boolean | Error>(false);
   const recalculate = useCallback(() => {
@@ -31,19 +31,16 @@ function useReCalculate(
     (async () => {
       try {
         const [transactions, allAccounts] = await Promise.all([
-          getTransactions(accounts, startDate),
-          getAccounts(),
+          getTransactions(accounts, currency, startDate),
+          getAccounts(currency),
         ]);
         const transactionsSum = transactions.reduce(
-          (memo, { amount, category }) =>
-            amount[1] === currency && category ? memo + amount[0] : memo,
+          (memo, { amount, category }) => (category ? memo + amount : memo),
           0,
         );
         const accountsSum = allAccounts.reduce(
           (memo, { balance, number }) =>
-            accounts.includes(number) && balance[1] === currency
-              ? memo + balance[0]
-              : memo,
+            accounts.includes(number) ? memo + balance : memo,
           0,
         );
         if (!canceled) {
@@ -67,7 +64,7 @@ function useReCalculate(
 
 export default function StartBalanceSetting({
   state: {
-    settings: { startBalance, accounts, startDate },
+    settings: { startBalance, accounts, startDate, currency },
   },
   dispatch,
   numberFormatter,
@@ -83,7 +80,12 @@ export default function StartBalanceSetting({
     numberFormatter,
     onChange: update,
   });
-  const [loading, recalculate] = useReCalculate(accounts, startDate, update);
+  const [loading, recalculate] = useReCalculate(
+    accounts,
+    startDate,
+    update,
+    currency,
+  );
 
   return (
     <Setting label="Starting Balance">
