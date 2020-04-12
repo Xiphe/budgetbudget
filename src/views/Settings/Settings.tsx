@@ -2,7 +2,7 @@ import React, { Dispatch, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { BudgetState, Action } from '../../budget';
 import { Content } from '../../components';
-import { appName, createNumberFormatter } from '../../lib';
+import { appName, createNumberFormatter, useSetShowSettings } from '../../lib';
 import Setting from './Setting';
 import styles from './Settings.module.scss';
 import {
@@ -21,11 +21,13 @@ type Props = {
 };
 
 export default function Settings(props: Props) {
-  const { numberLocale, fractionDigits } = props.state.settings;
+  const showSettings = useSetShowSettings();
+  const { numberLocale, fractionDigits, accounts } = props.state.settings;
   const numberFormatter = useMemo(
     () => createNumberFormatter(fractionDigits, numberLocale),
     [fractionDigits, numberLocale],
   );
+  const valid = accounts.length > 0;
 
   return (
     <Content padding={true}>
@@ -33,6 +35,14 @@ export default function Settings(props: Props) {
         <title>Settings - {appName}</title>
       </Helmet>
       <h1 className={styles.headline}>Settings</h1>
+      <button
+        title="close"
+        disabled={!valid}
+        className={styles.close}
+        onClick={() => showSettings(false)}
+      >
+        ✕
+      </button>
       <NameSetting {...props} />
       <CurrencySetting {...props} />
       <hr />
