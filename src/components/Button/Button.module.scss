@@ -1,3 +1,5 @@
+@import '../../lib/mixins.scss';
+
 .button {
   border: none;
   font-size: 1em;
@@ -22,6 +24,9 @@
         background-color: transparent;
       }
     }
+  }
+  &:global.focus-visible {
+    @include focusOutline();
   }
 }
 

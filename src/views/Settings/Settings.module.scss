@@ -53,6 +53,9 @@
     &:focus {
       outline: none;
     }
+    &:global.focus-visible {
+      @include focusOutline();
+    }
   }
 }
 .accountsLoadingError {

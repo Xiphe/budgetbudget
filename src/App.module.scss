@@ -1,11 +1,4 @@
-@import './lib/mixins.scss';
-
 .app {
   background-color: var(--background-color);
   color: var(--main-color);
-}
-
-:global button.focus-visible,
-:global input[type='checkbox'].focus-visible {
-  @include focusOutline();
 }
