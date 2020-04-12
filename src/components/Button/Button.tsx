@@ -20,7 +20,7 @@ export default function Button({
       )}
       {...rest}
     >
-      {children}
+      <span>{children}</span>
     </button>
   );
 }

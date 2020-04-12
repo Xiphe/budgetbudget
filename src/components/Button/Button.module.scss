@@ -7,5 +7,9 @@
 }
 
 .primary {
+  color: white;
   background-color: rgba(var(--accent-colors), 1);
+  &:active:after {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
 }

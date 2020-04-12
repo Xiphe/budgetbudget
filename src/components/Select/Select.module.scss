@@ -7,7 +7,10 @@
   padding: 0;
   &:before {
     z-index: 0;
-    content: '';
+    content: '▲ ▼';
+    font-size: 0.5em;
+    line-height: 1.2;
+    color: white;
     position: absolute;
     display: block;
     right: 0;
@@ -16,14 +19,16 @@
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
     background: rgba(var(--accent-colors), 1);
-    width: 1.1em;
+    width: 0.9rem;
+    padding: 0.35em 0 0 0.65em;
   }
 
   select {
+    appearance: none;
     position: relative;
     z-index: 1;
     font-size: 1em;
-    color: white;
+    color: var(--main-color);
     padding: 0.15em 0.8em;
     background: transparent;
     border: none;
