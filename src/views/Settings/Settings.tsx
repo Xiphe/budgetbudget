@@ -5,6 +5,7 @@ import { Content, Tab, TabBar } from '../../components';
 import { appName, useSetShowSettings } from '../../lib';
 import styles from './Settings.module.scss';
 import General from './General';
+import Categories from './Categories';
 
 type Props = {
   state: BudgetState;
@@ -40,6 +41,7 @@ export default function Settings(props: Props) {
         </Tab>
       </TabBar>
       {tab === 'general' && <General {...props} />}
+      {tab === 'categories' && <Categories {...props} />}
     </Content>
   );
 }

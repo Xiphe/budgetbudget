@@ -1,4 +1,4 @@
-import { BudgetState, Category } from './Types';
+import { BudgetState, Category, IncomeCategory } from './Types';
 
 export const ACTION_INIT = Symbol('INIT');
 export const ACTION_SET_NAME = Symbol('SET_NAME');
@@ -19,6 +19,18 @@ export const ACTION_SETTINGS_SET_CURRENCY = Symbol(
 );
 export const ACTION_SETTINGS_SET_START_DATE = Symbol(
   'ACTION_SETTINGS_SET_START_DATE',
+);
+export const ACTION_SETTINGS_UPDATE_INCOME_CATEGORY = Symbol(
+  'ACTION_SETTINGS_UPDATE_INCOME_CATEGORY',
+);
+export const ACTION_SETTINGS_REMOVE_INCOME_CATEGORY = Symbol(
+  'ACTION_SETTINGS_REMOVE_INCOME_CATEGORY',
+);
+export const ACTION_SETTINGS_ADD_INCOME_CATEGORY = Symbol(
+  'ACTION_SETTINGS_ADD_INCOME_CATEGORY',
+);
+export const ACTION_SETTINGS_SET_INCOME_AVAILABLE_IN = Symbol(
+  'ACTION_SETTINGS_SET_INCOME_AVAILABLE_IN',
 );
 export const ACTION_SET_CATEGORY_VALUE = Symbol('ACTION_SET_CATEGORY_VALUE');
 export const ACTION_SET_CATEGORY_ROLLOVER = Symbol(
@@ -66,6 +78,27 @@ type SetSettingsStartBalance = {
   type: typeof ACTION_SETTINGS_SET_START_BALANCE;
   payload: number;
 };
+type UpdateSettingsIncomeCategory = {
+  type: typeof ACTION_SETTINGS_UPDATE_INCOME_CATEGORY;
+  payload: {
+    oldCategoryId: number | null;
+    categoryId: number | null;
+  };
+};
+type SetSettingsIncomeAvailableIn = {
+  type: typeof ACTION_SETTINGS_SET_INCOME_AVAILABLE_IN;
+  payload: {
+    categoryId: number | null;
+    availableIn: number;
+  };
+};
+type RemoveSettingsIncomeCategory = {
+  type: typeof ACTION_SETTINGS_REMOVE_INCOME_CATEGORY;
+  payload: number | null;
+};
+type AddSettingsIncomeCategory = {
+  type: typeof ACTION_SETTINGS_ADD_INCOME_CATEGORY;
+};
 type SetSettingsCurrency = {
   type: typeof ACTION_SETTINGS_SET_CURRENCY;
   payload: string;
@@ -84,7 +117,11 @@ export type Action =
   | SetSettingsSelectedAccounts
   | SetSettingsStartDate
   | SetSettingsStartBalance
-  | SetSettingsCurrency;
+  | SetSettingsCurrency
+  | UpdateSettingsIncomeCategory
+  | SetSettingsIncomeAvailableIn
+  | RemoveSettingsIncomeCategory
+  | AddSettingsIncomeCategory;
 
 function updateCategory(
   state: BudgetState,
@@ -104,6 +141,32 @@ function updateCategory(
           [categoryId]: update(category),
         },
       },
+    },
+  };
+}
+
+function updateSettingsIncomeCategory(
+  state: BudgetState,
+  categoryId: number | null,
+  update: (incomeCategory: IncomeCategory) => IncomeCategory | null,
+) {
+  const incomeCategories = state.settings.incomeCategories;
+  const index = incomeCategories.findIndex(({ id }) => id === categoryId);
+  if (index === -1) {
+    return state;
+  }
+
+  return {
+    ...state,
+    settings: {
+      ...state.settings,
+      incomeCategories: [
+        ...incomeCategories.slice(0, index),
+        update(incomeCategories[index]),
+        ...incomeCategories.slice(index + 1),
+      ].filter((entry: null | IncomeCategory): entry is IncomeCategory =>
+        Boolean(entry),
+      ),
     },
   };
 }
@@ -183,6 +246,37 @@ export default function budgetReducer(
         settings: {
           ...state.settings,
           currency: action.payload,
+        },
+      };
+    case ACTION_SETTINGS_UPDATE_INCOME_CATEGORY:
+      return updateSettingsIncomeCategory(
+        state,
+        action.payload.oldCategoryId,
+        (incomeCategory) => ({
+          ...incomeCategory,
+          id: action.payload.categoryId,
+        }),
+      );
+    case ACTION_SETTINGS_SET_INCOME_AVAILABLE_IN:
+      return updateSettingsIncomeCategory(
+        state,
+        action.payload.categoryId,
+        (incomeCategory) => ({
+          ...incomeCategory,
+          availableIn: action.payload.availableIn,
+        }),
+      );
+    case ACTION_SETTINGS_REMOVE_INCOME_CATEGORY:
+      return updateSettingsIncomeCategory(state, action.payload, () => null);
+    case ACTION_SETTINGS_ADD_INCOME_CATEGORY:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          incomeCategories: state.settings.incomeCategories.concat({
+            id: null,
+            availableIn: 0,
+          }),
         },
       };
   }

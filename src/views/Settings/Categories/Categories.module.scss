@@ -1,0 +1,30 @@
+.incomeCategories {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  li {
+    margin-bottom: 0.5rem;
+  }
+}
+.incomeCategorySelect {
+  margin-right: 0.5em;
+}
+.availableInInput {
+  position: relative;
+  &:focus {
+    z-index: 1;
+  }
+  width: 2.3em;
+  border-radius: 5px;
+  text-align: right;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+}
+.addRemoveButton {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  margin-right: 0.5rem;
+}

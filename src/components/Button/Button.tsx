@@ -20,7 +20,7 @@ export default function Button({
       )}
       {...rest}
     >
-      <span className={styles.inner}>{children}</span>
+      {children}
     </button>
   );
 }

@@ -30,7 +30,10 @@ export default function useBudgetData(state: BudgetState) {
     accounts,
   );
   const incomeCategoryIds = useMemo(
-    () => incomeCategories.map(({ id }) => id),
+    () =>
+      incomeCategories
+        .map(({ id }) => id)
+        .filter((id): id is number => id !== null),
     [incomeCategories],
   );
   const categories = useMemo(

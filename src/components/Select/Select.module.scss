@@ -1,0 +1,37 @@
+@import '../../lib/mixins.scss';
+
+.select {
+  display: inline-block;
+  @include button();
+  margin-right: 1em;
+  padding: 0;
+  &:before {
+    z-index: 0;
+    content: '';
+    position: absolute;
+    display: block;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    background: rgba(var(--accent-colors), 1);
+    width: 1.1em;
+  }
+
+  select {
+    position: relative;
+    z-index: 1;
+    font-size: 1em;
+    color: white;
+    padding: 0.15em 0.8em;
+    background: transparent;
+    border: none;
+    &:focus {
+      outline: none;
+    }
+    &:global.focus-visible {
+      @include focusOutline();
+    }
+  }
+}

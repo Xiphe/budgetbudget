@@ -1,5 +1,4 @@
-import React, { Dispatch, useMemo } from 'react';
-import { BudgetState, Action } from '../../../budget';
+import React, { useMemo } from 'react';
 import { createNumberFormatter } from '../../../lib';
 import Setting from '../Setting';
 import NameSetting from './Name';
@@ -9,11 +8,7 @@ import FractionDigitsSetting from './FractionDigits';
 import StartDateSetting from './StartDate';
 import StartBalanceSetting from './StartBalance';
 import CurrencySetting from './Currency';
-
-type Props = {
-  state: BudgetState;
-  dispatch: Dispatch<Action>;
-};
+import { Props } from './Types';
 
 export default function Settings(props: Props) {
   const { numberLocale, fractionDigits } = props.state.settings;

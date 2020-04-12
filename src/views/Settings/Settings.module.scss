@@ -81,8 +81,15 @@
     }
   }
 }
-.accountsLoadingError {
-  margin-top: 0;
+.loadingError {
+  p {
+    margin-top: 0;
+    font-style: italic;
+    color: var(--secondary-color);
+  }
+}
+.categoryLoadingError {
+  margin-top: 1rem;
 }
 .dateInput {
   font-family: var(--font);

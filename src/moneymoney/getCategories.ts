@@ -1,10 +1,28 @@
-import { Transaction, CategoryTree, CategoryGroup } from './Types';
+import { Transaction, CategoryTree, Category, CategoryGroup } from './Types';
 
 function isCategoryGroup(cat: CategoryTree): cat is CategoryGroup {
   return Array.isArray((cat as CategoryGroup).children);
 }
 
-export default function getCategories(
+export function getFlatCategories(
+  transactions: Transaction[],
+  ignoreIds: number[] = [],
+): Category[] {
+  const knownIds = [...ignoreIds];
+  return transactions.reduce((memo, { categoryId, category }) => {
+    if (!category || !categoryId || knownIds.includes(categoryId)) {
+      return memo;
+    }
+
+    knownIds.push(categoryId);
+    return memo.concat({
+      name: category,
+      id: categoryId,
+    });
+  }, [] as Category[]);
+}
+
+export function getCategories(
   transactions: Transaction[],
   ignoreIds: number[] = [],
 ): CategoryTree[] {

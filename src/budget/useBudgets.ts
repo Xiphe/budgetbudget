@@ -168,6 +168,9 @@ function assignAvailable(
   balance: Balance,
 ) {
   incomeCategories.forEach(({ id, availableIn }) => {
+    if (!id) {
+      return;
+    }
     if (balance.categories[id]) {
       if (!available[availableIn]) {
         available[availableIn] = {

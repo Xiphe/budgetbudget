@@ -22,7 +22,7 @@ const budgetsShape = t.record(
 );
 const incomeCategoryShape = t.type(
   {
-    id: t.number,
+    id: t.union([t.number, t.null]),
     availableIn: t.number,
   },
   'incomeCategories',

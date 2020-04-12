@@ -1,12 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { ipcRenderer, useInputProps } from '../../../lib';
-import { Loading, Button } from '../../../components';
-import {
-  useAccounts,
-  cleanMessage,
-  isDatabaseLocked,
-} from '../../../moneymoney';
+import { useInputProps } from '../../../lib';
+import { Loading, LoadingError } from '../../../components';
+import { useAccounts } from '../../../moneymoney';
 import styles from '../Settings.module.scss';
 import { Props } from './Types';
 import { ACTION_SETTINGS_SET_SELECTED_ACCOUNTS } from '../../../budget';
@@ -60,19 +56,11 @@ export default function AccountSettings({
 
   if (allAccounts instanceof Error) {
     return (
-      <div>
-        <p className={styles.accountsLoadingError}>
-          {cleanMessage(allAccounts.message)}
-        </p>
-        {isDatabaseLocked(allAccounts.message) && (
-          <Button onClick={() => ipcRenderer.send('MM_OPEN')}>
-            Open MoneyMoney
-          </Button>
-        )}
-        <Button onClick={retry} primary>
-          Retry
-        </Button>
-      </div>
+      <LoadingError
+        className={styles.loadingError}
+        message={allAccounts.message}
+        retry={retry}
+      />
     );
   }
 
