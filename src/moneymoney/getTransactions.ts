@@ -1,5 +1,5 @@
 import { Transaction, validateTransaction } from './Types';
-import { parse, PlistObject } from 'plist';
+import { PlistObject } from 'plist';
 import { ipcRenderer } from '../lib';
 
 function isPlistObject(val: any): val is PlistObject {
@@ -20,12 +20,10 @@ async function getAccountTransactions(
   currency: string,
   startDate: string,
 ): Promise<Transaction[]> {
-  const resp = parse(
-    await ipcRenderer.invoke(
-      'MM_EXPORT_TRANSACTIONS',
-      accountNumber,
-      startDate,
-    ),
+  const resp: unknown = await ipcRenderer.invoke(
+    'MM_EXPORT_TRANSACTIONS',
+    accountNumber,
+    startDate,
   );
 
   if (!isPlistObject(resp)) {
