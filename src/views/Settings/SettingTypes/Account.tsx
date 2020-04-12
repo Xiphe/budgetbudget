@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { ipcRenderer, useInputProps } from '../../../lib';
 import { Loading, Button } from '../../../components';
@@ -10,6 +10,7 @@ import {
 import styles from '../Settings.module.scss';
 import { Props } from './Types';
 import { ACTION_SETTINGS_SET_SELECTED_ACCOUNTS } from '../../../budget';
+import { Account } from '../../../moneymoney/Types';
 
 export default function AccountSettings({
   dispatch,
@@ -18,6 +19,7 @@ export default function AccountSettings({
   },
 }: Props) {
   const { value, onChange, error, ...rest } = useInputProps({
+    internal: false,
     value: accounts,
     onChange: useCallback(
       (payload: string[]) => {
@@ -26,9 +28,9 @@ export default function AccountSettings({
       [dispatch],
     ),
     validate: useCallback(
-      ({ target: { value } }: { target: { value: string[] } }) => {
+      ({ target: { value } }: { target: { value: string[] } }, setError) => {
         if (value.length === 0) {
-          throw new Error('Please select at least one account');
+          setError('Please select at least one account');
         }
 
         return value;
@@ -36,7 +38,21 @@ export default function AccountSettings({
       [],
     ),
   });
+  const [currentLoadedAccounts, setCurrentLoadedAccounts] = useState<
+    Account[] | null
+  >(null);
   const [allAccounts, retry] = useAccounts(currency);
+  useEffect(() => {
+    if (allAccounts instanceof Error) {
+      return;
+    }
+    if (currentLoadedAccounts === null) {
+      setCurrentLoadedAccounts(allAccounts);
+    } else if (allAccounts !== currentLoadedAccounts) {
+      setCurrentLoadedAccounts(allAccounts);
+      onChange({ target: { value: [] } });
+    }
+  }, [currentLoadedAccounts, allAccounts, onChange]);
 
   if (!allAccounts) {
     return <Loading />;
