@@ -316,11 +316,12 @@ export default function useBudgets(
         amount: 0,
         transactions: [],
       };
-      toBudget =
+      toBudget = round(
         availableThisMonth.amount -
-        total.budgeted +
-        overspendPrevMonth +
-        uncategorized.amount;
+          total.budgeted +
+          overspendPrevMonth +
+          uncategorized.amount,
+      );
 
       budgetList[current] = {
         total,
