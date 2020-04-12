@@ -11,7 +11,7 @@ type SettingsContextType = [boolean, (showSettings: boolean) => void];
 const ShowSettingsContext = createContext<SettingsContextType | null>(null);
 
 function ShowSettingsProvider({ children }: { children: ReactNode }) {
-  const [showSettings, setShowSettings] = useState<boolean>(true);
+  const [showSettings, setShowSettings] = useState<boolean>(false);
 
   return (
     <ShowSettingsContext.Provider
