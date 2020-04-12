@@ -12,6 +12,9 @@ import registerSave from './registerSave';
 import moneymoneyHandlers from './moneymoney/handlers';
 
 export default function bootstrap() {
+  /* ref https://github.com/Xiphe/budgetbudget/issues/12 */
+  app.allowRendererProcessReuse = true;
+
   const windowManager = createWindowManager(ipcMain);
   const openFile = createOpenFile(ipcMain, windowManager.createWindow);
   const defaultMenu = createDefaultMenu(windowManager.createWindow, openFile);
