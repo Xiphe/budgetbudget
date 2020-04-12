@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import classNames from 'classnames';
 import { ipcRenderer, useInputProps } from '../../../lib';
 import { Loading, Button } from '../../../components';
 import {
@@ -62,6 +63,11 @@ export default function AccountSettings({
   return (
     <>
       <ul className={styles.accountList}>
+        {allAccounts.length === 0 && (
+          <p className={classNames(styles.error, styles.noAccountsError)}>
+            None of your accounts are using this currency
+          </p>
+        )}
         {allAccounts.map(({ number, name }) => (
           <li key={number}>
             <label>
