@@ -1,19 +1,10 @@
-import React, { Dispatch, useMemo } from 'react';
+import React, { Dispatch } from 'react';
 import { Helmet } from 'react-helmet';
 import { BudgetState, Action } from '../../budget';
 import { Content } from '../../components';
-import { appName, createNumberFormatter, useSetShowSettings } from '../../lib';
-import Setting from './Setting';
+import { appName, useSetShowSettings } from '../../lib';
 import styles from './Settings.module.scss';
-import {
-  NameSetting,
-  AccountSetting,
-  NumberLocaleSetting,
-  FractionDigitsSetting,
-  StartDateSetting,
-  StartBalanceSetting,
-  CurrencySetting,
-} from './SettingTypes';
+import General from './General';
 
 type Props = {
   state: BudgetState;
@@ -22,11 +13,7 @@ type Props = {
 
 export default function Settings(props: Props) {
   const showSettings = useSetShowSettings();
-  const { numberLocale, fractionDigits, accounts } = props.state.settings;
-  const numberFormatter = useMemo(
-    () => createNumberFormatter(fractionDigits, numberLocale),
-    [fractionDigits, numberLocale],
-  );
+  const { accounts } = props.state.settings;
   const valid = accounts.length > 0;
 
   return (
@@ -43,21 +30,7 @@ export default function Settings(props: Props) {
       >
         ✕
       </button>
-      <NameSetting {...props} />
-      <CurrencySetting {...props} />
-      <hr />
-      <Setting label="Accounts">
-        <AccountSetting {...props} />
-      </Setting>
-      <hr />
-      <Setting label="Number format Example">
-        {numberFormatter.format(12345.6789)}
-      </Setting>
-      <NumberLocaleSetting {...props} />
-      <FractionDigitsSetting {...props} />
-      <hr />
-      <StartDateSetting {...props} />
-      <StartBalanceSetting {...props} numberFormatter={numberFormatter} />
+      <General {...props} />
     </Content>
   );
 }
