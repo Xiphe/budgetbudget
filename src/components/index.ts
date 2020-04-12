@@ -5,3 +5,4 @@ export { default as Sidebar } from './Sidebar';
 export { default as Row } from './Row';
 export { default as Button } from './Button';
 export { default as InfiniteSlider } from './InfiniteSlider';
+export * from './TabBar';

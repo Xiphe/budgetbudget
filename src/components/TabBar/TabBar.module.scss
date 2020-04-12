@@ -1,0 +1,26 @@
+@import '../../lib/mixins.scss';
+
+.tabBar {
+  display: flex;
+}
+.tab {
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--main-color);
+  font-size: 1.3rem;
+  padding: 0.5rem 0;
+  font-weight: bold;
+  display: block;
+  flex-grow: 1;
+  border-bottom: 1px solid var(--border-color);
+  &:focus {
+    outline: none;
+  }
+  &:global.focus-visible {
+    @include focusOutline();
+  }
+}
+.activeTab {
+  border-bottom-color: var(--main-color);
+}

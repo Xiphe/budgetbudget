@@ -1,7 +1,7 @@
-import React, { Dispatch } from 'react';
+import React, { Dispatch, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { BudgetState, Action } from '../../budget';
-import { Content } from '../../components';
+import { Content, Tab, TabBar } from '../../components';
 import { appName, useSetShowSettings } from '../../lib';
 import styles from './Settings.module.scss';
 import General from './General';
@@ -13,6 +13,7 @@ type Props = {
 
 export default function Settings(props: Props) {
   const showSettings = useSetShowSettings();
+  const [tab, setTab] = useState<'general' | 'categories'>('general');
   const { accounts } = props.state.settings;
   const valid = accounts.length > 0;
 
@@ -30,7 +31,15 @@ export default function Settings(props: Props) {
       >
         ✕
       </button>
-      <General {...props} />
+      <TabBar>
+        <Tab active={tab === 'general'} onClick={() => setTab('general')}>
+          General
+        </Tab>
+        <Tab active={tab === 'categories'} onClick={() => setTab('categories')}>
+          Categories
+        </Tab>
+      </TabBar>
+      {tab === 'general' && <General {...props} />}
     </Content>
   );
 }
