@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
+import classNames from 'classnames';
 import styles from './Header.module.scss';
 
-export default function Header() {
-  return <div className={styles.header}></div>;
+type Props = {
+  className?: string;
+  children: ReactNode;
+};
+export default function Header({ children, className }: Props) {
+  return <div className={classNames(className, styles.header)}>{children}</div>;
 }

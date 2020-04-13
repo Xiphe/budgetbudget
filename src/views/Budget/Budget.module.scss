@@ -1,3 +1,58 @@
+@import '../../lib/mixins.scss';
+
 .budgetSlider {
   width: calc(100vw - var(--sidebar-width));
+}
+.header {
+  display: flex;
+}
+.monthList {
+  margin: 0.4rem auto;
+}
+.monthListEntry {
+  position: relative;
+  display: inline-block;
+  color: var(--main-color);
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-left: none;
+  font-size: 0.9rem;
+  background: transparent;
+  line-height: 1em;
+  transition: color 500ms ease-in;
+  &:first-child {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-left: 1px solid var(--border-color);
+  }
+  &:last-child {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+  }
+}
+button.monthListEntry {
+  cursor: pointer;
+  &:focus {
+    outline: none;
+  }
+  &:global.focus-visible {
+    z-index: 1;
+    @include focusOutline();
+  }
+  &:active {
+    background-color: rgba(var(--dim-colors), 0.2);
+  }
+}
+.evenMonthListEntry {
+  background-color: rgba(var(--dim-colors), 0.1);
+}
+.currentMonthListEntry {
+  border-bottom-color: rgba(var(--accent-colors), 1);
+}
+button.unloadedMonthListEntry {
+  cursor: default;
+  color: var(--secondary-color);
+}
+.monthListEntryYear {
+  font-weight: 200;
 }

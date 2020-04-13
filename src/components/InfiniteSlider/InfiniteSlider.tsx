@@ -90,9 +90,10 @@ export default function InfiniteSlider({
     if (!container) {
       return;
     }
-    const target = container.children[scrollTo] as HTMLElement;
+    const target = container.children[scrollTo + 1] as HTMLElement;
     if (target) {
-      container.scrollLeft = target.offsetLeft;
+      container.scrollLeft =
+        target.offsetLeft - stickyRef.current!.getBoundingClientRect().width;
     }
   }, [scrollTo]);
   useEffect(() => {

@@ -2,51 +2,84 @@ import React, {
   ReactNode,
   ReactElement,
   useState,
-  useMemo,
   useCallback,
+  useContext,
+  createContext,
+  useRef,
+  FC,
+  MutableRefObject,
 } from 'react';
-import subMonths from 'date-fns/subMonths';
-import addMonths from 'date-fns/addMonths';
+
 import { formatDateKey } from '../../lib';
 import { InfiniteSlider } from '../../components';
+import { isAfter } from 'date-fns';
 
-function getYear(dateInYear: Date) {
-  const year = dateInYear.getFullYear();
-  return Array(12)
-    .fill('')
-    .map((_, i) => {
-      const date = new Date(`${year}-${i + 1}`);
-      return { date, key: formatDateKey(date) };
-    });
+type ScrollTo = (date: Date) => void;
+const ScrollToContext = createContext<MutableRefObject<
+  ScrollTo | undefined
+> | null>(null);
+
+export const ScrollToProvider: FC = ({ children }) => {
+  const scrollToRef = useRef<ScrollTo>();
+
+  return (
+    <ScrollToContext.Provider value={scrollToRef}>
+      {children}
+    </ScrollToContext.Provider>
+  );
+};
+function useScrollToRef() {
+  const scrollTo = useContext(ScrollToContext);
+  if (!scrollTo) {
+    throw new Error('can not useScrollTo outside of ScrollToProvider');
+  }
+  return scrollTo;
+}
+export function useScrollTo() {
+  const scrollToRef = useScrollToRef();
+  return useCallback(
+    (date: Date) => {
+      if (!scrollToRef.current) {
+        throw new Error('Can not scroll');
+      }
+      scrollToRef.current(date);
+    },
+    [scrollToRef],
+  );
 }
 
 type Props = {
   sticky: ReactNode;
+  months: { date: Date; key: string }[];
+  loadMore: (direction: 'left' | 'right') => void;
   children: (month: { key: string; date: Date }, i: number) => ReactElement;
 };
 
-export default function BudgetSlider({ children, sticky }: Props) {
-  const today = new Date();
-  const [months, setMonths] = useState(() => getYear(today));
-  const scrollTo = useMemo(
-    () => months.findIndex(({ key }) => key === formatDateKey(today)),
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [],
+export default function BudgetSlider({
+  children,
+  sticky,
+  months,
+  loadMore,
+}: Props) {
+  const scrollToRef = useScrollToRef();
+  const [scrollTo, setScrollTo] = useState<number>(
+    () => months.findIndex(({ key }) => key === formatDateKey(new Date())) + 1,
   );
-  const loadMore = useCallback((direction: 'left' | 'right') => {
-    if (direction === 'left') {
-      setMonths((prevMonths) => [
-        ...getYear(subMonths(prevMonths[0].date, 1)),
-        ...prevMonths,
-      ]);
+  scrollToRef.current = (targetDate: Date) => {
+    const targetMonth = targetDate.getMonth();
+    const targetYear = targetDate.getFullYear();
+    const index = months.findIndex(
+      ({ date }) =>
+        date.getMonth() === targetMonth && date.getFullYear() === targetYear,
+    );
+    if (index !== -1) {
+      setScrollTo(index);
+    } else if (isAfter(targetDate, months[months.length - 1].date)) {
+      setScrollTo(months.length - 1);
     } else {
-      setMonths((prevMonths) =>
-        prevMonths.concat(
-          getYear(addMonths(prevMonths[prevMonths.length - 1].date, 1)),
-        ),
-      );
+      setScrollTo(0);
     }
-  }, []);
+  };
 
   return (
     <InfiniteSlider scrollTo={scrollTo} loadMore={loadMore} sticky={sticky}>

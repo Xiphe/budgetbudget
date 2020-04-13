@@ -13,6 +13,11 @@ export {
   useShowSettings,
 } from './ShowSettingsContext';
 export {
+  VisibleMothContextProvider,
+  useSetVisibleMonth,
+  useVisibleMonths,
+} from './VisibleMonthsContext';
+export {
   HeaderHeightProvider,
   useRegisterHeaderHeight,
 } from './HeaderHeightContext';

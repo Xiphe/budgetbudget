@@ -1,4 +1,7 @@
 .content {
+  height: 100vh;
+}
+.withHeader {
   margin-top: var(--header-height);
   height: calc(100vh - var(--header-height));
 }
