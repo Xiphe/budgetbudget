@@ -1,4 +1,4 @@
-import React, { useCallback, ChangeEvent } from 'react';
+import React, { useCallback } from 'react';
 import { useInputProps } from '../../../lib';
 import { ACTION_SETTINGS_SET_NUMBER_LOCALE } from '../../../budget';
 import Input from '../Input';
@@ -19,7 +19,7 @@ export default function NumberLocaleSetting({
       },
       [dispatch],
     ),
-    validate: useCallback((ev: ChangeEvent<HTMLInputElement>) => {
+    validate: useCallback((ev) => {
       if (ev.target.value === '') {
         throw new Error('Please enter a Language Tag');
       }

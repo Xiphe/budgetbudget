@@ -1,31 +1,20 @@
 import { useEffect, useState, Dispatch } from 'react';
-import { INIT_NEW, readFile } from '../lib';
+import { readFile } from '../lib';
 import { ACTION_INIT, Action } from './budgetReducer';
-import { validateBudgetState, VERSION } from './Types';
+import { validateBudgetState } from './Types';
+import { BudgetState } from './Types';
 
 export default function useInit(
-  init: string | typeof INIT_NEW,
+  init: string | BudgetState,
   dispatch: Dispatch<Action>,
 ) {
   const [loadingError, setLoadingError] = useState<null | Error>(null);
   useEffect(() => {
     let canceled = false;
-    if (init === INIT_NEW) {
+    if (typeof init !== 'string') {
       dispatch({
         type: ACTION_INIT,
-        payload: {
-          version: VERSION,
-          settings: {
-            accounts: [],
-            currency: 'EUR',
-            incomeCategories: [],
-            fractionDigits: 2,
-            startDate: 0,
-            startBalance: 0,
-            numberLocale: 'de-DE',
-          },
-          budgets: {},
-        },
+        payload: init,
       });
     } else {
       readFile(init, (err, data) => {

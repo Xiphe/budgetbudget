@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback } from 'react';
+import { useCallback } from 'react';
 import { NumberFormatter } from './createNumberFormatter';
 import useInputProps from './useInputProps';
 
@@ -15,10 +15,7 @@ export default function useCurrencyInput({
   onChange,
   numberFormatter: { fractionDelimiter, format, parse, fractionStep },
 }: CurrencyInputConfig) {
-  const { error: _, ...inputProps } = useInputProps<
-    number,
-    ChangeEvent<HTMLInputElement>
-  >({
+  const { error: _, ...inputProps } = useInputProps<number>({
     value,
     onChange: onChange,
     validate: useCallback((ev) => parse(ev.target.value), [parse]),

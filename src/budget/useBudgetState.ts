@@ -1,11 +1,11 @@
 import { useReducer } from 'react';
-import { INIT_NEW } from '../lib';
 import useMenu from './useMenu';
 import budgetReducer from './budgetReducer';
 import useSave from './useSave';
 import useInit from './useInit';
+import { BudgetState } from './Types';
 
-export default function useBudget(init: string | typeof INIT_NEW) {
+export default function useBudget(init: string | BudgetState) {
   const [state, dispatch] = useReducer(budgetReducer, null);
   const menu = useMenu();
   const error = useSave(menu, state);

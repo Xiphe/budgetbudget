@@ -35,18 +35,15 @@ export function withShowSettingsProvider<P extends object>(
   );
 }
 
-function useShowSettingsContext() {
+export function useSetShowSettings() {
+  const showSettings = useContext(ShowSettingsContext);
+  return showSettings ? showSettings[1] : undefined;
+}
+
+export function useShowSettings() {
   const value = useContext(ShowSettingsContext);
   if (!value) {
     throw new Error('Can not useShowSettings outside of ShowSettingsProvider');
   }
-  return value;
-}
-
-export function useSetShowSettings() {
-  return useShowSettingsContext()[1];
-}
-
-export function useShowSettings() {
-  return useShowSettingsContext()[0];
+  return value[0];
 }

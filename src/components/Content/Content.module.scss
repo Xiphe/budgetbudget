@@ -4,6 +4,7 @@
 .withHeader {
   margin-top: var(--header-height);
   height: calc(100vh - var(--header-height));
+  overflow: scroll;
 }
 .padding {
   padding: 0 2rem;

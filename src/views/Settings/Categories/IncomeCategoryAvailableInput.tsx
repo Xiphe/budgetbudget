@@ -1,4 +1,4 @@
-import React, { useCallback, ChangeEvent } from 'react';
+import React, { useCallback } from 'react';
 import { useInputProps } from '../../../lib';
 import { ACTION_SETTINGS_SET_INCOME_AVAILABLE_IN } from '../../../budget';
 import { Props as P } from './Types';
@@ -11,7 +11,7 @@ type Props = {
   value: number;
 };
 
-function validate({ target: { value } }: ChangeEvent<HTMLInputElement>) {
+function validate({ target: { value } }: { target: { value: string } }) {
   const val = parseInt(value, 10);
   if (isNaN(val) || val < 0) {
     return 0;

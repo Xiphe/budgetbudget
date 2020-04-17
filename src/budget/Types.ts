@@ -39,23 +39,13 @@ const settingsShape = t.type(
   },
   'settings',
 );
-const budgetStateShape = t.intersection(
-  [
-    t.partial(
-      {
-        name: t.string,
-      },
-      'optional',
-    ),
-    t.type(
-      {
-        version: t.string,
-        budgets: budgetsShape,
-        settings: settingsShape,
-      },
-      'required',
-    ),
-  ],
+const budgetStateShape = t.type(
+  {
+    name: t.string,
+    version: t.string,
+    budgets: budgetsShape,
+    settings: settingsShape,
+  },
   'budget',
 );
 

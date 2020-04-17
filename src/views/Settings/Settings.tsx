@@ -28,7 +28,7 @@ export default function Settings(props: Props) {
         title="close"
         disabled={!valid}
         className={styles.close}
-        onClick={() => showSettings(false)}
+        onClick={() => showSettings && showSettings(false)}
       >
         ✕
       </button>

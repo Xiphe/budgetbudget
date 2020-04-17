@@ -1,4 +1,4 @@
-import React, { useCallback, ChangeEvent } from 'react';
+import React, { useCallback } from 'react';
 import { useInputProps } from '../../../lib';
 import { ACTION_SET_NAME } from '../../../budget';
 import Input from '../Input';
@@ -14,7 +14,7 @@ export default function NameSetting({ state: { name }, dispatch }: Props) {
       },
       [dispatch],
     ),
-    validate: useCallback((ev: ChangeEvent<HTMLInputElement>) => {
+    validate: useCallback((ev) => {
       if (ev.target.value === '') {
         throw new Error('Please provide a name for the Budget');
       }

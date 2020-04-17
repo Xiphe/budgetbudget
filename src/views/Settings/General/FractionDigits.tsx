@@ -1,4 +1,4 @@
-import React, { useCallback, ChangeEvent } from 'react';
+import React, { useCallback } from 'react';
 import { useInputProps } from '../../../lib';
 import { ACTION_SETTINGS_SET_FRACTION_DIGITS } from '../../../budget';
 import Input from '../Input';
@@ -19,9 +19,9 @@ export default function FractionDigitsSetting({
       },
       [dispatch],
     ),
-    validate: useCallback((ev: ChangeEvent<HTMLInputElement>) => {
+    validate: useCallback((ev) => {
       const value = parseInt(ev.target.value, 10);
-      if (value.toString() !== ev.target.value) {
+      if (value.toString() !== String(ev.target.value)) {
         throw new Error('Please enter a valid number');
       } else if (value < 0) {
         throw new Error('Please enter a positive number or 0');

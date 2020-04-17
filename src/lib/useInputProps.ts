@@ -3,29 +3,37 @@ import { useState, useCallback } from 'react';
 function noop(v: any) {
   return v;
 }
-type UseInputConfig<V, E> = {
+const EMPTY = Symbol('EMPTY');
+
+type Event = { target: { value: any } };
+
+type UseInputConfig<V> = {
   value: V;
   toInputFormat?: (value: V) => any;
   internal?: boolean;
   format?: (value: V) => any;
   onChange: (value: V) => void;
-  validate: (ev: E, setError: (error: string | null) => void) => V;
+  validate: (ev: Event, setError: (error: string | null) => void) => V;
 };
-const EMPTY = Symbol('EMPTY');
 
-export default function useInputProps<
-  V extends any,
-  E extends { target: { value: any } }
->({
+export default function useInputProps<V extends any>({
   value,
   onChange,
   validate,
   toInputFormat = noop,
   format = noop,
   internal = true,
-}: UseInputConfig<V, E>) {
+}: UseInputConfig<V>) {
   const [internalValue, setValue] = useState<any>(EMPTY);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => {
+    try {
+      let err = null;
+      validate({ target: { value: value } }, (error) => (err = error));
+      return err;
+    } catch (err) {
+      return err.message;
+    }
+  });
 
   return {
     value: internalValue !== EMPTY ? internalValue : format(value),
@@ -42,7 +50,7 @@ export default function useInputProps<
       }
     }, [internal]),
     onChange: useCallback(
-      (ev: E) => {
+      (ev: Event) => {
         if (internal) {
           setValue(ev.target.value);
         }

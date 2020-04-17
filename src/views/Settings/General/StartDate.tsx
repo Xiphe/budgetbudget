@@ -1,4 +1,4 @@
-import React, { useCallback, ChangeEvent, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import format from 'date-fns/format';
 import { useInputProps } from '../../../lib';
 import { ACTION_SETTINGS_SET_START_DATE } from '../../../budget';
@@ -26,7 +26,7 @@ export default function StartDateSetting({
       },
       [dispatch],
     ),
-    validate: useCallback((ev: ChangeEvent<HTMLInputElement>) => {
+    validate: useCallback((ev) => {
       try {
         const date = new Date(ev.target.value).getTime();
         if (isNaN(date) || typeof date !== 'number') {

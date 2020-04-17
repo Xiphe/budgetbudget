@@ -1,0 +1,25 @@
+.warning {
+  background-color: #ff7614;
+  padding: 0.5em 1.5em;
+  border-radius: 3px;
+  font-size: 1.2rem;
+  margin-bottom: 2em;
+  h4 {
+    margin-bottom: 0;
+  }
+}
+.center {
+  text-align: center;
+}
+.linkButton {
+  font-size: 1em;
+  text-decoration: underline;
+  cursor: pointer;
+  color: var(--main-color);
+  appearance: none;
+  background: none;
+  border: none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+}

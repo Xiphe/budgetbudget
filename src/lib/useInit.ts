@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
 import { ipcRenderer } from './electron';
+import { BudgetState } from '../budget';
 
-export const INIT_NEW = Symbol('INIT_NEW');
-export default function useInit(): Error | string | null | typeof INIT_NEW {
-  const [file, setFile] = useState<string | null | typeof INIT_NEW>(null);
+export const INIT_EMPTY = Symbol('INIT_EMPTY');
+export default function useInit(): [
+  Error | string | null | typeof INIT_EMPTY | BudgetState,
+  (state: BudgetState) => void,
+] {
+  const [file, setFile] = useState<
+    string | null | typeof INIT_EMPTY | BudgetState
+  >(null);
   const [error, setError] = useState<null | Error>(null);
   useEffect(() => {
     let canceled = false;
@@ -12,7 +18,7 @@ export default function useInit(): Error | string | null | typeof INIT_NEW {
         return;
       }
       if (typeof res === 'undefined') {
-        setFile(INIT_NEW);
+        setFile(INIT_EMPTY);
       } else if (typeof res === 'string') {
         setFile(res);
       } else {
@@ -24,5 +30,5 @@ export default function useInit(): Error | string | null | typeof INIT_NEW {
     };
   }, []);
 
-  return error || file;
+  return [error || file, setFile];
 }

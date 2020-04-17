@@ -1,4 +1,4 @@
-import React, { useCallback, ChangeEvent } from 'react';
+import React, { useCallback } from 'react';
 import { Props as P } from './Types';
 import { Category } from '../../../moneymoney';
 import { useInputProps } from '../../../lib';
@@ -13,7 +13,7 @@ type Props = {
   categories: Category[];
 };
 
-function validate({ target: { value } }: ChangeEvent<HTMLSelectElement>) {
+function validate({ target: { value } }: { target: { value: string } }) {
   return parseInt(value, 10);
 }
 
