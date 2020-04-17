@@ -3,16 +3,60 @@
   "productName": "BudgetBudget",
   "version": "0.0.0-development",
   "description": "work with monthly budgets alongside moneymoney",
-  "main": "main.js",
+  "build": {
+    "appId": "app.budgetbudget.budgetbudget",
+    "files": [
+      "main.js",
+      "build/**/*",
+      "main/dist/**/*",
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "main/moneymoney",
+        "to": "scripts",
+        "filter": [
+          "*.applescript"
+        ]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.finance",
+      "target": "dmg"
+    },
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
+  "main": "public/electron.js",
   "type": "module",
   "scripts": {
     "start": "export PORT=$(get-port 7654) && concurrently npm:start:cra npm:start:electron",
     "start:cra": "BROWSER=none react-scripts start",
     "start:electron": "export SERVER_URL=http://localhost:$PORT && wait-on $SERVER_URL && NODE_ENV=development electron .",
-    "build": "react-scripts build",
-    "test": "react-scripts test"
+    "start:electron:prod": "NODE_ENV=production electron .",
+    "build": "concurrently npm:build:main npm:build:render",
+    "build:main": "tsc -p main/tsconfig.json",
+    "build:main_WP": "webpack --config main/webpack.config.js",
+    "build:render": "react-scripts build",
+    "test": "react-scripts test",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "dependencies": {
+    "classnames": "2.2.6",
+    "date-fns": "2.11.0",
+    "focus-visible": "5.1.0",
+    "fp-ts": "2.5.3",
+    "io-ts": "2.1.2",
+    "lodash.debounce": "4.0.8",
+    "plist": "3.0.1",
+    "react": "16.13.0",
+    "react-dom": "16.13.0",
+    "react-helmet": "6.0.0",
+    "ts-loader": "7.0.0"
+  },
+  "devDependencies": {
     "@testing-library/jest-dom": "5.1.1",
     "@testing-library/react": "10.0.1",
     "@testing-library/user-event": "10.0.0",
@@ -26,26 +70,17 @@
     "@types/react": "16.9.23",
     "@types/react-dom": "16.9.5",
     "@types/react-helmet": "5.0.15",
-    "classnames": "2.2.6",
     "concurrently": "5.1.0",
-    "date-fns": "2.11.0",
     "electron": "8.1.1",
-    "focus-visible": "5.1.0",
-    "fp-ts": "2.5.3",
+    "electron-builder": "22.5.1",
     "get-port-cli": "2.0.0",
-    "io-ts": "2.1.2",
-    "lodash.debounce": "4.0.8",
     "node-sass": "4.13.1",
-    "plist": "3.0.1",
-    "pouchdb": "7.2.1",
-    "react": "16.13.0",
-    "react-dom": "16.13.0",
-    "react-helmet": "6.0.0",
     "react-scripts": "3.4.0",
     "ts-node": "8.8.1",
     "typescript": "3.8.3",
     "typescript-plugin-css-modules": "2.2.0",
-    "wait-on": "4.0.1"
+    "wait-on": "4.0.1",
+    "webpack-cli": "3.3.11"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -58,7 +93,7 @@
     "url": "git+https://github.com/Xiphe/budgetbudget.git"
   },
   "private": true,
-  "author": "Hannes Diercks <node@xiphe.net> (https://xiphe.net/)",
+  "author": "Hannes Diercks <budgetbudget@xiphe.net> (https://xiphe.net/)",
   "license": "MIT",
   "homepage": "./"
 }

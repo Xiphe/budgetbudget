@@ -1,4 +1,5 @@
 import { BrowserWindow, IpcMain, WebContents } from 'electron';
+import { join } from 'path';
 
 export type WindowManager = ReturnType<typeof createWindowManager>;
 export default function createWindowManager(ipcMain: IpcMain) {
@@ -39,7 +40,6 @@ export default function createWindowManager(ipcMain: IpcMain) {
     const win = new BrowserWindow({
       width: 800,
       height: 600,
-      vibrancy: 'sidebar',
       webPreferences: {
         nodeIntegration: true,
       },
@@ -57,7 +57,7 @@ export default function createWindowManager(ipcMain: IpcMain) {
       win.loadURL(SERVER_URL);
       win.webContents.openDevTools();
     } else {
-      win.loadFile('./build/index.html');
+      win.loadFile(join(__dirname, '../../build/index.html'));
     }
 
     if (file) {

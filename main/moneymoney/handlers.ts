@@ -1,7 +1,12 @@
 import { IpcMain } from 'electron';
+import { join } from 'path';
 import { exec } from 'child_process';
 import { parse } from 'plist';
 import osascript from './osascript';
+
+const scriptsDir = __dirname.includes('/app.asar/')
+  ? join(process.resourcesPath, 'scripts')
+  : join((require as any).main.filename, '../../main/moneymoney');
 
 function isDbLocked(err: any) {
   return err.stderr && err.stderr.includes('Locked database. (-2720)');
@@ -44,7 +49,7 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
 
     try {
       await osascript(
-        __dirname + '/exportTransactions.applescript',
+        join(scriptsDir, 'exportTransactions.applescript'),
         accountNumber,
         new Date().toLocaleDateString(),
       );
@@ -60,7 +65,7 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
     'MM_EXPORT_ACCOUNTS',
     withRetry(async () => {
       const accounts = parse(
-        await osascript(__dirname + '/exportAccounts.applescript'),
+        await osascript(join(scriptsDir, 'exportAccounts.applescript')),
       );
       if (!Array.isArray(accounts)) {
         throw new Error('Unexpectedly got non-array as accounts');
@@ -92,7 +97,10 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
     'MM_EXPORT_TRANSACTIONS',
     withRetry(async (_, ...args) => {
       return parse(
-        await osascript(__dirname + '/exportTransactions.applescript', ...args),
+        await osascript(
+          join(scriptsDir, 'exportTransactions.applescript'),
+          ...args,
+        ),
       );
     }),
   );
