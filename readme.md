@@ -8,7 +8,7 @@
 <h1 align="center">BudgetBudget</h1>
 
 <div align="center">
-Envelope styled budgeting using your
+Envelope budgeting using your
 <a href="https://moneymoney-app.com/">MoneyMoney</a> transactions.
 </div>
 
