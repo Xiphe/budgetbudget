@@ -3,10 +3,7 @@ import { join } from 'path';
 import { exec } from 'child_process';
 import { parse } from 'plist';
 import osascript from './osascript';
-
-const scriptsDir = __dirname.includes('/app.asar/')
-  ? join(process.resourcesPath, 'scripts')
-  : join((require as any).main.filename, '../../main/moneymoney');
+import scriptsDir from '../scriptsDir';
 
 function isDbLocked(err: any) {
   return err.stderr && err.stderr.includes('Locked database. (-2720)');

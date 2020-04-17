@@ -4,5 +4,5 @@ if (process.env.NODE_ENV === 'development') {
   });
   require('../main/index').default();
 } else {
-  require('../main/dist/index').default();
+  require('../main/dist.js').default();
 }

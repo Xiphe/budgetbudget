@@ -3,21 +3,31 @@
   "productName": "BudgetBudget",
   "version": "0.0.0-development",
   "description": "work with monthly budgets alongside moneymoney",
+  "scripts": {
+    "start": "export PORT=$(get-port 7654) && concurrently npm:start:cra npm:start:electron",
+    "start:cra": "BROWSER=none react-scripts start",
+    "start:electron": "export SERVER_URL=http://localhost:$PORT && wait-on $SERVER_URL && NODE_ENV=development electron .",
+    "start:electron:prod": "NODE_ENV=production electron .",
+    "build": "concurrently npm:build:main npm:build:renderer",
+    "build:main": "webpack --config main/webpack.config.js",
+    "build:renderer": "react-scripts build",
+    "inspect:asar": "rm -rf app_asar && asar extract dist/mac/BudgetBudget.app/Contents/Resources/app.asar ./app_asar",
+    "test": "react-scripts test",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "main": "public/electron.js",
   "build": {
     "appId": "app.budgetbudget.budgetbudget",
     "files": [
-      "main.js",
       "build/**/*",
-      "main/dist/**/*",
-      "node_modules/**/*"
+      "main/dist.js",
+      "!node_modules/**/*"
     ],
     "extraResources": [
       {
-        "from": "main/moneymoney",
-        "to": "scripts",
-        "filter": [
-          "*.applescript"
-        ]
+        "from": "main/scripts",
+        "to": "scripts"
       }
     ],
     "mac": {
@@ -28,21 +38,7 @@
       "buildResources": "assets"
     }
   },
-  "main": "public/electron.js",
   "type": "module",
-  "scripts": {
-    "start": "export PORT=$(get-port 7654) && concurrently npm:start:cra npm:start:electron",
-    "start:cra": "BROWSER=none react-scripts start",
-    "start:electron": "export SERVER_URL=http://localhost:$PORT && wait-on $SERVER_URL && NODE_ENV=development electron .",
-    "start:electron:prod": "NODE_ENV=production electron .",
-    "build": "concurrently npm:build:main npm:build:render",
-    "build:main": "tsc -p main/tsconfig.json",
-    "build:main_WP": "webpack --config main/webpack.config.js",
-    "build:render": "react-scripts build",
-    "test": "react-scripts test",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder"
-  },
   "dependencies": {
     "classnames": "2.2.6",
     "date-fns": "2.11.0",
@@ -53,8 +49,7 @@
     "plist": "3.0.1",
     "react": "16.13.0",
     "react-dom": "16.13.0",
-    "react-helmet": "6.0.0",
-    "ts-loader": "7.0.0"
+    "react-helmet": "6.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.1.1",
@@ -70,12 +65,14 @@
     "@types/react": "16.9.23",
     "@types/react-dom": "16.9.5",
     "@types/react-helmet": "5.0.15",
+    "asar": "3.0.3",
     "concurrently": "5.1.0",
     "electron": "8.1.1",
     "electron-builder": "22.5.1",
     "get-port-cli": "2.0.0",
     "node-sass": "4.13.1",
     "react-scripts": "3.4.0",
+    "ts-loader": "7.0.0",
     "ts-node": "8.8.1",
     "typescript": "3.8.3",
     "typescript-plugin-css-modules": "2.2.0",

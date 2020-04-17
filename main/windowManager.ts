@@ -57,7 +57,7 @@ export default function createWindowManager(ipcMain: IpcMain) {
       win.loadURL(SERVER_URL);
       win.webContents.openDevTools();
     } else {
-      win.loadFile(join(__dirname, '../../build/index.html'));
+      win.loadFile(join(__dirname, '../build/index.html'));
     }
 
     if (file) {

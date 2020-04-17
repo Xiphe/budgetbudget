@@ -1,4 +1,6 @@
 node_modules/
 build/
+app_asar/
 dist/
+dist.js
 .DS_Store
