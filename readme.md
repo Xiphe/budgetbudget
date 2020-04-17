@@ -7,13 +7,18 @@
 </div>
 <h1 align="center">BudgetBudget</h1>
 
-Envelope styled budgeting using your [MoneyMoney](https://moneymoney-app.com/)
-transactions.
+<div align="center">
+Envelope styled budgeting using your
+<a href="https://moneymoney-app.com/">MoneyMoney</a> transactions.
+</div>
+
+&nbsp;
 
 ## How to use
 
 This app is currently still in development and not officially released.
 If you still want to use it you need to build it yourself. See
+[Run the app in development mode](#run-the-app-in-development-mode)
 
 ## Contributing
 
