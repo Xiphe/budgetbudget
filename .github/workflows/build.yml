@@ -1,32 +1,35 @@
 name: Build/release
 
-on:
-  push:
-    branches:
-      - master
+on: push
 
 jobs:
   release:
     runs-on: macos-latest
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v1
-      - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 12.x
+      - uses: actions/cache@v1
+        id: dependencies-v1
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-dependencies-v1-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dependencies-v1-
       - name: Prepare for app notarization
         run: |
           mkdir -p ~/private_keys/
           echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
-      - name: Build/release Electron app
-        uses: samuelmeuli/action-electron-builder@v1
-        with:
-          mac_certs: ${{ secrets.mac_certs }}
-          mac_certs_password: ${{ secrets.mac_certs_password }}
-          github_token: ${{ secrets.github_token }}
+      - run: npm ci
+        if: steps.dependencies-v1.outputs.cache-hit != 'true'
         env:
+          ADBLOCK: true
+      - run: npm run build
+      - run: npx --no-install semantic-release || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_LINK: ${{ secrets.mac_certs }}
+          CSC_KEY_PASSWORD: ${{ secrets.mac_certs_password }}
           API_KEY_ID: ${{ secrets.api_key_id }}
           API_KEY_ISSUER_ID: ${{ secrets.api_key_issuer_id }}
-      - name: DEBUG
-        run: ls && cd dist &&  ls && cd mac && ls

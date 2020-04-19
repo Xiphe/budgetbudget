@@ -1,7 +1,7 @@
 {
   "name": "budgetbudget",
   "productName": "BudgetBudget",
-  "version": "0.1.0-alpha.1",
+  "version": "0.0.0-development",
   "description": "work with monthly budgets alongside moneymoney",
   "scripts": {
     "start": "export PORT=$(get-port 7654) && concurrently npm:start:cra npm:start:electron",
@@ -39,6 +39,29 @@
     },
     "afterSign": "electron-builder-notarize"
   },
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/exec",
+        {
+          "prepareCmd": "npx --no-install electron-builder --mac --publish never"
+        }
+      ],
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            {
+              "path": "dist/*.dmg",
+              "label": "MacOS distribution"
+            }
+          ]
+        }
+      ]
+    ]
+  },
   "type": "module",
   "dependencies": {
     "classnames": "2.2.6",
@@ -53,6 +76,7 @@
     "react-helmet": "6.0.0"
   },
   "devDependencies": {
+    "@semantic-release/exec": "5.0.0",
     "@testing-library/jest-dom": "5.1.1",
     "@testing-library/react": "10.0.1",
     "@testing-library/user-event": "10.0.0",
@@ -74,6 +98,7 @@
     "get-port-cli": "2.0.0",
     "node-sass": "4.13.1",
     "react-scripts": "3.4.0",
+    "semantic-release": "17.0.6",
     "ts-loader": "7.0.0",
     "ts-node": "8.8.1",
     "typescript": "3.8.3",
@@ -89,7 +114,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Xiphe/budgetbudget.git"
+    "url": "https://github.com/Xiphe/budgetbudget.git"
   },
   "private": true,
   "author": "Hannes Diercks <budgetbudget@xiphe.net> (https://xiphe.net/)",
