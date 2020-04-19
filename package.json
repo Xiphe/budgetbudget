@@ -55,7 +55,7 @@
           "assets": [
             {
               "path": "dist/*.dmg",
-              "label": "MacOS distribution"
+              "name": "BudgetBudget.dmg"
             }
           ]
         }
