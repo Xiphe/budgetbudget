@@ -7,6 +7,7 @@ import {
 } from 'electron';
 import createWindowManager from './windowManager';
 import createOpenFile from './openFile';
+import disableUnused from './disableUnused';
 import { createDefaultMenu } from './defaultMenu';
 import registerSave from './registerSave';
 import moneymoneyHandlers from './moneymoney/handlers';
@@ -14,6 +15,8 @@ import moneymoneyHandlers from './moneymoney/handlers';
 export default function bootstrap() {
   /* ref https://github.com/Xiphe/budgetbudget/issues/12 */
   app.allowRendererProcessReuse = true;
+
+  disableUnused(app);
 
   const windowManager = createWindowManager(ipcMain);
   const openFile = createOpenFile(ipcMain, windowManager.createWindow);
