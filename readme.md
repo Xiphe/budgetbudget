@@ -7,8 +7,22 @@
 </div>
 <h1 align="center">BudgetBudget</h1>
 <div align="center">
-  <img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release" alt="semantic-release" />
+  <a href="https://github.com/Xiphe/budgetbudget/releases">
+    <img alt="GitHub release (latest SemVer including pre-releases)" src="https://img.shields.io/github/v/release/Xiphe/budgetbudget?include_prereleases">
+  </a>
+  <a href="https://github.com/Xiphe/budgetbudget/actions?query=workflow%3A%22build+%26+release%22">
+    <img
+      src="https://github.com/Xiphe/budgetbudget/workflows/build%20&%20release/badge.svg" alt="build & release" />
+  </a>
+  <a href="https://github.com/semantic-release/semantic-release">
+    <img
+      src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg"
+      alt="semantic-release"
+    />
+  </a>
 </div>
+
+&nbsp;
 
 <div align="center">
 Envelope budgeting using your
@@ -19,9 +33,9 @@ Envelope budgeting using your
 
 ## How to use
 
-This app is currently still in development and not officially released.
-If you still want to use it you need to build it yourself. See
-[Run the app in development mode](#run-the-app-in-development-mode)
+This app is currently still in development and only pre-released as an
+alpha version.
+If you want to check it out grab the latest release from the [Releases Page](https://github.com/Xiphe/budgetbudget/releases/).
 
 ## Contributing
 
