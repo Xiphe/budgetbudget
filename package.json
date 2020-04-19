@@ -36,12 +36,14 @@
     },
     "directories": {
       "buildResources": "assets"
-    }
+    },
+    "afterSign": "scripts/notarize.js"
   },
   "type": "module",
   "dependencies": {
     "classnames": "2.2.6",
     "date-fns": "2.11.0",
+    "electron-notarize": "0.3.0",
     "focus-visible": "5.1.0",
     "fp-ts": "2.5.3",
     "io-ts": "2.1.2",
