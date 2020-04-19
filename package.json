@@ -9,7 +9,7 @@
     "start:electron": "export SERVER_URL=http://localhost:$PORT && wait-on $SERVER_URL && NODE_ENV=development electron .",
     "start:electron:prod": "NODE_ENV=production electron .",
     "build": "concurrently npm:build:main npm:build:renderer",
-    "build:main": "webpack --config main/webpack.config.js",
+    "build:main": "webpack --config main/webpack.config.cjs",
     "build:renderer": "react-scripts build",
     "inspect:asar": "rm -rf app_asar && asar extract dist/mac/BudgetBudget.app/Contents/Resources/app.asar ./app_asar",
     "test": "react-scripts test",
@@ -37,13 +37,12 @@
     "directories": {
       "buildResources": "assets"
     },
-    "afterSign": "scripts/notarize.js"
+    "afterSign": "electron-builder-notarize"
   },
   "type": "module",
   "dependencies": {
     "classnames": "2.2.6",
     "date-fns": "2.11.0",
-    "electron-notarize": "0.3.0",
     "focus-visible": "5.1.0",
     "fp-ts": "2.5.3",
     "io-ts": "2.1.2",
@@ -71,6 +70,7 @@
     "concurrently": "5.1.0",
     "electron": "8.1.1",
     "electron-builder": "22.5.1",
+    "electron-builder-notarize": "1.1.2",
     "get-port-cli": "2.0.0",
     "node-sass": "4.13.1",
     "react-scripts": "3.4.0",
