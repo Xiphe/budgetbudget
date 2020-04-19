@@ -1,7 +1,7 @@
 {
   "name": "budgetbudget",
   "productName": "BudgetBudget",
-  "version": "0.0.0-development",
+  "version": "0.1.0-alpha.1",
   "description": "work with monthly budgets alongside moneymoney",
   "scripts": {
     "start": "export PORT=$(get-port 7654) && concurrently npm:start:cra npm:start:electron",
