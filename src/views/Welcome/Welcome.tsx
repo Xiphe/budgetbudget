@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { appName, shell } from '../../lib';
+import useMenu from '../../budget/useMenu';
 import { Content, Button } from '../../components';
 import styles from './Welcome.module.scss';
 
@@ -8,6 +9,8 @@ type Props = {
   onCreate: () => void;
 };
 export default function Welcome({ onCreate }: Props) {
+  useMenu();
+
   return (
     <Content padding>
       <Helmet>
