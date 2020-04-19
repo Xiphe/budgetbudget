@@ -9,7 +9,7 @@ export { default as useAccounts } from './useAccounts';
 export { default as useTransactions } from './useTransactions';
 export { getCategories, getFlatCategories } from './getCategories';
 export { default as calculateBalances } from './calculateBalances';
-export * from './isDatabaseLocked';
+export * from './errors';
 export { isCategory } from './Types';
 export type Transaction = TransactionT;
 export type CategoryTree = CategoryTreeT;

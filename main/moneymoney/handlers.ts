@@ -13,6 +13,16 @@ function delay(t: number) {
   return new Promise((r) => setTimeout(r, t));
 }
 
+async function moneymoneyExists() {
+  if (
+    (
+      await osascript(join(scriptsDir, 'moneymoneyExists.applescript'))
+    ).trim() !== 'true'
+  ) {
+    throw new Error('Seems as if MoneyMoney is not installed on your mac');
+  }
+}
+
 function withRetry<T extends (...args: any[]) => Promise<any>>(
   fn: T,
   retry: number = 0,
@@ -28,6 +38,7 @@ function withRetry<T extends (...args: any[]) => Promise<any>>(
         }
         throw new Error('MoneyMoney database is locked');
       }
+      await moneymoneyExists();
       throw err;
     }
   }) as any;

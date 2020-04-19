@@ -8,3 +8,8 @@ export function cleanMessage(message: string) {
 export function isDatabaseLocked(message: string) {
   return message.includes('MoneyMoney database is locked');
 }
+export function cantFindMoneyMoney(message: string) {
+  return message.includes(
+    'Seems as if MoneyMoney is not installed on your mac',
+  );
+}
