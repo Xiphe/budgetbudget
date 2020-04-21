@@ -18,7 +18,7 @@ export default function main() {
 
   disableUnused(app);
 
-  const windowManager = createWindowManager(ipcMain);
+  const windowManager = createWindowManager(app, ipcMain);
   const openFile = createOpenFile(ipcMain, windowManager.createWindow);
   const defaultMenu = createDefaultMenu(windowManager.createWindow, openFile);
   registerSave(ipcMain, windowManager);

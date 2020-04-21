@@ -1,8 +1,8 @@
-import { BrowserWindow, IpcMain, WebContents } from 'electron';
+import { BrowserWindow, IpcMain, WebContents, App } from 'electron';
 import { join } from 'path';
 
 export type WindowManager = ReturnType<typeof createWindowManager>;
-export default function createWindowManager(ipcMain: IpcMain) {
+export default function createWindowManager(app: App, ipcMain: IpcMain) {
   const windows: { [key: string]: BrowserWindow } = {};
   const newWindows: BrowserWindow[] = [];
 
@@ -28,6 +28,16 @@ export default function createWindowManager(ipcMain: IpcMain) {
       } else {
         throw new Error(`Unable to de-register window ${sender}`);
       }
+    }
+  }
+
+  function registerWindow(win: BrowserWindow, file?: string) {
+    if (file) {
+      windows[file] = win;
+      app.addRecentDocument(file);
+      win.setRepresentedFilename(file);
+    } else {
+      newWindows.push(win);
     }
   }
 
@@ -60,12 +70,7 @@ export default function createWindowManager(ipcMain: IpcMain) {
       win.loadFile(join(__dirname, '../build/index.html'));
     }
 
-    if (file) {
-      windows[file] = win;
-      win.setRepresentedFilename(file);
-    } else {
-      newWindows.push(win);
-    }
+    registerWindow(win, file);
 
     win.once('close', (ev: any) => {
       unregisterWindow(ev.sender.webContents);
@@ -93,9 +98,7 @@ export default function createWindowManager(ipcMain: IpcMain) {
     createWindow,
     getFile,
     updateFile(sender: WebContents, file: string) {
-      const win = unregisterWindow(sender);
-      windows[file] = win;
-      win.setRepresentedFilename(file);
+      registerWindow(unregisterWindow(sender), file);
     },
     broadcast(data: any) {
       newWindows.concat(Object.values(windows)).forEach((win: any) => {
