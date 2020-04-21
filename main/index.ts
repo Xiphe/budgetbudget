@@ -1,1 +1,1 @@
-export { default } from './bootstrap';
+export { default } from './main';

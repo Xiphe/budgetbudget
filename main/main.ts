@@ -12,7 +12,7 @@ import { createDefaultMenu } from './defaultMenu';
 import registerSave from './registerSave';
 import moneymoneyHandlers from './moneymoney/handlers';
 
-export default function bootstrap() {
+export default function main() {
   /* ref https://github.com/Xiphe/budgetbudget/issues/12 */
   app.allowRendererProcessReuse = true;
 
@@ -31,7 +31,7 @@ export default function bootstrap() {
     'AppleColorPreferencesChangedNotification',
     () => windowManager.broadcast('UPDATE_COLOR_PREFERENCES'),
   );
-  app.on('ready', () => windowManager.createWindow());
+  windowManager.createWindow();
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
       app.quit();
