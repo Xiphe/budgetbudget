@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   createMenu,
   createFileMenu,
@@ -6,6 +6,7 @@ import {
   CreateMenuCallbacks,
   ipcRenderer,
   Menu,
+  settings,
   useSetShowSettings,
 } from '../lib';
 
@@ -48,17 +49,34 @@ function buildMenu(callbacks: CreateMenuCallbacks) {
 
 export default function useMenu() {
   const setShowSettings = useSetShowSettings();
-  const menu = useMemo(() => buildMenu({ setShowSettings }), [setShowSettings]);
+  const [recentSignal, setRecentSignal] = useState<symbol>(Symbol());
+  const [focus, updateFocus] = useState<boolean>(true);
+  const menu = useMemo(
+    () => buildMenu({ setShowSettings }),
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    [setShowSettings, recentSignal],
+  );
   useEffect(() => {
-    const activate = () => {
-      Menu.setApplicationMenu(menu);
-    };
-    activate();
-    ipcRenderer.on('FOCUS', activate);
+    const obs = settings.watch('recentFiles', () => {
+      setRecentSignal(Symbol());
+    });
+    const setFocus = () => updateFocus(true);
+    const setBlur = () => updateFocus(false);
+
+    ipcRenderer.on('FOCUS', setFocus);
+    ipcRenderer.on('BLUR', setBlur);
+
     return () => {
-      ipcRenderer.off('FOCUS', activate);
+      obs.dispose();
+      ipcRenderer.off('FOCUS', setFocus);
+      ipcRenderer.off('BLUR', setBlur);
     };
-  }, [menu]);
+  }, []);
+  useEffect(() => {
+    if (focus) {
+      Menu.setApplicationMenu(menu);
+    }
+  }, [focus, menu]);
 
   return menu;
 }

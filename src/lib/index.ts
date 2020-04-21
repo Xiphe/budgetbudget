@@ -6,6 +6,7 @@ export { default as createNumberFormatter } from './createNumberFormatter';
 export { default as useInputProps } from './useInputProps';
 export { default as useAmountInputProps } from './useAmountInputProps';
 export { default as useInit, INIT_EMPTY } from './useInit';
+export { default as settings } from './electron-settings';
 export { createMenu, createFileMenu, createEditMenu } from './createMenu';
 export {
   withShowSettingsProvider,
@@ -24,6 +25,7 @@ export {
 export * from './guards';
 export * from './electron';
 export * from './fs';
+export * from './path';
 export * from './useIsVisible';
 export type NumberFormatter = NumberFormatterT;
 export type CreateMenuCallbacks = CreateMenuCallbacksT;

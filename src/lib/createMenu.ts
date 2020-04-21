@@ -1,5 +1,7 @@
 import { MenuItemConstructorOptions } from 'electron';
 import { ipcRenderer, appName } from './electron';
+import settings from './electron-settings';
+import { basename } from './path';
 
 type MenuConfig = MenuItemConstructorOptions;
 export type CreateMenuCallbacks = {
@@ -60,6 +62,11 @@ export function createFileMenu(entries: MenuConfig[] = []): MenuConfig[] {
         ipcRenderer.invoke('MENU_FILE_OPEN');
       },
     },
+    {
+      label: 'Open Recent',
+      id: 'open-recent',
+      submenu: createRecentSubmenu(settings.get('recentFiles') as any),
+    },
     entries.length ? { type: 'separator' } : false,
     ...entries,
     { type: 'separator' },
@@ -67,6 +74,20 @@ export function createFileMenu(entries: MenuConfig[] = []): MenuConfig[] {
   ];
 
   return config.filter(isMenuConfig);
+}
+
+export function createRecentSubmenu(
+  recentFiles: {
+    name: string;
+    file: string;
+  }[],
+): MenuConfig['submenu'] {
+  return recentFiles.map(({ name, file }) => ({
+    label: `${name} - ${basename(file)}`,
+    click() {
+      ipcRenderer.invoke('MENU_FILE_OPEN_EXISTING', file);
+    },
+  }));
 }
 
 export function createEditMenu(): MenuConfig {

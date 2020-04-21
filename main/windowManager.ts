@@ -88,6 +88,9 @@ export default function createWindowManager(app: App, ipcMain: IpcMain) {
     win.on('focus', () => {
       win.webContents.send('FOCUS');
     });
+    win.on('blur', () => {
+      win.webContents.send('BLUR');
+    });
 
     const { SERVER_URL, NODE_ENV } = process.env;
     if (NODE_ENV === 'development') {
@@ -124,6 +127,9 @@ export default function createWindowManager(app: App, ipcMain: IpcMain) {
   });
   ipcMain.handle('MENU_FILE_NEW', () => {
     createWindow();
+  });
+  ipcMain.handle('MENU_FILE_OPEN_EXISTING', (_, file: string) => {
+    createWindow(file);
   });
 
   return {

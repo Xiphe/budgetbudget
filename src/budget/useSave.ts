@@ -1,8 +1,21 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ipcRenderer, writeFile } from '../lib';
+import { ipcRenderer, writeFile, existsSync, settings } from '../lib';
 import { Menu } from 'electron';
 import { MENU_ID_SAVE, MENU_ID_SAVE_AS } from './useMenu';
 import { BudgetState } from './Types';
+
+type RecentFile = { name: string; file: string };
+function addRecentFile(file: string, name: string) {
+  const recent: RecentFile[] = settings.get('recentFiles', []) as any;
+  const otherExistingFiles = recent.filter(
+    ({ file: f }) => existsSync(f) && f !== file,
+  );
+
+  settings.set('recentFiles', [
+    { file, name },
+    ...otherExistingFiles.slice(0, 9),
+  ]);
+}
 
 export default function useSave(menu: Menu, state: BudgetState | null) {
   const [saved, setSaved] = useState<BudgetState | null | Error>(null);
@@ -33,6 +46,7 @@ export default function useSave(menu: Menu, state: BudgetState | null) {
         return;
       }
 
+      addRecentFile(file, state.name);
       writeFile(file, JSON.stringify(state), (err) => {
         if (!canceled) {
           setSaved(err || state);
