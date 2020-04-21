@@ -1,3 +1,6 @@
 .row {
   padding-left: calc(5px + var(--indent) * 10px);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
