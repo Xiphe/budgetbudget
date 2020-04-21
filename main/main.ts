@@ -19,6 +19,7 @@ export default function main() {
   disableUnused(app);
 
   const windowManager = createWindowManager(app, ipcMain);
+  windowManager.init();
   const openFile = createOpenFile(ipcMain, windowManager.createWindow);
   const defaultMenu = createDefaultMenu(windowManager.createWindow, openFile);
   registerSave(ipcMain, windowManager);
@@ -31,7 +32,6 @@ export default function main() {
     'AppleColorPreferencesChangedNotification',
     () => windowManager.broadcast('UPDATE_COLOR_PREFERENCES'),
   );
-  windowManager.createWindow();
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
       app.quit();
