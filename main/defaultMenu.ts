@@ -1,36 +1,32 @@
-import { Menu } from 'electron';
+import { Menu, app } from 'electron';
+import {
+  createMenu,
+  createFileMenu,
+  createOpenRecent,
+} from '../src/shared/createMenu';
+import { Settings } from '../src/shared/settings';
 
 export function createDefaultMenu(
   createWindow: (file?: string) => void,
   openFile: () => void,
+  settings: Settings,
 ) {
-  const defaultMenu = Menu.buildFromTemplate([
-    { role: 'appMenu' },
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'New Budget',
-          accelerator: 'CommandOrControl+N',
-          click() {
-            createWindow();
-          },
-        },
-        { type: 'separator' },
-        {
-          label: 'Open...',
-          accelerator: 'CommandOrControl+O',
-          click: openFile,
-        },
-        { type: 'separator' },
-        process.platform === 'darwin' ? { role: 'close' } : { role: 'quit' },
-      ],
-    },
-  ]);
-
   return {
     activate() {
-      Menu.setApplicationMenu(defaultMenu);
+      Menu.setApplicationMenu(
+        Menu.buildFromTemplate(
+          createMenu(app.name, [
+            createFileMenu({
+              openRecent: createOpenRecent(
+                settings.getRecentFiles(),
+                createWindow,
+              ),
+              fileNew: () => createWindow(),
+              fileOpen: openFile,
+            }),
+          ]),
+        ),
+      );
     },
   };
 }

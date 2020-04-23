@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ipcRenderer, remote } from 'electron';
+import { getSharedSettings, useSetShowSettings } from '../lib';
 import {
   createMenu,
   createFileMenu,
   createEditMenu,
+  createOpenRecent,
   CreateMenuCallbacks,
-  getSharedSettings,
-  useSetShowSettings,
-} from '../lib';
+} from '../shared/createMenu';
 
 export const MENU_ID_SAVE = 'MENU_SAVE';
 export const MENU_ID_SAVE_AS = 'MENU_SAVE_AS';
@@ -15,10 +15,16 @@ export const MENU_ID_SAVE_AS = 'MENU_SAVE_AS';
 function buildMenu(callbacks: CreateMenuCallbacks) {
   return remote.Menu.buildFromTemplate(
     createMenu(
+      remote.app.name,
       [
-        {
-          label: 'File',
-          submenu: createFileMenu([
+        createFileMenu({
+          fileOpen: ipcRenderer.invoke.bind(null, 'MENU_FILE_OPEN'),
+          fileNew: ipcRenderer.invoke.bind(null, 'MENU_FILE_NEW'),
+          openRecent: createOpenRecent(
+            getSharedSettings().getRecentFiles(),
+            ipcRenderer.invoke.bind(null, 'MENU_FILE_OPEN_EXISTING'),
+          ),
+          entries: [
             {
               label: 'Save',
               id: MENU_ID_SAVE,
@@ -37,8 +43,8 @@ function buildMenu(callbacks: CreateMenuCallbacks) {
                 ipcRenderer.send('SAVE_AS');
               },
             },
-          ]),
-        },
+          ],
+        }),
         createEditMenu(),
       ],
       callbacks,

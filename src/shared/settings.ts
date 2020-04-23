@@ -1,7 +1,8 @@
 import settings from 'electron-settings';
 import fs from 'fs';
 
-type RecentFile = { name: string; file: string };
+export type RecentFile = { name: string; file: string };
+export type Settings = ReturnType<typeof getSettings>;
 
 export default function getSettings() {
   function getOpenBudgets(checkExists: boolean = true) {

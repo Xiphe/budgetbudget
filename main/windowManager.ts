@@ -1,10 +1,13 @@
 import { BrowserWindow, IpcMain, WebContents, App } from 'electron';
 import { join } from 'path';
-import getSettings from '../src/shared/settings';
+import { Settings } from '../src/shared/settings';
 
 export type WindowManager = ReturnType<typeof createWindowManager>;
-export default function createWindowManager(app: App, ipcMain: IpcMain) {
-  const settings = getSettings();
+export default function createWindowManager(
+  app: App,
+  ipcMain: IpcMain,
+  settings: Settings,
+) {
   const windows: { [key: string]: BrowserWindow } = {};
   const newWindows: BrowserWindow[] = [];
   let appIsQuitting = false;

@@ -11,6 +11,7 @@ import disableUnused from './disableUnused';
 import { createDefaultMenu } from './defaultMenu';
 import registerSave from './registerSave';
 import moneymoneyHandlers from './moneymoney/handlers';
+import getSettings from '../src/shared/settings';
 
 export default function main() {
   /* ref https://github.com/Xiphe/budgetbudget/issues/12 */
@@ -18,10 +19,15 @@ export default function main() {
 
   disableUnused(app);
 
-  const windowManager = createWindowManager(app, ipcMain);
+  const settings = getSettings();
+  const windowManager = createWindowManager(app, ipcMain, settings);
   windowManager.init();
   const openFile = createOpenFile(ipcMain, windowManager.createWindow);
-  const defaultMenu = createDefaultMenu(windowManager.createWindow, openFile);
+  const defaultMenu = createDefaultMenu(
+    windowManager.createWindow,
+    openFile,
+    settings,
+  );
   registerSave(ipcMain, windowManager);
   moneymoneyHandlers(ipcMain);
 
@@ -33,11 +39,7 @@ export default function main() {
     () => windowManager.broadcast('UPDATE_COLOR_PREFERENCES'),
   );
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-      app.quit();
-    } else {
-      defaultMenu.activate();
-    }
+    defaultMenu.activate();
   });
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
