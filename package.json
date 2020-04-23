@@ -62,7 +62,6 @@
       ]
     ]
   },
-  "type": "module",
   "dependencies": {
     "classnames": "2.2.6",
     "date-fns": "2.11.0",
