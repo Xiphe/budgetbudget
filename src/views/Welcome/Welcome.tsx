@@ -1,6 +1,6 @@
 import React from 'react';
+import { remote } from 'electron';
 import { Helmet } from 'react-helmet';
-import { appName, shell } from '../../lib';
 import useMenu from '../../budget/useMenu';
 import { Content, Button } from '../../components';
 import styles from './Welcome.module.scss';
@@ -14,7 +14,7 @@ export default function Welcome({ onCreate }: Props) {
   return (
     <Content padding>
       <Helmet>
-        <title>Welcome - {appName}</title>
+        <title>Welcome - {remote.app.name}</title>
       </Helmet>
 
       <h1 className={styles.center}>Welcome!</h1>
@@ -31,7 +31,7 @@ export default function Welcome({ onCreate }: Props) {
             <button
               className={styles.linkButton}
               onClick={() =>
-                shell.openExternal(
+                remote.shell.openExternal(
                   'https://github.com/Xiphe/budgetbudget/releases',
                 )
               }

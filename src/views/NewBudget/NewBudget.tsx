@@ -1,10 +1,10 @@
 import React, { useState, useReducer } from 'react';
+import { remote, ipcRenderer } from 'electron';
 import { Helmet } from 'react-helmet';
 import { BudgetState, VERSION } from '../../budget';
 import { Content, Button, Header } from '../../components';
 import startOfMonth from 'date-fns/startOfMonth';
 import subMonths from 'date-fns/subMonths';
-import { appName, getLocale, ipcRenderer } from '../../lib';
 import General from '../Settings/General';
 import Categories from '../Settings/Categories';
 import budgetReducer from '../../budget/budgetReducer';
@@ -29,7 +29,7 @@ export default function NewBudget({ onCreate }: Props) {
       fractionDigits: 2,
       startDate: startOfMonth(subMonths(new Date(), 1)).getTime(),
       startBalance: 0,
-      numberLocale: getLocale(),
+      numberLocale: remote.app.getLocale(),
     },
   });
 
@@ -67,7 +67,7 @@ export default function NewBudget({ onCreate }: Props) {
       }
     >
       <Helmet>
-        <title>New Budget - {appName}</title>
+        <title>New Budget - {remote.app.name}</title>
       </Helmet>
       {page === 'general' && <General state={state} dispatch={dispatch} />}
       {page === 'categories' && (

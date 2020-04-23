@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ipcRenderer } from './electron';
+import { ipcRenderer } from 'electron';
 import { BudgetState } from '../budget';
 
 export const INIT_EMPTY = Symbol('INIT_EMPTY');

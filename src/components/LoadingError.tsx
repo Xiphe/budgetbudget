@@ -1,10 +1,10 @@
 import React from 'react';
+import { remote, ipcRenderer } from 'electron';
 import {
   cleanMessage,
   isDatabaseLocked,
   cantFindMoneyMoney,
 } from '../moneymoney';
-import { ipcRenderer, shell } from '../lib';
 import Button from './Button';
 
 type Props = { className?: string; message: string; retry?: () => void };
@@ -20,7 +20,9 @@ export default function LoadingError({ className, message, retry }: Props) {
       )}
       {cantFindMoneyMoney(message) && (
         <Button
-          onClick={() => shell.openExternal('https://moneymoney-app.com/')}
+          onClick={() =>
+            remote.shell.openExternal('https://moneymoney-app.com/')
+          }
         >
           Goto MoneyMoney website
         </Button>

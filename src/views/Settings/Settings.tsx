@@ -1,8 +1,9 @@
 import React, { Dispatch, useState } from 'react';
+import { remote } from 'electron';
 import { Helmet } from 'react-helmet';
 import { BudgetState, Action } from '../../budget';
 import { Content, Tab, TabBar } from '../../components';
-import { appName, useSetShowSettings } from '../../lib';
+import { useSetShowSettings } from '../../lib';
 import styles from './Settings.module.scss';
 import General from './General';
 import Categories from './Categories';
@@ -21,7 +22,7 @@ export default function Settings(props: Props) {
   return (
     <Content padding={true}>
       <Helmet>
-        <title>Settings - {appName}</title>
+        <title>Settings - {remote.app.name}</title>
       </Helmet>
       <h1 className={styles.headline}>Settings</h1>
       <button

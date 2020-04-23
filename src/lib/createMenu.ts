@@ -1,6 +1,6 @@
 import { MenuItemConstructorOptions } from 'electron';
-import { ipcRenderer, appName } from './electron';
-import { basename } from './path';
+import { ipcRenderer, remote } from 'electron';
+import { basename } from 'path';
 import getSharedSettings from './getSharedSettings';
 
 type MenuConfig = MenuItemConstructorOptions;
@@ -38,7 +38,7 @@ export function createMenu(
 
   return [
     {
-      label: appName,
+      label: remote.app.name,
       submenu: submenu.filter(isMenuConfig),
     },
     ...entries,

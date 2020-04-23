@@ -1,5 +1,5 @@
 import { useEffect, useState, Dispatch } from 'react';
-import { readFile } from '../lib';
+import { readFile } from 'fs';
 import { ACTION_INIT, Action } from './budgetReducer';
 import { validateBudgetState } from './Types';
 import { BudgetState } from './Types';

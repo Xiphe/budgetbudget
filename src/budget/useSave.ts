@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ipcRenderer, writeFile, getSharedSettings } from '../lib';
-import { Menu } from 'electron';
+import { writeFile } from 'fs';
+import { ipcRenderer, Menu } from 'electron';
+import { getSharedSettings } from '../lib';
 import { MENU_ID_SAVE, MENU_ID_SAVE_AS } from './useMenu';
 import { BudgetState } from './Types';
 

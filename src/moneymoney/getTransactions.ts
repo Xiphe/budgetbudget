@@ -1,6 +1,6 @@
 import { Transaction, validateTransaction } from './Types';
 import { PlistObject } from 'plist';
-import { ipcRenderer } from '../lib';
+import { ipcRenderer } from 'electron';
 
 function isPlistObject(val: any): val is PlistObject {
   return (

@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ipcRenderer, remote } from 'electron';
 import {
   createMenu,
   createFileMenu,
   createEditMenu,
   CreateMenuCallbacks,
-  ipcRenderer,
-  Menu,
   getSharedSettings,
   useSetShowSettings,
 } from '../lib';
@@ -14,7 +13,7 @@ export const MENU_ID_SAVE = 'MENU_SAVE';
 export const MENU_ID_SAVE_AS = 'MENU_SAVE_AS';
 
 function buildMenu(callbacks: CreateMenuCallbacks) {
-  return Menu.buildFromTemplate(
+  return remote.Menu.buildFromTemplate(
     createMenu(
       [
         {
@@ -74,7 +73,7 @@ export default function useMenu() {
   }, []);
   useEffect(() => {
     if (focus) {
-      Menu.setApplicationMenu(menu);
+      remote.Menu.setApplicationMenu(menu);
     }
   }, [focus, menu]);
 

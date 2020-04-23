@@ -1,5 +1,5 @@
 import { Account, validateAccount } from './Types';
-import { ipcRenderer } from '../lib';
+import { ipcRenderer } from 'electron';
 
 export default async function getAccounts(
   currency: string,

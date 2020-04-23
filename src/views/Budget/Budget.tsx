@@ -1,4 +1,5 @@
 import React, { Dispatch, useState, useCallback } from 'react';
+import { remote } from 'electron';
 import { Helmet } from 'react-helmet';
 import isAfter from 'date-fns/isAfter';
 import subMonths from 'date-fns/subMonths';
@@ -6,7 +7,6 @@ import addMonths from 'date-fns/addMonths';
 import { BudgetState, Action, useBudgetData } from '../../budget';
 import { Content, Loading } from '../../components';
 import {
-  appName,
   HeaderHeightProvider,
   VisibleMothContextProvider,
   formatDateKey,
@@ -62,7 +62,7 @@ export default function Budget({ state, dispatch }: Props) {
   const title = (
     <Helmet>
       <title>
-        {state.name} - {appName}
+        {state.name} - {remote.app.name}
       </title>
     </Helmet>
   );

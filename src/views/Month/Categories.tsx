@@ -1,11 +1,12 @@
 import React, { Fragment, useCallback } from 'react';
 import classNames from 'classnames';
+import { Menu, MenuItem } from 'electron';
 import { isCategory } from '../../moneymoney';
 import { BudgetCategoryRow } from '../../budget/useBudgets';
 import { Row } from '../../components';
 import { Props } from './Types';
 import styles from './Month.module.scss';
-import { NumberFormatter, Menu, MenuItem } from '../../lib';
+import { NumberFormatter } from '../../lib';
 import { ActionCreators } from './useActions';
 import BudgetInput from './BudgetInput';
 
