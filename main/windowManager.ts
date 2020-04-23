@@ -1,34 +1,12 @@
-import { existsSync } from 'fs';
 import { BrowserWindow, IpcMain, WebContents, App } from 'electron';
 import { join } from 'path';
-
-import { set, get } from 'electron-settings';
-
-function openBudgetsSetting() {
-  const key = 'openBudgets';
-
-  return {
-    get() {
-      return new Set<string>(get(key, []) as any);
-    },
-    add(file: string) {
-      const open = this.get();
-      open.add(file);
-      set(key, [...open]);
-    },
-    remove(file: string) {
-      const open = this.get();
-      open.delete(file);
-      set(key, [...open]);
-    },
-  };
-}
+import getSettings from '../src/shared/settings';
 
 export type WindowManager = ReturnType<typeof createWindowManager>;
 export default function createWindowManager(app: App, ipcMain: IpcMain) {
+  const settings = getSettings();
   const windows: { [key: string]: BrowserWindow } = {};
   const newWindows: BrowserWindow[] = [];
-  const openBudgets = openBudgetsSetting();
   let appIsQuitting = false;
   app.once('before-quit', () => {
     appIsQuitting = true;
@@ -43,7 +21,7 @@ export default function createWindowManager(app: App, ipcMain: IpcMain) {
   function unregisterWindow(sender: WebContents) {
     const file = getFile(sender);
     if (file) {
-      openBudgets.remove(file);
+      settings.removeOpenBudget(file);
       const win = windows[file];
       delete windows[file];
       return win;
@@ -63,7 +41,7 @@ export default function createWindowManager(app: App, ipcMain: IpcMain) {
   function registerWindow(win: BrowserWindow, file?: string) {
     if (file) {
       windows[file] = win;
-      openBudgets.add(file);
+      settings.addOpenBudget(file);
       app.addRecentDocument(file);
       win.setRepresentedFilename(file);
     } else {
@@ -134,7 +112,7 @@ export default function createWindowManager(app: App, ipcMain: IpcMain) {
 
   return {
     init() {
-      const previouslyOpen = [...openBudgets.get()].filter(existsSync);
+      const previouslyOpen = settings.getOpenBudgets();
       if (previouslyOpen.length) {
         previouslyOpen.forEach(createWindow);
       } else {

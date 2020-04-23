@@ -6,7 +6,7 @@ export { default as createNumberFormatter } from './createNumberFormatter';
 export { default as useInputProps } from './useInputProps';
 export { default as useAmountInputProps } from './useAmountInputProps';
 export { default as useInit, INIT_EMPTY } from './useInit';
-export { default as settings } from './electron-settings';
+export { default as getSharedSettings } from './getSharedSettings';
 export { createMenu, createFileMenu, createEditMenu } from './createMenu';
 export {
   withShowSettingsProvider,

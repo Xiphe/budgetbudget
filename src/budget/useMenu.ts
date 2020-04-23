@@ -6,7 +6,7 @@ import {
   CreateMenuCallbacks,
   ipcRenderer,
   Menu,
-  settings,
+  getSharedSettings,
   useSetShowSettings,
 } from '../lib';
 
@@ -57,7 +57,7 @@ export default function useMenu() {
     [setShowSettings, recentSignal],
   );
   useEffect(() => {
-    const obs = settings.watch('recentFiles', () => {
+    const unwatch = getSharedSettings().watchRecentFiles(() => {
       setRecentSignal(Symbol());
     });
     const setFocus = () => updateFocus(true);
@@ -67,7 +67,7 @@ export default function useMenu() {
     ipcRenderer.on('BLUR', setBlur);
 
     return () => {
-      obs.dispose();
+      unwatch();
       ipcRenderer.off('FOCUS', setFocus);
       ipcRenderer.off('BLUR', setBlur);
     };

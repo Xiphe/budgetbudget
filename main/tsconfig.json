@@ -1,8 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "noEmit": false,
-    "downlevelIteration": true
+    "noEmit": false
   },
   "include": ["./*.ts"]
 }

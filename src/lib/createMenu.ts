@@ -1,7 +1,7 @@
 import { MenuItemConstructorOptions } from 'electron';
 import { ipcRenderer, appName } from './electron';
-import settings from './electron-settings';
 import { basename } from './path';
+import getSharedSettings from './getSharedSettings';
 
 type MenuConfig = MenuItemConstructorOptions;
 export type CreateMenuCallbacks = {
@@ -65,7 +65,7 @@ export function createFileMenu(entries: MenuConfig[] = []): MenuConfig[] {
     {
       label: 'Open Recent',
       id: 'open-recent',
-      submenu: createRecentSubmenu(settings.get('recentFiles') as any),
+      submenu: createRecentSubmenu(getSharedSettings().getRecentFiles()),
     },
     entries.length ? { type: 'separator' } : false,
     ...entries,
