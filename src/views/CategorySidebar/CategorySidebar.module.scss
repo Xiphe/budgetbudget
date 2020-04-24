@@ -4,3 +4,19 @@
   overflow: hidden;
   white-space: nowrap;
 }
+
+.sidebarWrap {
+  border-right: 1px solid var(--border-color);
+}
+
+.categorySidebar {
+  margin-top: calc(var(--month-header-height) - 1px);
+  border-top: 1px solid var(--border-color);
+  border-right: none;
+  height: calc(100% - var(--month-header-height));
+  overflow-y: scroll;
+  transition: margin-top 200ms ease-out;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

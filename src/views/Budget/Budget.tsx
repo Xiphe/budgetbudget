@@ -1,63 +1,31 @@
-import React, { Dispatch, useState, useCallback } from 'react';
+import React, { Dispatch, useRef } from 'react';
 import { remote } from 'electron';
 import { Helmet } from 'react-helmet';
-import isAfter from 'date-fns/isAfter';
-import subMonths from 'date-fns/subMonths';
-import addMonths from 'date-fns/addMonths';
 import { BudgetState, Action, useBudgetData } from '../../budget';
-import { Content, Loading } from '../../components';
-import {
-  HeaderHeightProvider,
-  VisibleMothContextProvider,
-  formatDateKey,
-} from '../../lib';
+import { Content, Loading, InfiniteSlider } from '../../components';
+import { HeaderHeightProvider, VisibleMothContextProvider } from '../../lib';
 import Month from '../Month';
-import BudgetSlider, { ScrollToProvider } from './BudgetSlider';
 import BudgetHeader from './Header';
 import CategorySidebar from '../CategorySidebar/CategorySidebar';
+import styles from './Budget.module.scss';
 
 type Props = {
   state: BudgetState;
   dispatch: Dispatch<Action>;
 };
 
-function getYear(dateInYear: Date) {
-  const year = dateInYear.getFullYear();
-  return Array(12)
-    .fill('')
-    .map((_, i) => {
-      const date = new Date(`${year}-${i + 1}`);
-      return { date, key: formatDateKey(date) };
-    });
-}
-
 export default function Budget({ state, dispatch }: Props) {
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
   const {
     loading,
     error,
     retry,
     budgets,
-    lastDate,
-    pastBudget,
-    futureBudget,
     numberFormatter,
+    extendFuture,
     categories,
   } = useBudgetData(state);
-  const [months, setMonths] = useState(() => getYear(new Date()));
-  const loadMore = useCallback((direction: 'left' | 'right') => {
-    if (direction === 'left') {
-      setMonths((prevMonths) => [
-        ...getYear(subMonths(prevMonths[0].date, 1)),
-        ...prevMonths,
-      ]);
-    } else {
-      setMonths((prevMonths) =>
-        prevMonths.concat(
-          getYear(addMonths(prevMonths[prevMonths.length - 1].date, 1)),
-        ),
-      );
-    }
-  }, []);
 
   const title = (
     <Helmet>
@@ -89,33 +57,32 @@ export default function Budget({ state, dispatch }: Props) {
   return (
     <VisibleMothContextProvider>
       <HeaderHeightProvider>
-        <ScrollToProvider>
-          {title}
-          <Content header={<BudgetHeader months={months} />}>
-            <BudgetSlider
-              loadMore={loadMore}
-              months={months}
-              sticky={<CategorySidebar categories={categories || []} />}
-            >
-              {({ key, date }) => (
-                <Month
-                  key={key}
-                  monthKey={key}
-                  date={date}
-                  dispatch={dispatch}
-                  budget={
-                    budgets[key] ||
-                    (lastDate && isAfter(date, lastDate)
-                      ? futureBudget
-                      : pastBudget)
-                  }
-                  categories={categories || []}
-                  numberFormatter={numberFormatter}
-                />
-              )}
-            </BudgetSlider>
-          </Content>
-        </ScrollToProvider>
+        <Content header={<BudgetHeader months={[]} />}>
+          <CategorySidebar
+            syncScrollY={sliderRef}
+            innerRef={sidebarRef}
+            categories={categories || []}
+          />
+          <InfiniteSlider
+            innerRef={sliderRef}
+            className={styles.budgetSlider}
+            loadMore={() => extendFuture(2)}
+            syncScrollY={sidebarRef}
+            scrollTo={0}
+          >
+            {budgets.map((budget) => (
+              <Month
+                key={budget.key}
+                monthKey={budget.key}
+                date={budget.date}
+                dispatch={dispatch}
+                budget={budget}
+                categories={categories || []}
+                numberFormatter={numberFormatter}
+              />
+            ))}
+          </InfiniteSlider>
+        </Content>
       </HeaderHeightProvider>
     </VisibleMothContextProvider>
   );

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import addMonths from 'date-fns/addMonths';
 import isAfter from 'date-fns/isAfter';
 import { BudgetState, Budgets, Budget, IncomeCategory } from './Types';
@@ -21,6 +21,8 @@ export type BudgetCategoryRow = BudgetRow & {
   children?: BudgetCategoryRow[];
 };
 export type BudgetListEntry = {
+  key: string;
+  date: Date;
   available: AmountWithPartialTransactions;
   overspendPrevMonth: number;
   toBudget: number;
@@ -28,48 +30,33 @@ export type BudgetListEntry = {
   uncategorized: AmountWithPartialTransactions;
   categories: BudgetCategoryRow[];
 };
-export type BudgetList = {
-  [key: string]: undefined | BudgetListEntry;
-};
+
 type AmountWithPartialTransactions = {
   amount: number;
   transactions: Pick<Transaction, 'amount' | 'name' | 'purpose'>[];
 };
 
 const EMPTY_TRANSACTIONS: Transaction[] = [];
-const EMPTY_BUDGETS: BudgetList = {};
-
-export const EMPTY_BUDGET: BudgetListEntry = {
-  total: {
-    budgeted: 0,
-    spend: 0,
-    balance: 0,
-  },
-  toBudget: 0,
-  available: {
-    amount: 0,
-    transactions: [],
-  },
-  overspendPrevMonth: 0,
-  uncategorized: {
-    amount: 0,
-    transactions: [],
-  },
-  categories: [],
-};
+const EMPTY_BUDGETS: BudgetListEntry[] = [];
 
 function emptyBudgetRow(): BudgetRow {
   return { budgeted: 0, spend: 0, balance: 0 };
 }
 
-function useFirstLast(balances: Balances, budgets: Budgets) {
+function useFirstLast(balances: Balances, budgets: Budgets, future: number) {
   return useMemo<
     [string | undefined, string | undefined, Date | undefined]
   >(() => {
     const sorted = Object.keys(balances).concat(Object.keys(budgets)).sort();
     const last = sorted[sorted.length - 1];
-    return [sorted[0], last, last ? new Date(last) : undefined];
-  }, [balances, budgets]);
+    const lastPlusFuture = last ? addMonths(new Date(last), future) : undefined;
+
+    return [
+      sorted[0],
+      lastPlusFuture ? formatDateKey(lastPlusFuture) : undefined,
+      lastPlusFuture,
+    ];
+  }, [balances, budgets, future]);
 }
 
 type Rollover = { total: number; [key: number]: number };
@@ -208,41 +195,6 @@ function addBudgeted(
   };
 }
 
-type GetLastEntryArgs = {
-  entry: BudgetListEntry;
-  rollover: Rollover;
-  trees: CategoryTree[];
-  round: (value: number) => number;
-  overspendRolloverState: OverspendRollover;
-};
-function getLastEntry({
-  entry,
-  rollover,
-  trees,
-  round,
-  overspendRolloverState,
-}: GetLastEntryArgs) {
-  const total = emptyBudgetRow();
-  const { total: _, ...rolloverCategories } = rollover;
-  const budgetCategories = getCategoryRows({
-    overspendRolloverState,
-    trees,
-    round,
-    rolloverCategories,
-    rollover,
-    parentRows: [total],
-  });
-
-  return {
-    total: total,
-    available: addBudgeted(entry.toBudget),
-    overspendPrevMonth: 0,
-    uncategorized: { amount: 0, transactions: [] },
-    toBudget: entry.toBudget,
-    categories: budgetCategories,
-  };
-}
-
 export default function useBudgets(
   transactions: Transaction[] = EMPTY_TRANSACTIONS,
   categories: CategoryTree[] = [],
@@ -250,36 +202,21 @@ export default function useBudgets(
     budgets,
     settings: { incomeCategories, fractionDigits, startBalance },
   }: BudgetState,
-) {
+): [BudgetListEntry[], (add: number) => void] {
   const round = useMemo(() => roundWithFractions(fractionDigits), [
     fractionDigits,
   ]);
   const balances = useMemo(() => calculateBalances(transactions), [
     transactions,
   ]);
+  const [future, setFuture] = useState<number>(0);
+  const [first, last, lastDate] = useFirstLast(balances, budgets, future);
 
-  const [first, last, lastDate] = useFirstLast(balances, budgets);
-  const pastBudget = useMemo(
-    () => ({
-      ...EMPTY_BUDGET,
-      available: {
-        amount: startBalance,
-        transactions: [],
-      },
-      toBudget: startBalance,
-    }),
-    [startBalance],
-  );
-  return useMemo((): [
-    BudgetList,
-    BudgetListEntry,
-    BudgetListEntry,
-    Date | undefined,
-  ] => {
+  const budgetList = useMemo((): BudgetListEntry[] => {
     if (!first || !last || !lastDate) {
-      return [EMPTY_BUDGETS, EMPTY_BUDGET, EMPTY_BUDGET, lastDate];
+      return EMPTY_BUDGETS;
     }
-    const budgetList: BudgetList = {};
+    const budgetList: BudgetListEntry[] = [];
     const available: AmountWithPartialTransactions[] = [
       {
         amount: startBalance,
@@ -323,16 +260,19 @@ export default function useBudgets(
           uncategorized.amount,
       );
 
-      budgetList[current] = {
+      const date = new Date(current);
+      budgetList.push({
+        key: current,
+        date,
         total,
         available: availableThisMonth,
         overspendPrevMonth,
         toBudget,
         categories: budgetCategories,
         uncategorized,
-      };
+      });
 
-      const nextMonth = addMonths(new Date(current), 1);
+      const nextMonth = addMonths(date, 1);
       if (
         isAfter(nextMonth, lastDate) &&
         !available.length &&
@@ -343,18 +283,7 @@ export default function useBudgets(
       current = formatDateKey(nextMonth);
     }
 
-    return [
-      budgetList,
-      getLastEntry({
-        overspendRolloverState,
-        entry: budgetList[current]!,
-        rollover,
-        trees: categories,
-        round,
-      }),
-      pastBudget,
-      lastDate,
-    ];
+    return budgetList;
   }, [
     first,
     last,
@@ -365,6 +294,13 @@ export default function useBudgets(
     budgets,
     incomeCategories,
     startBalance,
-    pastBudget,
   ]);
+
+  return [
+    budgetList,
+    useCallback(
+      (add: number) => setFuture((pastFuture) => pastFuture + add),
+      [],
+    ),
+  ];
 }

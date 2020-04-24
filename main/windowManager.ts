@@ -61,6 +61,7 @@ export default function createWindowManager(
     const win = new BrowserWindow({
       width: 800,
       height: 600,
+      vibrancy: 'sidebar',
       webPreferences: {
         nodeIntegration: true,
       },

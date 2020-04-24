@@ -2,9 +2,8 @@
 
 .budgetSlider {
   width: calc(100vw - var(--sidebar-width));
-}
-.header {
-  display: flex;
+  background: var(--background-color);
+  overflow: scroll;
 }
 .monthList {
   margin: 0.4rem auto;

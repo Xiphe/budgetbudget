@@ -1,15 +1,13 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, MutableRefObject, useCallback } from 'react';
 import { Sidebar, Row } from '../../components';
-import Header from '../Month/Header';
 import { CategoryTree, isCategory } from '../../moneymoney';
 import styles from './CategorySidebar.module.scss';
 
-type Props = {
+type SidebarCategoriesProps = {
   categories: CategoryTree[];
   indent?: number;
 };
-
-function SidebarCategories({ categories, indent = 0 }: Props) {
+function SidebarCategories({ categories, indent = 0 }: SidebarCategoriesProps) {
   return (
     <>
       {categories.map((tree) => {
@@ -31,11 +29,34 @@ function SidebarCategories({ categories, indent = 0 }: Props) {
   );
 }
 
-export default function CategorySidebar({ categories }: Props) {
+type Props = {
+  categories: CategoryTree[];
+  innerRef: MutableRefObject<HTMLDivElement | null>;
+  syncScrollY: MutableRefObject<HTMLDivElement | null>;
+};
+export default function CategorySidebar({
+  categories,
+  innerRef,
+  syncScrollY,
+}: Props) {
+  const syncScroll = useCallback(
+    ({ target: { scrollTop } }) => {
+      if (syncScrollY.current) {
+        syncScrollY.current.scrollTop = scrollTop;
+      }
+    },
+    [syncScrollY],
+  );
+
   return (
-    <Sidebar>
-      <Header></Header>
-      <SidebarCategories categories={categories} />
-    </Sidebar>
+    <div className={styles.sidebarWrap}>
+      <Sidebar
+        onScroll={syncScroll}
+        innerRef={innerRef}
+        className={styles.categorySidebar}
+      >
+        <SidebarCategories categories={categories} />
+      </Sidebar>
+    </div>
   );
 }

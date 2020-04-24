@@ -23,8 +23,8 @@ export default function MonthContainer(props: Props) {
   const actions = useActions(props);
 
   return (
-    <div ref={ref} className={styles.month}>
-      <div>
+    <div className={styles.month}>
+      <div ref={ref} className={styles.monthInner}>
         <Header>{visible ? <Overview {...props} /> : <Loading />}</Header>
         {visible ? (
           <Categories

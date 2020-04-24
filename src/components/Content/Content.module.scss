@@ -1,5 +1,6 @@
 .content {
   height: 100vh;
+  display: flex;
 }
 .withHeader {
   margin-top: var(--header-height);

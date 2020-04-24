@@ -1,9 +1,14 @@
 .header {
   position: fixed;
   top: 0;
-  background: rgba(var(--undim-colors), 0.1);
+  background: var(--background-color);
   border-bottom: 1px solid var(--border-color);
   z-index: 10;
   height: var(--header-height);
   width: 100%;
+}
+
+.dim {
+  display: flex;
+  background: rgba(var(--undim-colors), 0.1);
 }

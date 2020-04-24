@@ -7,5 +7,9 @@ type Props = {
   children: ReactNode;
 };
 export default function Header({ children, className }: Props) {
-  return <div className={classNames(className, styles.header)}>{children}</div>;
+  return (
+    <div className={classNames(className, styles.header)}>
+      <div className={styles.dim}>{children}</div>
+    </div>
+  );
 }

@@ -6,7 +6,6 @@ import format from 'date-fns/format';
 import { Header } from '../../components';
 import { useVisibleMonths, formatDateKey } from '../../lib';
 import styles from './Budget.module.scss';
-import { useScrollTo } from './BudgetSlider';
 
 type Month = {
   date: Date;
@@ -23,7 +22,6 @@ type Props = {
 };
 
 export default function BudgetHeader({ months }: Props) {
-  const scrollTo = useScrollTo();
   const visibleMonths = useVisibleMonths();
   const loadedMonthKeys = useMemo(() => months.map(({ key }) => key), [months]);
   const monthList = useMemo(() => {
@@ -58,7 +56,7 @@ export default function BudgetHeader({ months }: Props) {
   }, [visibleMonths, loadedMonthKeys]);
 
   return (
-    <Header className={styles.header}>
+    <Header>
       <div className={styles.monthList}>
         {monthList.map(({ key, date, name, year, even, current, loaded }) => {
           return (
@@ -81,7 +79,6 @@ export default function BudgetHeader({ months }: Props) {
                   current && styles.currentMonthListEntry,
                   even && styles.evenMonthListEntry,
                 )}
-                onClick={() => scrollTo(date)}
               >
                 {name}
               </button>
