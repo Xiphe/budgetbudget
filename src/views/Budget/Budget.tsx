@@ -17,6 +17,9 @@ type Props = {
 export default function Budget({ state, dispatch }: Props) {
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
+  const onSliderScrollRef = useRef<((target: HTMLDivElement) => void) | null>(
+    null,
+  );
   const {
     loading,
     error,
@@ -57,7 +60,11 @@ export default function Budget({ state, dispatch }: Props) {
   return (
     <VisibleMothContextProvider>
       <HeaderHeightProvider>
-        <Content header={<BudgetHeader months={[]} />}>
+        <Content
+          header={
+            <BudgetHeader scrollRef={onSliderScrollRef} months={budgets} />
+          }
+        >
           <CategorySidebar
             syncScrollY={sliderRef}
             innerRef={sidebarRef}
@@ -65,6 +72,7 @@ export default function Budget({ state, dispatch }: Props) {
           />
           <InfiniteSlider
             innerRef={sliderRef}
+            onScrollRef={onSliderScrollRef}
             className={styles.budgetSlider}
             loadMore={() => extendFuture(2)}
             syncScrollY={sidebarRef}

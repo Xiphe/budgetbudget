@@ -1,6 +1,11 @@
-import React, { useMemo, Fragment } from 'react';
+import React, {
+  useMemo,
+  Fragment,
+  useRef,
+  useEffect,
+  MutableRefObject,
+} from 'react';
 import classNames from 'classnames';
-import subMonths from 'date-fns/subMonths';
 import addMonths from 'date-fns/addMonths';
 import format from 'date-fns/format';
 import { Header } from '../../components';
@@ -19,72 +24,100 @@ type Month = {
 
 type Props = {
   months: { date: Date; key: string }[];
+  scrollRef: MutableRefObject<((target: HTMLDivElement) => void) | null>;
 };
 
-export default function BudgetHeader({ months }: Props) {
-  const visibleMonths = useVisibleMonths();
-  const loadedMonthKeys = useMemo(() => months.map(({ key }) => key), [months]);
-  const monthList = useMemo(() => {
-    if (!visibleMonths.length) {
+export default function BudgetHeader({ months, scrollRef }: Props) {
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    scrollRef.current = (target) => {
+      window.requestAnimationFrame(() => {
+        if (headerRef.current === null) {
+          return;
+        }
+        const outer = headerRef.current;
+        const inner: HTMLDivElement = headerRef.current.children[0] as any;
+        const scrollViewWidth = target.getBoundingClientRect().width;
+        const scrollItemWidth = target.children[0].getBoundingClientRect()
+          .width;
+        const visibleItems = scrollViewWidth / scrollItemWidth;
+        const scrolled =
+          target.scrollLeft / target.children[0].getBoundingClientRect().width;
+        const outerWidth = outer.getBoundingClientRect().width;
+
+        const firstMonth: HTMLSpanElement = inner.children[1] as any;
+        const oneYearLater: HTMLSpanElement = inner.children[14] as any;
+        const oneYearWidth = oneYearLater.offsetLeft - firstMonth.offsetLeft;
+        const oneMonthWidth = oneYearWidth / 12;
+
+        /* keep visible months in center unless were at the start */
+        inner.style.left = `-${Math.max(
+          oneMonthWidth * scrolled -
+            outerWidth / 2 +
+            oneMonthWidth +
+            (oneMonthWidth / 2) * (visibleItems - 1),
+          0,
+        )}px`;
+      });
+    };
+  }, [scrollRef]);
+  const moreMonths = useMemo(() => {
+    if (!months.length) {
       return [];
     }
-    const visibleMonthKeys = visibleMonths.map(formatDateKey);
-    const monthsToDisplay = Math.max(12, visibleMonths.length + 2);
-    const offsetLeft = Math.round((monthsToDisplay - visibleMonths.length) / 2);
-    const list: Month[] = [];
-    let current = subMonths(visibleMonths[0], offsetLeft);
-    let first = true;
-    while (list.length < monthsToDisplay) {
-      const key = formatDateKey(current);
-      list.push({
-        date: current,
-        key,
-        loaded: loadedMonthKeys.includes(key),
-        current: visibleMonthKeys.includes(key),
-        name: format(current, 'MMM'),
-        year:
-          first || format(current, 'M') === '1'
-            ? format(current, 'yyyy')
-            : undefined,
-        even: current.getFullYear() % 2 === 0,
-      });
-      first = false;
-      current = addMonths(current, 1);
-    }
+    let add = addMonths(months[months.length - 1].date, 1);
+    return months.concat(
+      Array(13)
+        .fill('')
+        .map(() => {
+          const more = {
+            date: add,
+            key: formatDateKey(add),
+          };
+          add = addMonths(add, 1);
+          return more;
+        }),
+    );
+  }, [months]);
+  const visibleMonths = useVisibleMonths();
+  const visibleMonthKeys = useMemo(() => visibleMonths.map(formatDateKey), [
+    visibleMonths,
+  ]);
 
-    return list;
-  }, [visibleMonths, loadedMonthKeys]);
+  if (!moreMonths.length) {
+    return <Header />;
+  }
+
+  const first = moreMonths[0].date;
 
   return (
     <Header>
-      <div className={styles.monthList}>
-        {monthList.map(({ key, date, name, year, even, current, loaded }) => {
-          return (
+      <div className={styles.monthList} ref={headerRef}>
+        <div className={styles.monthListInner}>
+          {moreMonths.map(({ date, key }) => (
             <Fragment key={key}>
-              {year && (
+              {date === first || date.getMonth() === 0 ? (
                 <span
                   className={classNames(
                     styles.monthListEntry,
                     styles.monthListEntryYear,
-                    even && styles.evenMonthListEntry,
                   )}
                 >
-                  {year}
+                  {format(date, 'yyyy')}
                 </span>
-              )}
+              ) : null}
               <button
                 className={classNames(
                   styles.monthListEntry,
-                  !loaded && styles.unloadedMonthListEntry,
-                  current && styles.currentMonthListEntry,
-                  even && styles.evenMonthListEntry,
+                  visibleMonthKeys.includes(key) &&
+                    styles.currentMonthListEntry,
                 )}
               >
-                {name}
+                {format(date, 'MMM')}
               </button>
             </Fragment>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </Header>
   );

@@ -13,6 +13,7 @@ type Props = {
   innerRef: MutableRefObject<HTMLDivElement | null>;
   syncScrollY: MutableRefObject<HTMLDivElement | null>;
   className?: string;
+  onScrollRef?: MutableRefObject<((target: HTMLDivElement) => void) | null>;
   children: ReactElement | ReactElement[];
   scrollTo: number;
   loadMore: () => void;
@@ -27,6 +28,7 @@ export default function InfiniteSlider({
   scrollTo,
   loadMore,
   syncScrollY,
+  onScrollRef,
   className,
 }: Props) {
   const onScroll = useCallback(
@@ -34,6 +36,9 @@ export default function InfiniteSlider({
       const { target } = ev;
       if (syncScrollY.current) {
         syncScrollY.current.scrollTop = target.scrollTop;
+      }
+      if (onScrollRef && onScrollRef.current) {
+        onScrollRef.current(target);
       }
 
       if (
@@ -43,7 +48,7 @@ export default function InfiniteSlider({
         loadMore();
       }
     },
-    [loadMore, syncScrollY],
+    [loadMore, syncScrollY, onScrollRef],
   );
 
   /** Scroll to given index */

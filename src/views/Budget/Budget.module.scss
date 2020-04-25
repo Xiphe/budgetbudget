@@ -6,27 +6,34 @@
   overflow: scroll;
 }
 .monthList {
+  height: 1.6rem;
+  position: relative;
   margin: 0.4rem auto;
+  width: 70vw;
+  max-width: 40rem;
+  overflow: hidden;
+  border-radius: 3px;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+}
+.monthListInner {
+  position: absolute;
+  white-space: nowrap;
 }
 .monthListEntry {
   position: relative;
   display: inline-block;
   color: var(--main-color);
   padding: 0.25rem 0.5rem;
-  border: 1px solid var(--border-color);
-  border-left: none;
+  border: none;
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   font-size: 0.9rem;
   background: transparent;
   line-height: 1em;
-  transition: color 500ms ease-in;
-  &:first-child {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-    border-left: 1px solid var(--border-color);
-  }
+  transition: border-color 1s;
   &:last-child {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
+    border-right: none;
   }
 }
 button.monthListEntry {
@@ -46,6 +53,7 @@ button.monthListEntry {
   background-color: rgba(var(--dim-colors), 0.1);
 }
 .currentMonthListEntry {
+  transition: none;
   border-bottom-color: rgba(var(--accent-colors), 1);
 }
 button.unloadedMonthListEntry {
@@ -53,5 +61,9 @@ button.unloadedMonthListEntry {
   color: var(--secondary-color);
 }
 .monthListEntryYear {
+  background-color: var(--background-color);
+  z-index: 1;
+  position: sticky;
+  left: 0;
   font-weight: 200;
 }

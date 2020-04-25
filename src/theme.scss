@@ -1,4 +1,6 @@
 [data-theme^='light'] {
+  --header-background-color: #f6f6f6;
+  --element-border-color: #c5c5c5;
   --dim-colors: 0, 0, 0;
   --undim-colors: 255, 255, 255;
   --main-color: rgb(35, 35, 35);
@@ -16,6 +18,8 @@
   --dim-colors: 255, 255, 255;
   --undim-colors: 0, 0, 0;
   --main-color: #fff;
+  --header-background-color: #2f3031;
+  --element-border-color: #131313;
   --secondary-color: #676466;
   --background-color: rgb(36, 36, 36);
   --input-background: rgba(var(--dim-colors), 0.15);
@@ -26,7 +30,7 @@
   --element-shadow: 0px 1px 3px rgba(0, 0, 0, 0.4);
 }
 :root {
-  --row-height: 1.6rem;
+  --row-height: 1.8rem;
   --sidebar-width: 15rem;
   --header-height: 2.5rem;
   --font: 'Roboto';

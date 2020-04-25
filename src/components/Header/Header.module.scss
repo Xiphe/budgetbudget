@@ -1,8 +1,8 @@
 .header {
   position: fixed;
   top: 0;
-  background: var(--background-color);
-  border-bottom: 1px solid var(--border-color);
+  background: var(--header-background-color);
+  border-bottom: 1px solid var(--element-border-color);
   z-index: 10;
   height: var(--header-height);
   width: 100%;

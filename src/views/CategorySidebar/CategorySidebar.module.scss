@@ -1,17 +1,17 @@
 .row {
-  padding-left: calc(5px + var(--indent) * 10px);
+  padding-left: calc(1rem + var(--indent) * 1rem);
+  padding-right: 1rem;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
 .sidebarWrap {
-  border-right: 1px solid var(--border-color);
+  border-right: 1px solid var(--element-border-color);
 }
 
 .categorySidebar {
-  margin-top: calc(var(--month-header-height) - 1px);
-  border-top: 1px solid var(--border-color);
+  margin-top: calc(var(--month-header-height));
   border-right: none;
   height: calc(100% - var(--month-header-height));
   overflow-y: scroll;

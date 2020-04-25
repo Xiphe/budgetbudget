@@ -4,7 +4,7 @@ import styles from './Header.module.scss';
 
 type Props = {
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
 };
 export default function Header({ children, className }: Props) {
   return (
