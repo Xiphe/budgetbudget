@@ -63,7 +63,7 @@ export default function createWindowManager(
       height: 600,
       minWidth: 500,
       minHeight: 300,
-      titleBarStyle: 'hidden',
+      titleBarStyle: 'hiddenInset',
       vibrancy: 'sidebar',
       webPreferences: {
         nodeIntegration: true,

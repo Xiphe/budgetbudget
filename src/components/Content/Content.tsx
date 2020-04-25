@@ -3,11 +3,19 @@ import classNames from 'classnames';
 import styles from './Content.module.scss';
 
 type Props = {
-  header?: ReactNode;
+  header: ReactNode;
   children: ReactNode;
   padding?: boolean;
+  flex?: boolean;
+  background?: boolean;
 };
-export default function Content({ header, children, padding }: Props) {
+export default function Content({
+  header,
+  children,
+  padding,
+  background,
+  flex,
+}: Props) {
   return (
     <>
       {header}
@@ -15,7 +23,8 @@ export default function Content({ header, children, padding }: Props) {
         className={classNames(
           styles.content,
           padding && styles.padding,
-          header && styles.withHeader,
+          flex && styles.flex,
+          background && styles.background,
         )}
       >
         {children}

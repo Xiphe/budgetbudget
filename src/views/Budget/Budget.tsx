@@ -5,8 +5,6 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
-import { remote } from 'electron';
-import { Helmet } from 'react-helmet';
 import isSameMonth from 'date-fns/isSameMonth';
 import differenceInCalendarMonths from 'date-fns/differenceInCalendarMonths';
 import { BudgetState, Action, useBudgetData } from '../../budget';
@@ -72,18 +70,9 @@ export default function Budget({ state, dispatch }: Props) {
     extendFuture(12);
   }, [extendFuture]);
 
-  const title = (
-    <Helmet>
-      <title>
-        {state.name} - {remote.app.name}
-      </title>
-    </Helmet>
-  );
-
   if (error) {
     return (
       <div>
-        {title}
         <p>Error: {error.message}</p>
         {retry && <button onClick={retry}>retry</button>}
       </div>
@@ -93,7 +82,6 @@ export default function Budget({ state, dispatch }: Props) {
   if (loading) {
     return (
       <>
-        {title}
         <Loading />
       </>
     );
@@ -103,6 +91,7 @@ export default function Budget({ state, dispatch }: Props) {
     <VisibleMothContextProvider>
       <HeaderHeightProvider>
         <Content
+          flex
           header={
             <BudgetHeader
               onClick={handleHeaderMonthClick}

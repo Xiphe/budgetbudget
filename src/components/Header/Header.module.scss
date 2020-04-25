@@ -10,8 +10,9 @@
   display: flex;
   align-items: center;
 }
-
-.inner {
-  width: calc(100% - 68px);
-  margin-left: 68px;
+.trafficLightSpacer {
+  margin-left: 78px;
+}
+.spacer {
+  flex-grow: 1;
 }

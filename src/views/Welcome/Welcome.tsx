@@ -1,8 +1,7 @@
 import React from 'react';
 import { remote } from 'electron';
-import { Helmet } from 'react-helmet';
 import useMenu from '../../budget/useMenu';
-import { Content, Button } from '../../components';
+import { Content, Button, Header } from '../../components';
 import styles from './Welcome.module.scss';
 
 type Props = {
@@ -12,11 +11,7 @@ export default function Welcome({ onCreate }: Props) {
   useMenu();
 
   return (
-    <Content padding>
-      <Helmet>
-        <title>Welcome - {remote.app.name}</title>
-      </Helmet>
-
+    <Content padding header={<Header>Welcome</Header>}>
       <h1 className={styles.center}>Welcome!</h1>
       <div className={styles.warning}>
         <h3>This is Alpha Software</h3>

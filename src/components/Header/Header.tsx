@@ -9,7 +9,11 @@ type Props = {
 export default function Header({ children, className }: Props) {
   return (
     <div className={classNames(className, styles.header)}>
-      <div className={styles.inner}>{children}</div>
+      <div className={styles.trafficLightSpacer}></div>
+      {children}
     </div>
   );
+}
+export function HeaderSpacer() {
+  return <div className={styles.spacer}></div>;
 }
