@@ -1,3 +1,4 @@
+import { ScrollTo as ScrollToT } from './InfiniteSlider';
 export { default as Loading } from './Loading';
 export { default as LoadingError } from './LoadingError';
 export { default as Header } from './Header';
@@ -8,3 +9,4 @@ export { default as Row } from './Row';
 export { default as Button } from './Button';
 export { default as InfiniteSlider } from './InfiniteSlider';
 export * from './TabBar';
+export type ScrollTo = ScrollToT;

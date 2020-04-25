@@ -47,14 +47,17 @@ function useFirstLast(balances: Balances, budgets: Budgets, future: number) {
   return useMemo<
     [string | undefined, string | undefined, Date | undefined]
   >(() => {
+    const today = new Date();
     const sorted = Object.keys(balances).concat(Object.keys(budgets)).sort();
     const last = sorted[sorted.length - 1];
     const lastPlusFuture = last ? addMonths(new Date(last), future) : undefined;
+    const rightmost =
+      lastPlusFuture && isAfter(today, lastPlusFuture) ? today : lastPlusFuture;
 
     return [
       sorted[0],
-      lastPlusFuture ? formatDateKey(lastPlusFuture) : undefined,
-      lastPlusFuture,
+      rightmost ? formatDateKey(rightmost) : undefined,
+      rightmost,
     ];
   }, [balances, budgets, future]);
 }

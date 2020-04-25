@@ -1,8 +1,16 @@
-import React, { Dispatch, useRef } from 'react';
+import React, {
+  Dispatch,
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+} from 'react';
 import { remote } from 'electron';
 import { Helmet } from 'react-helmet';
+import isSameMonth from 'date-fns/isSameMonth';
+import differenceInCalendarMonths from 'date-fns/differenceInCalendarMonths';
 import { BudgetState, Action, useBudgetData } from '../../budget';
-import { Content, Loading, InfiniteSlider } from '../../components';
+import { Content, Loading, InfiniteSlider, ScrollTo } from '../../components';
 import { HeaderHeightProvider, VisibleMothContextProvider } from '../../lib';
 import Month from '../Month';
 import BudgetHeader from './Header';
@@ -20,6 +28,7 @@ export default function Budget({ state, dispatch }: Props) {
   const onSliderScrollRef = useRef<((target: HTMLDivElement) => void) | null>(
     null,
   );
+  const [scrollTo, setScrollTo] = useState<ScrollTo | null>(null);
   const {
     loading,
     error,
@@ -29,6 +38,39 @@ export default function Budget({ state, dispatch }: Props) {
     extendFuture,
     categories,
   } = useBudgetData(state);
+  const handleHeaderMonthClick = useCallback(
+    (key: string) => {
+      if (!scrollTo) {
+        return;
+      }
+      const index = budgets.findIndex(({ key: k }) => key === k);
+      if (index === -1) {
+        const target = new Date(key);
+        const last = budgets[budgets.length - 1].date;
+        const difference = differenceInCalendarMonths(target, last);
+        extendFuture(difference + 2);
+        setTimeout(() => {
+          scrollTo(budgets.length + difference - 1);
+        }, 0);
+      } else {
+        scrollTo(index);
+      }
+    },
+    [budgets, extendFuture, scrollTo],
+  );
+  useEffect(() => {
+    if (scrollTo) {
+      const today = new Date();
+      scrollTo(
+        budgets.findIndex(({ date }) => isSameMonth(today, date)),
+        'auto',
+      );
+    }
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [scrollTo]);
+  const loadMore = useCallback(() => {
+    extendFuture(12);
+  }, [extendFuture]);
 
   const title = (
     <Helmet>
@@ -62,7 +104,11 @@ export default function Budget({ state, dispatch }: Props) {
       <HeaderHeightProvider>
         <Content
           header={
-            <BudgetHeader scrollRef={onSliderScrollRef} months={budgets} />
+            <BudgetHeader
+              onClick={handleHeaderMonthClick}
+              scrollRef={onSliderScrollRef}
+              months={budgets}
+            />
           }
         >
           <CategorySidebar
@@ -75,9 +121,9 @@ export default function Budget({ state, dispatch }: Props) {
             innerRef={sliderRef}
             onScrollRef={onSliderScrollRef}
             className={styles.budgetSlider}
-            loadMore={() => extendFuture(2)}
+            loadMore={loadMore}
             syncScrollY={sidebarRef}
-            scrollTo={0}
+            getScrollTo={setScrollTo}
           >
             {budgets.map((budget) => (
               <Month

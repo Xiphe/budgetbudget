@@ -4,6 +4,7 @@ import React, {
   useRef,
   useEffect,
   MutableRefObject,
+  useCallback,
 } from 'react';
 import classNames from 'classnames';
 import addMonths from 'date-fns/addMonths';
@@ -13,11 +14,18 @@ import { useVisibleMonths, formatDateKey } from '../../lib';
 import styles from './Budget.module.scss';
 
 type Props = {
+  onClick: (key: string) => void;
   months: { date: Date; key: string }[];
   scrollRef: MutableRefObject<((target: HTMLDivElement) => void) | null>;
 };
 
-export default function BudgetHeader({ months, scrollRef }: Props) {
+export default function BudgetHeader({ months, scrollRef, onClick }: Props) {
+  const handleClick = useCallback(
+    ({ target }: { target: HTMLButtonElement }) => {
+      onClick(target.name);
+    },
+    [onClick],
+  );
   const headerRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     scrollRef.current = (target) => {
@@ -97,11 +105,13 @@ export default function BudgetHeader({ months, scrollRef }: Props) {
                 </span>
               ) : null}
               <button
+                name={key}
                 className={classNames(
                   styles.monthListEntry,
                   visibleMonthKeys.includes(key) &&
                     styles.currentMonthListEntry,
                 )}
+                onClick={handleClick as any}
               >
                 {format(date, 'MMM')}
               </button>

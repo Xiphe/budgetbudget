@@ -9,13 +9,15 @@ import classNames from 'classnames';
 import styles from './InfiniteSlider.module.scss';
 import { useVisibilityObserver, IsVisibleProvider } from '../../lib';
 
+export type ScrollTo = (scrollTo: number, behaviour?: ScrollBehavior) => void;
+
 type Props = {
   innerRef: MutableRefObject<HTMLDivElement | null>;
   syncScrollY: MutableRefObject<HTMLDivElement | null>;
+  getScrollTo?: (scrollTo: ScrollTo) => void;
   className?: string;
   onScrollRef?: MutableRefObject<((target: HTMLDivElement) => void) | null>;
   children: ReactElement | ReactElement[];
-  scrollTo: number;
   loadMore: () => void;
 };
 
@@ -25,12 +27,31 @@ const LOAD_MORE_THRESHOLD = 500;
 export default function InfiniteSlider({
   children,
   innerRef: containerRef,
-  scrollTo,
+  getScrollTo,
   loadMore,
   syncScrollY,
   onScrollRef,
   className,
 }: Props) {
+  useEffect(() => {
+    if (getScrollTo) {
+      getScrollTo(
+        () => (scrollTo: number, behaviour: ScrollBehavior = 'smooth') => {
+          const container = containerRef.current;
+          if (!container) {
+            return;
+          }
+          const target = container.children[scrollTo] as HTMLElement;
+          if (target) {
+            window.requestAnimationFrame(() => {
+              target.scrollIntoView({ behaviour, inline: 'start' } as any);
+            });
+          }
+        },
+      );
+    }
+  }, [getScrollTo, containerRef]);
+
   const onScroll = useCallback(
     (ev) => {
       const { target } = ev;
@@ -50,18 +71,6 @@ export default function InfiniteSlider({
     },
     [loadMore, syncScrollY, onScrollRef],
   );
-
-  /** Scroll to given index */
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) {
-      return;
-    }
-    const target = container.children[scrollTo] as HTMLElement;
-    if (target) {
-      container.scrollLeft = target.getBoundingClientRect().width * scrollTo;
-    }
-  }, [scrollTo, containerRef]);
 
   const isVisible = useVisibilityObserver(
     useMemo(
