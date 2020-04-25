@@ -11,12 +11,19 @@
 }
 
 .categorySidebar {
-  margin-top: calc(var(--month-header-height));
   border-right: none;
   height: calc(100% - var(--month-header-height));
   overflow-y: scroll;
   transition: margin-top 200ms ease-out;
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+.sidebarHeader {
+  height: var(--month-header-height);
+  padding: 0.5rem 1rem;
+  h3 {
+    margin: 0;
   }
 }

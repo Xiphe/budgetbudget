@@ -33,10 +33,12 @@ type Props = {
   categories: CategoryTree[];
   innerRef: MutableRefObject<HTMLDivElement | null>;
   syncScrollY: MutableRefObject<HTMLDivElement | null>;
+  budgetName: string;
 };
 export default function CategorySidebar({
   categories,
   innerRef,
+  budgetName,
   syncScrollY,
 }: Props) {
   const syncScroll = useCallback(
@@ -50,6 +52,9 @@ export default function CategorySidebar({
 
   return (
     <div className={styles.sidebarWrap}>
+      <div className={styles.sidebarHeader}>
+        <h3>{budgetName}</h3>
+      </div>
       <Sidebar
         onScroll={syncScroll}
         innerRef={innerRef}

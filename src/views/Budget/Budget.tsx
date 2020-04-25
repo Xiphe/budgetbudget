@@ -68,6 +68,7 @@ export default function Budget({ state, dispatch }: Props) {
           <CategorySidebar
             syncScrollY={sliderRef}
             innerRef={sidebarRef}
+            budgetName={state.name}
             categories={categories || []}
           />
           <InfiniteSlider
