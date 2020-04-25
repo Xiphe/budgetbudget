@@ -12,16 +12,6 @@ import { Header } from '../../components';
 import { useVisibleMonths, formatDateKey } from '../../lib';
 import styles from './Budget.module.scss';
 
-type Month = {
-  date: Date;
-  key: string;
-  loaded: boolean;
-  name: string;
-  year?: string;
-  even: boolean;
-  current: boolean;
-};
-
 type Props = {
   months: { date: Date; key: string }[];
   scrollRef: MutableRefObject<((target: HTMLDivElement) => void) | null>;

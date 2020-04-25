@@ -3,6 +3,7 @@
   --element-border-color: #c5c5c5;
   --dim-colors: 0, 0, 0;
   --undim-colors: 255, 255, 255;
+  --outer-border: transparent;
   --main-color: rgb(35, 35, 35);
   --secondary-color: #b3b1b7;
   --input-background: white;
@@ -17,6 +18,7 @@
 [data-theme^='dark'] {
   --dim-colors: 255, 255, 255;
   --undim-colors: 0, 0, 0;
+  --outer-border: rgba(255, 255, 255, 0.2);
   --main-color: #fff;
   --header-background-color: #2f3031;
   --element-border-color: #131313;

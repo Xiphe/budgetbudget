@@ -6,7 +6,8 @@
   overflow: scroll;
 }
 .monthList {
-  height: 1.6rem;
+  -webkit-app-region: no-drag;
+  height: 1.5rem;
   position: relative;
   margin: 0.4rem auto;
   width: 70vw;
@@ -19,18 +20,19 @@
 .monthListInner {
   position: absolute;
   white-space: nowrap;
+  height: 1.5rem;
 }
 .monthListEntry {
-  position: relative;
   display: inline-block;
   color: var(--main-color);
-  padding: 0.25rem 0.5rem;
+  padding: 0rem 0.5rem;
   border: none;
   border-right: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
   font-size: 0.9rem;
   background: transparent;
-  line-height: 1em;
+  line-height: 1.5rem;
+  height: calc(1.5rem - 1px);
   transition: border-color 1s;
   &:last-child {
     border-right: none;

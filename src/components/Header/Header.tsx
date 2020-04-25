@@ -9,7 +9,7 @@ type Props = {
 export default function Header({ children, className }: Props) {
   return (
     <div className={classNames(className, styles.header)}>
-      <div className={styles.dim}>{children}</div>
+      <div className={styles.inner}>{children}</div>
     </div>
   );
 }
