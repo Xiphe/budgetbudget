@@ -70,6 +70,7 @@
     "fp-ts": "2.5.3",
     "io-ts": "2.1.2",
     "lodash.debounce": "4.0.8",
+    "memoize-one": "5.1.1",
     "plist": "3.0.1",
     "react": "16.13.0",
     "react-dom": "16.13.0"

@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
 import { createNumberFormatter } from '../lib';
-import { useTransactions, Transaction, getCategories } from '../moneymoney';
+import {
+  useTransactions,
+  Transaction,
+  Category,
+  useCategories,
+} from '../moneymoney';
 import { BudgetState } from './Types';
 import useBudgets from './useBudgets';
 
@@ -8,6 +13,12 @@ function transactionsLoaded(
   transactions: Transaction[] | Error | null,
 ): transactions is Transaction[] {
   return Array.isArray(transactions);
+}
+
+function categoriesLoaded(
+  categories: Category[] | Error | null,
+): categories is Category[] {
+  return Array.isArray(categories);
 }
 
 export default function useBudgetData(state: BudgetState) {
@@ -29,32 +40,48 @@ export default function useBudgetData(state: BudgetState) {
     currency,
     accounts,
   );
-  const incomeCategoryIds = useMemo(
-    () =>
-      incomeCategories
-        .map(({ id }) => id)
-        .filter((id): id is number => id !== null),
-    [incomeCategories],
+
+  const [categories, defaultCategories, retryLoadCategories] = useCategories(
+    currency,
   );
-  const categories = useMemo(
-    () =>
-      transactionsLoaded(transactions)
-        ? getCategories(transactions, incomeCategoryIds)
-        : undefined,
-    [transactions, incomeCategoryIds],
-  );
-  const [budgets, extendFuture] = useBudgets(
+  const usableCategories = useMemo(() => {
+    if (!categoriesLoaded(categories)) {
+      return [];
+    }
+    const incomeCategoryIds = incomeCategories
+      .map(({ id }) => id)
+      .filter((id): id is string => id !== null);
+    return categories.filter(({ uuid }) => !incomeCategoryIds.includes(uuid));
+  }, [incomeCategories, categories]);
+
+  const [months, extendFuture] = useBudgets(
     transactionsLoaded(transactions) ? transactions : undefined,
-    categories,
+    usableCategories,
+    defaultCategories,
     state,
   );
+  const retry = useMemo(() => {
+    if (transactions instanceof Error && categories instanceof Error) {
+      return () => {
+        retryLoadTransactions();
+        retryLoadCategories();
+      };
+    }
+    if (transactions instanceof Error) {
+      return retryLoadTransactions;
+    }
+    if (categories instanceof Error) {
+      return retryLoadCategories();
+    }
+    return null;
+  }, [transactions, retryLoadTransactions, categories, retryLoadCategories]);
 
   return {
-    loading: !transactionsLoaded(transactions),
+    loading: !transactionsLoaded(transactions) || !categoriesLoaded(categories),
     error: transactions instanceof Error ? transactions : null,
-    retry: transactions instanceof Error ? retryLoadTransactions : null,
-    budgets,
-    categories,
+    retry,
+    months,
+    categories: usableCategories,
     extendFuture,
     numberFormatter,
   };

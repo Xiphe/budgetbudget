@@ -38,7 +38,7 @@ export const ACTION_SET_CATEGORY_ROLLOVER = Symbol(
 );
 
 type MonthCategory = {
-  categoryId: number;
+  categoryId: string;
   monthKey: string;
 };
 
@@ -81,20 +81,20 @@ type SetSettingsStartBalance = {
 type UpdateSettingsIncomeCategory = {
   type: typeof ACTION_SETTINGS_UPDATE_INCOME_CATEGORY;
   payload: {
-    oldCategoryId: number | null;
-    categoryId: number | null;
+    oldCategoryId: string | null;
+    categoryId: string | null;
   };
 };
 type SetSettingsIncomeAvailableIn = {
   type: typeof ACTION_SETTINGS_SET_INCOME_AVAILABLE_IN;
   payload: {
-    categoryId: number | null;
+    categoryId: string | null;
     availableIn: number;
   };
 };
 type RemoveSettingsIncomeCategory = {
   type: typeof ACTION_SETTINGS_REMOVE_INCOME_CATEGORY;
-  payload: number | null;
+  payload: string | null;
 };
 type AddSettingsIncomeCategory = {
   type: typeof ACTION_SETTINGS_ADD_INCOME_CATEGORY;
@@ -147,7 +147,7 @@ function updateCategory(
 
 function updateSettingsIncomeCategory(
   state: BudgetState,
-  categoryId: number | null,
+  categoryId: string | null,
   update: (incomeCategory: IncomeCategory) => IncomeCategory | null,
 ) {
   const incomeCategories = state.settings.incomeCategories;

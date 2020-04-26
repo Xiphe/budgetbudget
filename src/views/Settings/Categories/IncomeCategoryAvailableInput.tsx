@@ -7,7 +7,7 @@ import styles from './Categories.module.scss';
 
 type Props = {
   dispatch: P['dispatch'];
-  categoryId: number | null;
+  categoryId: string | null;
   value: number;
 };
 

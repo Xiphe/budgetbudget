@@ -1,57 +1,27 @@
-import { Transaction, CategoryTree, Category, CategoryGroup } from './Types';
+import { Category, validateCategory } from './Types';
+import { ipcRenderer } from 'electron';
 
-function isCategoryGroup(cat: CategoryTree): cat is CategoryGroup {
-  return Array.isArray((cat as CategoryGroup).children);
-}
+export default async function getCategories(
+  currency: string,
+): Promise<[Category[], Category[]]> {
+  const probablyCategories: unknown = await ipcRenderer.invoke(
+    'MM_EXPORT_CATEGORIES',
+  );
 
-export function getFlatCategories(
-  transactions: Transaction[],
-  ignoreIds: number[] = [],
-): Category[] {
-  const knownIds = [...ignoreIds];
-  return transactions.reduce((memo, { categoryId, category }) => {
-    if (!category || !categoryId || knownIds.includes(categoryId)) {
-      return memo;
-    }
+  if (!Array.isArray(probablyCategories)) {
+    throw new Error('Unexpectedly got non-array as categories');
+  }
 
-    knownIds.push(categoryId);
-    return memo.concat({
-      name: category,
-      id: categoryId,
-    });
-  }, [] as Category[]);
-}
-
-export function getCategories(
-  transactions: Transaction[],
-  ignoreIds: number[] = [],
-): CategoryTree[] {
-  const knownIds = [...ignoreIds];
-  return transactions.reduce((memo, { categoryId, category }) => {
-    if (!category || !categoryId || knownIds.includes(categoryId)) {
-      return memo;
-    }
-
-    knownIds.push(categoryId);
-
-    return category.split('\\').reduce((group, name, i, all) => {
-      if (i + 1 === all.length) {
-        group.push({ id: categoryId, name });
+  return probablyCategories.map(validateCategory).reduce(
+    (memo, category) => {
+      if (category.currency !== currency) {
         return memo;
       }
-
-      const existing = group
-        .filter(isCategoryGroup)
-        .find((entry) => entry.name === name);
-
-      if (existing) {
-        return existing.children;
+      if (category.default) {
+        return [memo[0], memo[1].concat(category)];
       }
-
-      const newGroup = { name, children: [] };
-      group.push(newGroup);
-
-      return newGroup.children;
-    }, memo);
-  }, [] as CategoryTree[]);
+      return [memo[0].concat(category), memo[1]];
+    },
+    [[], []] as [Category[], Category[]],
+  );
 }

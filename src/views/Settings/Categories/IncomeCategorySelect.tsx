@@ -8,13 +8,13 @@ import styles from './Categories.module.scss';
 
 type Props = {
   dispatch: P['dispatch'];
-  categoryId: number | null;
-  incomeCategoryIds: (number | null)[];
+  categoryId: string | null;
+  incomeCategoryIds: (string | null)[];
   categories: Category[];
 };
 
 function validate({ target: { value } }: { target: { value: string } }) {
-  return parseInt(value, 10);
+  return value;
 }
 
 export default function IncomeCategorySelect({
@@ -28,7 +28,7 @@ export default function IncomeCategorySelect({
     value: categoryId,
     validate,
     onChange: useCallback(
-      (value: number | null) => {
+      (value: string | null) => {
         dispatch({
           type: ACTION_SETTINGS_UPDATE_INCOME_CATEGORY,
           payload: {
@@ -43,18 +43,26 @@ export default function IncomeCategorySelect({
   let found = false;
 
   return (
-    <Select {...inputProps} className={styles.incomeCategorySelect}>
-      {!categoryId && <option value="new">- please select -</option>}
-      {categories.map(({ id, name }) => {
-        if (categoryId !== id && incomeCategoryIds.includes(id)) {
+    <Select
+      {...inputProps}
+      value={inputProps.value === null ? '__NEW__' : inputProps.value}
+      className={styles.incomeCategorySelect}
+    >
+      {!categoryId && (
+        <option value="__NEW__" disabled>
+          [please select]
+        </option>
+      )}
+      {categories.map(({ uuid, name, group, indentation }) => {
+        if (categoryId !== uuid && incomeCategoryIds.includes(uuid)) {
           return null;
         }
-        if (categoryId === id) {
+        if (categoryId === uuid) {
           found = true;
         }
         return (
-          <option key={id} value={id}>
-            {name}
+          <option key={uuid} value={uuid} disabled={group}>
+            {Array(indentation).fill('–').join('')} {name}
           </option>
         );
       })}

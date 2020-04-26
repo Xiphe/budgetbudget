@@ -13,8 +13,16 @@ export default async function getAccounts(
   const accounts = await Promise.all(
     probablyAccounts.map(
       async (data: unknown): Promise<Account | false> => {
-        const { accountNumber, balance, name } = validateAccount(data);
-        if (!accountNumber.length) {
+        const {
+          accountNumber,
+          balance,
+          name,
+          uuid,
+          icon,
+          group,
+          portfolio,
+        } = validateAccount(data);
+        if (group || portfolio || !accountNumber.length) {
           return false;
         }
         const currencyBalance = balance.find(([_, c]) => c === currency);
@@ -23,6 +31,8 @@ export default async function getAccounts(
         }
 
         return {
+          uuid,
+          icon,
           name,
           number: accountNumber,
           balance: currencyBalance[0],

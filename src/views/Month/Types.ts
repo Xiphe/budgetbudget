@@ -1,13 +1,13 @@
 import { NumberFormatter } from '../../lib';
-import { BudgetListEntry, Action } from '../../budget';
+import { MonthData, Action } from '../../budget';
 import { Dispatch } from 'react';
-import { CategoryTree } from '../../moneymoney/Types';
+import { Category } from '../../moneymoney';
 
 export type Props = {
   dispatch: Dispatch<Action>;
   monthKey: string;
   date: Date;
-  categories: CategoryTree[];
+  categories: Category[];
   numberFormatter: NumberFormatter;
-  budget: BudgetListEntry;
+  month: MonthData;
 };

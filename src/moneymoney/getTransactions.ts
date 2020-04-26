@@ -1,5 +1,6 @@
 import { Transaction, validateTransaction } from './Types';
 import { PlistObject } from 'plist';
+import format from 'date-fns/format';
 import { ipcRenderer } from 'electron';
 
 function isPlistObject(val: any): val is PlistObject {
@@ -34,7 +35,7 @@ async function getAccountTransactions(
     throw new Error('Unexpectedly got non-array as transactions');
   }
 
-  return resp.transactions.filter((data: unknown) => {
+  return resp.transactions.filter((data: unknown): data is Transaction => {
     if (typeof data !== 'object' || data === null) {
       throw new Error('Unexpectedly got non-object as transaction');
     }
@@ -48,7 +49,7 @@ export default async function getTransactions(
   currency: string,
   startDateTimestamp: number,
 ): Promise<Transaction[]> {
-  const startDate = new Date(startDateTimestamp).toLocaleDateString();
+  const startDate = format(new Date(startDateTimestamp), 'yyyy-MM-dd');
   return (
     await Promise.all(
       accountNumbers.map((accountNumber) =>

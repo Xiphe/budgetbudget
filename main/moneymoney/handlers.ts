@@ -2,6 +2,7 @@ import { IpcMain } from 'electron';
 import { join } from 'path';
 import { exec } from 'child_process';
 import { parse } from 'plist';
+import format from 'date-fns/format';
 import osascript from './osascript';
 import scriptsDir from '../scriptsDir';
 
@@ -59,7 +60,7 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
       await osascript(
         join(scriptsDir, 'exportTransactions.applescript'),
         accountNumber,
-        new Date().toLocaleDateString(),
+        format(new Date(), 'yyyy-MM-dd'),
       );
       usableAccounts.push(accountNumber);
       return true;
@@ -84,11 +85,11 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
             if (typeof data !== 'object' || data === null) {
               return false;
             }
-            const accountNumber: unknown = (data as any).accountNumber;
-            if (typeof accountNumber !== 'string' || !accountNumber.length) {
+            const uuid: unknown = (data as any).uuid;
+            if (typeof uuid !== 'string' || !uuid.length) {
               return false;
             }
-            if (!(await canHandleTransactions(accountNumber))) {
+            if (!(await canHandleTransactions(uuid))) {
               return false;
             }
 
@@ -109,6 +110,15 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
           join(scriptsDir, 'exportTransactions.applescript'),
           ...args,
         ),
+      );
+    }),
+  );
+
+  ipcMain.handle(
+    'MM_EXPORT_CATEGORIES',
+    withRetry(async () => {
+      return parse(
+        await osascript(join(scriptsDir, 'exportCategories.applescript')),
       );
     }),
   );

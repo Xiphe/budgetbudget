@@ -4,9 +4,9 @@ import styles from './Month.module.scss';
 
 type Props = {
   numberFormatter: NumberFormatter;
-  categoryId: number;
+  categoryId: string;
   value: number;
-  onChange: (ev: { amount: number; id: number }) => void;
+  onChange: (ev: { amount: number; id: string }) => void;
 };
 
 export default function BudgetInput({

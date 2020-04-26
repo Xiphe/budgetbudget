@@ -9,14 +9,23 @@ const date = new t.Type<Date, Date, unknown>(
     input instanceof Date ? t.success(input) : t.failure(input, context),
   t.identity,
 );
+const unit8Array = new t.Type<Uint8Array, Uint8Array, unknown>(
+  'date',
+  (input: unknown): input is Uint8Array => input instanceof Uint8Array,
+  (input, context) =>
+    input instanceof Uint8Array ? t.success(input) : t.failure(input, context),
+  t.identity,
+);
 
 const transactionShape = t.intersection(
   [
     t.type(
       {
+        account: t.string,
         id: t.number,
         amount: t.number,
         currency: t.string,
+        category: t.string,
         accountNumber: t.string,
         booked: t.boolean,
         bookingDate: date,
@@ -26,8 +35,6 @@ const transactionShape = t.intersection(
     t.partial(
       {
         purpose: t.string,
-        category: t.string,
-        categoryId: t.number,
         name: t.string,
         valueDate: date,
       },
@@ -41,15 +48,45 @@ const interopAccountShape = t.type(
     accountNumber: t.string,
     name: t.string,
     balance: t.array(t.tuple([t.number, t.string])),
+    currency: t.string,
+    group: t.boolean,
+    icon: unit8Array,
+    portfolio: t.boolean,
+    uuid: t.string,
   },
   'account',
 );
+const categoryShape = t.type({
+  budget: t.union([
+    t.type({}),
+    t.type({
+      amount: t.number,
+      available: t.number,
+      period: t.union([
+        t.literal('monthly'),
+        t.literal('quarterly'),
+        t.literal('yearly'),
+        t.literal('total'),
+      ]),
+    }),
+  ]),
+  name: t.string,
+  currency: t.string,
+  default: t.boolean,
+  group: t.boolean,
+  icon: unit8Array,
+  indentation: t.number,
+  uuid: t.string,
+});
 
+export type Category = t.TypeOf<typeof categoryShape>;
 export type Transaction = t.TypeOf<typeof transactionShape>;
 type InteropAccount = t.TypeOf<typeof interopAccountShape>;
 export type Account = {
   name: string;
   balance: number;
+  icon: Uint8Array;
+  uuid: string;
   number: string;
 };
 
@@ -68,19 +105,26 @@ export function validateAccount(data: unknown): InteropAccount {
   }
   return data as InteropAccount;
 }
-
-export type Category = {
-  id: number;
-  name: string;
-};
-export type CategoryGroup = {
-  name: string;
-  children: CategoryTree[];
-};
-export type CategoryTree = Category | CategoryGroup;
-export function isCategory(tree: CategoryTree): tree is Category {
-  return typeof (tree as Category).id === 'number';
+export function validateCategory(data: unknown): Category {
+  const c = categoryShape.decode(data);
+  if (isLeft(c)) {
+    throw ThrowReporter.report(c);
+  }
+  return data as Category;
 }
+
+// export type Category = {
+//   id: number;
+//   name: string;
+// };
+// export type CategoryGroup = {
+//   name: string;
+//   children: CategoryTree[];
+// };
+// export type CategoryTree = Category | CategoryGroup;
+// export function isCategory(tree: CategoryTree): tree is Category {
+//   return typeof (tree as Category).id === 'number';
+// }
 
 export type AmountWithTransactions = {
   amount: number;
@@ -89,7 +133,7 @@ export type AmountWithTransactions = {
 export type Balance = {
   total: number;
   categories: {
-    [id: number]: AmountWithTransactions;
+    [id: string]: AmountWithTransactions;
   };
   uncategorised: AmountWithTransactions;
 };

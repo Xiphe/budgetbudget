@@ -31,7 +31,7 @@ export default function Budget({ state, dispatch }: Props) {
     loading,
     error,
     retry,
-    budgets,
+    months,
     numberFormatter,
     extendFuture,
     categories,
@@ -41,26 +41,26 @@ export default function Budget({ state, dispatch }: Props) {
       if (!scrollTo) {
         return;
       }
-      const index = budgets.findIndex(({ key: k }) => key === k);
+      const index = months.findIndex(({ key: k }) => key === k);
       if (index === -1) {
         const target = new Date(key);
-        const last = budgets[budgets.length - 1].date;
+        const last = months[months.length - 1].date;
         const difference = differenceInCalendarMonths(target, last);
         extendFuture(difference + 2);
         setTimeout(() => {
-          scrollTo(budgets.length + difference - 1);
+          scrollTo(months.length + difference - 1);
         }, 0);
       } else {
         scrollTo(index);
       }
     },
-    [budgets, extendFuture, scrollTo],
+    [months, extendFuture, scrollTo],
   );
   useEffect(() => {
     if (scrollTo) {
       const today = new Date();
       scrollTo(
-        budgets.findIndex(({ date }) => isSameMonth(today, date)),
+        months.findIndex(({ date }) => isSameMonth(today, date)),
         'auto',
       );
     }
@@ -96,7 +96,7 @@ export default function Budget({ state, dispatch }: Props) {
             <BudgetHeader
               onClick={handleHeaderMonthClick}
               scrollRef={onSliderScrollRef}
-              months={budgets}
+              months={months}
             />
           }
         >
@@ -114,13 +114,13 @@ export default function Budget({ state, dispatch }: Props) {
             syncScrollY={sidebarRef}
             getScrollTo={setScrollTo}
           >
-            {budgets.map((budget) => (
+            {months.map((month) => (
               <Month
-                key={budget.key}
-                monthKey={budget.key}
-                date={budget.date}
+                key={month.key}
+                monthKey={month.key}
+                date={month.date}
                 dispatch={dispatch}
-                budget={budget}
+                month={month}
                 categories={categories || []}
                 numberFormatter={numberFormatter}
               />
