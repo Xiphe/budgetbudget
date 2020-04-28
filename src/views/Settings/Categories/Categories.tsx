@@ -12,7 +12,7 @@ export default function CategorySettings(props: Omit<Props, 'categories'>) {
   const [categories, _, retry] = useCategories(currency);
 
   if (categories === null) {
-    return <Loading />;
+    return <Loading center />;
   }
 
   if (categories instanceof Error) {

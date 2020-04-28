@@ -4,6 +4,8 @@ export { default as LoadingError } from './LoadingError';
 export { default as Header, HeaderSpacer } from './Header';
 export { default as Content } from './Content';
 export { default as Sidebar } from './Sidebar';
+export { default as ErrorBoundary, FullScreenError } from './ErrorBoundary';
+export { default as Startup } from './Startup';
 export { default as Select } from './Select';
 export { default as Row } from './Row';
 export { default as Button } from './Button';

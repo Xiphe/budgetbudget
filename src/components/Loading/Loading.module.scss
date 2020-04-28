@@ -1,0 +1,62 @@
+/* from https://loading.io/css/ */
+.lds {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 13px;
+}
+.lds div {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--main-color);
+  opacity: 1;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds div:nth-child(1) {
+  left: 8px;
+  animation: lds1 0.6s infinite;
+}
+.lds div:nth-child(2) {
+  left: 8px;
+  animation: lds2 0.6s infinite;
+}
+.lds div:nth-child(3) {
+  left: 32px;
+  animation: lds2 0.6s infinite;
+}
+.lds div:nth-child(4) {
+  left: 56px;
+  animation: lds3 0.6s infinite;
+}
+@keyframes lds1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}
+
+.center {
+  display: inline-block;
+  top: calc(50% - 7px);
+  left: calc(50% - 40px);
+}

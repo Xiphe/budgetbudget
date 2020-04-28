@@ -8,7 +8,13 @@ import React, {
 import isSameMonth from 'date-fns/isSameMonth';
 import differenceInCalendarMonths from 'date-fns/differenceInCalendarMonths';
 import { BudgetState, Action, useBudgetData } from '../../budget';
-import { Content, Loading, InfiniteSlider, ScrollTo } from '../../components';
+import {
+  Content,
+  FullScreenError,
+  InfiniteSlider,
+  ScrollTo,
+  Startup,
+} from '../../components';
 import { HeaderHeightProvider, VisibleMothContextProvider } from '../../lib';
 import Month from '../Month';
 import BudgetHeader from './Header';
@@ -71,20 +77,11 @@ export default function Budget({ state, dispatch }: Props) {
   }, [extendFuture]);
 
   if (error) {
-    return (
-      <div>
-        <p>Error: {error.message}</p>
-        {retry && <button onClick={retry}>retry</button>}
-      </div>
-    );
+    return <FullScreenError error={Object.assign(error, { retry }) as any} />;
   }
 
   if (loading) {
-    return (
-      <>
-        <Loading />
-      </>
-    );
+    return <Startup />;
   }
 
   return (
