@@ -52,25 +52,25 @@ export default function InfiniteSlider({
     }
   }, [getScrollTo, containerRef]);
 
-  const onScroll = useCallback(
-    (ev) => {
-      const { target } = ev;
-      if (syncScrollY.current) {
-        syncScrollY.current.scrollTop = target.scrollTop;
-      }
-      if (onScrollRef && onScrollRef.current) {
-        onScrollRef.current(target);
-      }
+  const onScroll = useCallback(() => {
+    const target = containerRef.current;
+    if (!target) {
+      return;
+    }
+    if (syncScrollY.current) {
+      syncScrollY.current.scrollTop = target.scrollTop;
+    }
+    if (onScrollRef && onScrollRef.current) {
+      onScrollRef.current(target);
+    }
 
-      if (
-        target.getBoundingClientRect().width + target.scrollLeft >
-        target.scrollWidth - LOAD_MORE_THRESHOLD
-      ) {
-        loadMore();
-      }
-    },
-    [loadMore, syncScrollY, onScrollRef],
-  );
+    if (
+      target.getBoundingClientRect().width + target.scrollLeft >
+      target.scrollWidth - LOAD_MORE_THRESHOLD
+    ) {
+      loadMore();
+    }
+  }, [containerRef, loadMore, syncScrollY, onScrollRef]);
 
   const isVisible = useVisibilityObserver(
     useMemo(
@@ -82,6 +82,11 @@ export default function InfiniteSlider({
       [containerRef],
     ),
   );
+
+  useEffect(() => {
+    onScroll();
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [containerRef]);
 
   return (
     <div
