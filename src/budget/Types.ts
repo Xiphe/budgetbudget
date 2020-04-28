@@ -63,6 +63,16 @@ export type IncomeCategory = t.TypeOf<typeof incomeCategoryShape>;
 export type Settings = t.TypeOf<typeof settingsShape>;
 
 export function validateBudgetState(data: unknown): BudgetState {
+  if (typeof data !== 'object' || data === null) {
+    throw new Error('Invalid budget file format');
+  }
+  const version: unknown = (data as any).version;
+  if (!version || version === '0.0.1') {
+    throw new Error(
+      'File format not supported. Please use an earlier version of BudgetBudget to open this file',
+    );
+  }
+
   const c = budgetStateShape.decode(data);
   if (isLeft(c)) {
     throw ThrowReporter.report(c);
