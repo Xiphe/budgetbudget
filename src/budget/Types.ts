@@ -8,7 +8,7 @@ import {
 import { isLeft } from 'fp-ts/lib/Either';
 import { ThrowReporter } from 'io-ts/lib/ThrowReporter';
 
-export const VERSION = '0.0.1';
+export const VERSION = '0.0.2';
 
 const categoryShape = t.intersection([
   t.type({
