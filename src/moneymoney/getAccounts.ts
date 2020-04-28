@@ -16,23 +16,26 @@ export default async function getAccounts(
         const {
           accountNumber,
           balance,
+          currency: accountCurrency,
           name,
+          indentation,
           uuid,
           icon,
           group,
           portfolio,
         } = validateAccount(data);
-        if (group || portfolio || !accountNumber.length) {
-          return false;
-        }
+
         const currencyBalance = balance.find(([_, c]) => c === currency);
-        if (!currencyBalance) {
+        if (accountCurrency !== currency || !currencyBalance) {
           return false;
         }
 
         return {
           uuid,
           icon,
+          group,
+          indentation,
+          portfolio,
           name,
           number: accountNumber,
           balance: currencyBalance[0],

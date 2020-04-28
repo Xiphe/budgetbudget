@@ -22,7 +22,7 @@ export default function calculateBalances(
 
     balance.total += transaction.amount;
 
-    const categoryId = transaction.category;
+    const categoryId = transaction.categoryUuid;
 
     let amount: AmountWithTransactions;
     if (defaultCategoryIds.includes(categoryId)) {

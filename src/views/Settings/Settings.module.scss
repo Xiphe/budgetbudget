@@ -73,3 +73,9 @@
 .recalculateButton {
   margin-left: 1em;
 }
+.disabledCheckbox {
+  color: var(--secondary-color);
+}
+.accountListEntry {
+  margin-left: calc(var(--indentation) * 1em);
+}

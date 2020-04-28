@@ -21,11 +21,11 @@ const transactionShape = t.intersection(
   [
     t.type(
       {
-        account: t.string,
         id: t.number,
         amount: t.number,
         currency: t.string,
-        category: t.string,
+        categoryUuid: t.string,
+        accountUuid: t.string,
         accountNumber: t.string,
         booked: t.boolean,
         bookingDate: date,
@@ -34,6 +34,8 @@ const transactionShape = t.intersection(
     ),
     t.partial(
       {
+        categoryId: t.number,
+        category: t.string,
         purpose: t.string,
         name: t.string,
         valueDate: date,
@@ -50,6 +52,7 @@ const interopAccountShape = t.type(
     balance: t.array(t.tuple([t.number, t.string])),
     currency: t.string,
     group: t.boolean,
+    indentation: t.number,
     icon: unit8Array,
     portfolio: t.boolean,
     uuid: t.string,
@@ -85,6 +88,9 @@ type InteropAccount = t.TypeOf<typeof interopAccountShape>;
 export type Account = {
   name: string;
   balance: number;
+  group: boolean;
+  indentation: number;
+  portfolio: boolean;
   icon: Uint8Array;
   uuid: string;
   number: string;
@@ -93,7 +99,6 @@ export type Account = {
 export function validateTransaction(data: unknown): Transaction {
   const c = transactionShape.decode(data);
   if (isLeft(c)) {
-    console.log(data);
     throw ThrowReporter.report(c);
   }
   return data as Transaction;
@@ -112,19 +117,6 @@ export function validateCategory(data: unknown): Category {
   }
   return data as Category;
 }
-
-// export type Category = {
-//   id: number;
-//   name: string;
-// };
-// export type CategoryGroup = {
-//   name: string;
-//   children: CategoryTree[];
-// };
-// export type CategoryTree = Category | CategoryGroup;
-// export function isCategory(tree: CategoryTree): tree is Category {
-//   return typeof (tree as Category).id === 'number';
-// }
 
 export type AmountWithTransactions = {
   amount: number;

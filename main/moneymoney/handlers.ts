@@ -2,7 +2,6 @@ import { IpcMain } from 'electron';
 import { join } from 'path';
 import { exec } from 'child_process';
 import { parse } from 'plist';
-import format from 'date-fns/format';
 import osascript from './osascript';
 import scriptsDir from '../scriptsDir';
 
@@ -46,59 +45,12 @@ function withRetry<T extends (...args: any[]) => Promise<any>>(
 }
 
 export default function moneymoneyHandlers(ipcMain: IpcMain) {
-  const unusableAccounts: string[] = [];
-  const usableAccounts: string[] = [];
-  const canHandleTransactions = async (accountNumber: string) => {
-    if (unusableAccounts.includes(accountNumber)) {
-      return false;
-    }
-    if (usableAccounts.includes(accountNumber)) {
-      return true;
-    }
-
-    try {
-      await osascript(
-        join(scriptsDir, 'exportTransactions.applescript'),
-        accountNumber,
-        format(new Date(), 'yyyy-MM-dd'),
-      );
-      usableAccounts.push(accountNumber);
-      return true;
-    } catch (err) {
-      unusableAccounts.push(accountNumber);
-      return false;
-    }
-  };
-
   ipcMain.handle(
     'MM_EXPORT_ACCOUNTS',
     withRetry(async () => {
-      const accounts = parse(
+      return parse(
         await osascript(join(scriptsDir, 'exportAccounts.applescript')),
       );
-      if (!Array.isArray(accounts)) {
-        throw new Error('Unexpectedly got non-array as accounts');
-      }
-      const usableAccountsOrFalse = await Promise.all(
-        accounts.map(
-          async (data: unknown): Promise<object | false> => {
-            if (typeof data !== 'object' || data === null) {
-              return false;
-            }
-            const uuid: unknown = (data as any).uuid;
-            if (typeof uuid !== 'string' || !uuid.length) {
-              return false;
-            }
-            if (!(await canHandleTransactions(uuid))) {
-              return false;
-            }
-
-            return data;
-          },
-        ),
-      );
-
-      return usableAccountsOrFalse.filter(Boolean);
     }),
   );
 
