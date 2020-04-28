@@ -39,8 +39,8 @@ function useReCalculate(
           0,
         );
         const accountsSum = allAccounts.reduce(
-          (memo, { balance, number }) =>
-            accounts.includes(number) ? memo + balance : memo,
+          (memo, { balance, uuid }) =>
+            accounts.includes(uuid) ? memo + balance : memo,
           0,
         );
         if (!canceled) {
