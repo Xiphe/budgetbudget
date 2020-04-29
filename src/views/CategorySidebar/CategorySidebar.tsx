@@ -34,13 +34,17 @@ export default function CategorySidebar({
         innerRef={innerRef}
         className={styles.categorySidebar}
       >
-        {categories.map(({ uuid, name, group, indentation }) => (
+        {categories.map(({ uuid, name, group, indentation, icon }) => (
           <Row
             key={uuid}
             indent={indentation}
             leaf={!group}
             className={styles.row}
           >
+            <span
+              style={{ backgroundImage: `url(${icon})` }}
+              className={styles.icon}
+            />
             {name}
           </Row>
         ))}

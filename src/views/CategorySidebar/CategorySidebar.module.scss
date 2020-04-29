@@ -4,6 +4,7 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  display: flex;
 }
 
 .sidebarWrap {
@@ -27,4 +28,13 @@
   h3 {
     margin: 0;
   }
+}
+
+.icon {
+  display: block;
+  width: 1.6rem;
+  height: 1.5rem;
+  background-position: center left;
+  background-size: 1.3rem;
+  background-repeat: no-repeat;
 }

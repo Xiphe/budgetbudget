@@ -79,3 +79,9 @@
 .accountListEntry {
   margin-left: calc(var(--indentation) * 1em);
 }
+.accountListIcon {
+  height: 1em;
+  width: 1em;
+  margin: 0 0.5rem 0 0.2rem;
+  transform: translate(0, 0.05em) scale(1.2);
+}

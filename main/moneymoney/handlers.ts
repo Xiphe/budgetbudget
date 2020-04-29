@@ -13,6 +13,29 @@ function delay(t: number) {
   return new Promise((r) => setTimeout(r, t));
 }
 
+function base64Icons(data: unknown) {
+  if (!Array.isArray(data)) {
+    throw new Error('Unexpectedly got non-array as data');
+  }
+
+  return data.map((entry: unknown) => {
+    if (entry === null || typeof entry !== 'object') {
+      throw new Error('Unexpectedly got non-object in data array');
+    }
+
+    const icon: unknown = (entry as any).icon;
+
+    if (!(icon instanceof Buffer)) {
+      throw new Error(`Unexpectedly got ${typeof icon} as icon`);
+    }
+
+    return {
+      ...entry,
+      icon: `data:image/png;base64,${icon.toString('base64')}`,
+    };
+  });
+}
+
 async function moneymoneyExists() {
   if (
     (
@@ -48,8 +71,8 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
   ipcMain.handle(
     'MM_EXPORT_ACCOUNTS',
     withRetry(async () => {
-      return parse(
-        await osascript(join(scriptsDir, 'exportAccounts.applescript')),
+      return base64Icons(
+        parse(await osascript(join(scriptsDir, 'exportAccounts.applescript'))),
       );
     }),
   );
@@ -69,8 +92,10 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
   ipcMain.handle(
     'MM_EXPORT_CATEGORIES',
     withRetry(async () => {
-      return parse(
-        await osascript(join(scriptsDir, 'exportCategories.applescript')),
+      return base64Icons(
+        parse(
+          await osascript(join(scriptsDir, 'exportCategories.applescript')),
+        ),
       );
     }),
   );

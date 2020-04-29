@@ -72,40 +72,46 @@ export default function AccountSettings({
             None of your accounts are using this currency
           </p>
         )}
-        {allAccounts.map(({ uuid, name, indentation, group, portfolio }) => (
-          <li key={uuid} style={{ '--indentation': indentation } as any}>
-            {group ? (
-              <span className={styles.accountListEntry}>{name}</span>
-            ) : (
-              <label
-                className={classNames(
-                  styles.accountListEntry,
-                  portfolio && styles.disabledCheckbox,
-                )}
-              >
-                <input
-                  type="checkbox"
-                  disabled={portfolio}
-                  checked={value.includes(uuid)}
-                  onChange={() => {
-                    const i = value.indexOf(uuid);
-                    if (i === -1) {
-                      onChange({ target: { value: value.concat(uuid) } });
-                    } else {
-                      onChange({
-                        target: {
-                          value: value.filter((n: string) => n !== uuid),
-                        },
-                      });
-                    }
-                  }}
-                  {...rest}
-                />
-                {name}
-              </label>
-            )}
-          </li>
-        ))}
+        {allAccounts.map(
+          ({ uuid, name, indentation, group, portfolio, icon }) => (
+            <li key={uuid} style={{ '--indentation': indentation } as any}>
+              {group ? (
+                <span className={styles.accountListEntry}>
+                  <img src={icon} alt="" className={styles.accountListIcon} />
+                  {name}
+                </span>
+              ) : (
+                <label
+                  className={classNames(
+                    styles.accountListEntry,
+                    portfolio && styles.disabledCheckbox,
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    disabled={portfolio}
+                    checked={value.includes(uuid)}
+                    onChange={() => {
+                      const i = value.indexOf(uuid);
+                      if (i === -1) {
+                        onChange({ target: { value: value.concat(uuid) } });
+                      } else {
+                        onChange({
+                          target: {
+                            value: value.filter((n: string) => n !== uuid),
+                          },
+                        });
+                      }
+                    }}
+                    {...rest}
+                  />
+                  <img src={icon} alt="" className={styles.accountListIcon} />
+                  {name}
+                </label>
+              )}
+            </li>
+          ),
+        )}
       </ul>
       {error && <p className={styles.error}>{error}</p>}
     </>

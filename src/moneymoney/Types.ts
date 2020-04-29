@@ -9,13 +9,6 @@ const date = new t.Type<Date, Date, unknown>(
     input instanceof Date ? t.success(input) : t.failure(input, context),
   t.identity,
 );
-const unit8Array = new t.Type<Uint8Array, Uint8Array, unknown>(
-  'date',
-  (input: unknown): input is Uint8Array => input instanceof Uint8Array,
-  (input, context) =>
-    input instanceof Uint8Array ? t.success(input) : t.failure(input, context),
-  t.identity,
-);
 
 const transactionShape = t.intersection(
   [
@@ -53,7 +46,7 @@ const interopAccountShape = t.type(
     currency: t.string,
     group: t.boolean,
     indentation: t.number,
-    icon: unit8Array,
+    icon: t.string,
     portfolio: t.boolean,
     uuid: t.string,
   },
@@ -77,7 +70,7 @@ const categoryShape = t.type({
   currency: t.string,
   default: t.boolean,
   group: t.boolean,
-  icon: unit8Array,
+  icon: t.string,
   indentation: t.number,
   uuid: t.string,
 });
@@ -91,7 +84,7 @@ export type Account = {
   group: boolean;
   indentation: number;
   portfolio: boolean;
-  icon: Uint8Array;
+  icon: string;
   uuid: string;
   number: string;
 };
