@@ -1,8 +1,11 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import classNames from 'classnames';
-import { Menu, MenuItem } from 'electron';
-import { isCategory } from '../../moneymoney';
-import { BudgetCategoryRow } from '../../budget/useBudgets';
+import { remote } from 'electron';
+import {
+  BudgetCategoryRow,
+  BudgetCategoryGroup,
+  isBudgetCategoryRow,
+} from '../../budget';
 import { Row } from '../../components';
 import { Props } from './Types';
 import styles from './Month.module.scss';
@@ -11,80 +14,62 @@ import { ActionCreators } from './useActions';
 import BudgetInput from './BudgetInput';
 
 type CategoriesProps = Omit<Props, 'budget'> & {
-  budgetCategories?: BudgetCategoryRow[];
-  indent?: number;
+  budgetCategories?: (BudgetCategoryRow | BudgetCategoryGroup)[];
   actions: ActionCreators;
 };
 
 type BudgetRowProps = {
   actions: CategoriesProps['actions'];
   numberFormatter: NumberFormatter;
-  budgetCategory?: BudgetCategoryRow;
-  categoryId?: number;
+
+  entry: BudgetCategoryRow;
   indent: number;
 };
-function noop() {}
 function BudgetRow({
   numberFormatter,
-  budgetCategory,
+  entry: { uuid, overspendRollover, budgeted, spend, balance },
   actions: { setBudgeted, toggleRollover },
   indent,
-  categoryId,
 }: BudgetRowProps) {
   const { format } = numberFormatter;
-  const budgeted = budgetCategory ? budgetCategory.budgeted : 0;
-  const rollover = budgetCategory ? budgetCategory.overspendRollover : false;
-  const spend = budgetCategory ? budgetCategory.spend : 0;
-  const balance = budgetCategory ? budgetCategory.balance : 0;
-  const isLeaf = categoryId !== undefined;
+
   const showContextMenu = useCallback(
     (ev) => {
-      if (!categoryId) {
-        return;
-      }
       ev.preventDefault();
-      const menu = new Menu();
+      const menu = new remote.Menu();
       menu.append(
-        new MenuItem({
-          label: rollover
+        new remote.MenuItem({
+          label: overspendRollover
             ? 'Stop overspending rollover'
             : 'Rollover overspending',
           click() {
-            toggleRollover({ id: categoryId, rollover: !rollover });
+            toggleRollover({
+              id: uuid,
+              rollover: !overspendRollover,
+            });
           },
         }),
       );
       menu.popup();
     },
-    [categoryId, toggleRollover, rollover],
+    [uuid, overspendRollover, toggleRollover],
   );
 
   return (
-    <Row
-      className={classNames(
-        styles.budgetRow,
-        categoryId === undefined && styles.budgetRowGroup,
-      )}
-      indent={indent}
-      leaf={isLeaf}
-    >
+    <Row className={styles.budgetRow} indent={indent} leaf={true}>
       <span className={classNames(budgeted === 0 && styles.zero)}>
-        {categoryId !== undefined ? (
-          <BudgetInput
-            onChange={setBudgeted}
-            value={budgeted}
-            categoryId={categoryId}
-            numberFormatter={numberFormatter}
-          />
-        ) : (
-          format(budgeted)
-        )}
+        <BudgetInput
+          onChange={setBudgeted}
+          value={budgeted}
+          categoryId={uuid}
+          numberFormatter={numberFormatter}
+        />
       </span>
       <span className={classNames(spend === 0 && styles.zero)}>
         {format(spend)}
       </span>
       <span
-        onContextMenu={isLeaf ? showContextMenu : noop}
+        onContextMenu={showContextMenu}
         className={classNames(
           balance === 0 && styles.zero,
           balance < 0 && styles.negativeBalance,
@@ -97,49 +82,47 @@ function BudgetRow({
 }
 
 export default function Categories({
-  categories,
   budgetCategories = [],
-  indent = 0,
-  ...rest
+  numberFormatter,
+  actions,
 }: CategoriesProps) {
-  const { numberFormatter, actions } = rest;
+  const { format } = numberFormatter;
   return (
     <>
-      {categories.map((tree) => {
-        if (isCategory(tree)) {
+      {budgetCategories.map((entry) => {
+        if (!isBudgetCategoryRow(entry)) {
           return (
-            <BudgetRow
-              key={tree.id}
-              indent={indent}
-              actions={actions}
-              budgetCategory={budgetCategories.find(({ id }) => id === tree.id)}
-              numberFormatter={numberFormatter}
-              categoryId={tree.id}
-            />
+            <Row
+              key={entry.uuid}
+              className={classNames(styles.budgetRow, styles.budgetRowGroup)}
+              indent={entry.indent}
+            >
+              <span className={classNames(entry.budgeted === 0 && styles.zero)}>
+                {format(entry.budgeted)}
+              </span>
+              <span className={classNames(entry.spend === 0 && styles.zero)}>
+                {format(entry.spend)}
+              </span>
+              <span
+                className={classNames(
+                  entry.balance === 0 && styles.zero,
+                  entry.balance < 0 && styles.negativeBalance,
+                )}
+              >
+                {format(entry.balance)}
+              </span>
+            </Row>
           );
         }
 
-        const budgetCategory = budgetCategories.find(
-          ({ name }) => name === tree.name,
-        );
-
         return (
-          <Fragment key={tree.name}>
-            <BudgetRow
-              indent={indent}
-              actions={actions}
-              budgetCategory={budgetCategory}
-              numberFormatter={numberFormatter}
-            />
-            <Categories
-              indent={indent + 1}
-              categories={tree.children}
-              budgetCategories={
-                budgetCategory ? budgetCategory.children : undefined
-              }
-              {...rest}
-            />
-          </Fragment>
+          <BudgetRow
+            key={entry.uuid}
+            indent={entry.indent}
+            actions={actions}
+            entry={entry}
+            numberFormatter={numberFormatter}
+          />
         );
       })}
     </>

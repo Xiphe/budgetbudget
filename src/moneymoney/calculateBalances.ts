@@ -3,6 +3,7 @@ import { formatDateKey } from '../lib';
 
 export default function calculateBalances(
   transactions: Transaction[],
+  defaultCategoryIds: string[],
 ): Balances {
   return transactions.reduce((memo, transaction) => {
     const key = formatDateKey(transaction.bookingDate);
@@ -21,10 +22,10 @@ export default function calculateBalances(
 
     balance.total += transaction.amount;
 
-    const categoryId = transaction.categoryId;
+    const categoryId = transaction.categoryUuid;
 
     let amount: AmountWithTransactions;
-    if (categoryId === undefined) {
+    if (defaultCategoryIds.includes(categoryId)) {
       amount = balance.uncategorised;
     } else {
       if (!balance.categories[categoryId]) {

@@ -1,5 +1,5 @@
 .sidebar {
-  background-color: var(--background-color);
   width: calc(var(--sidebar-width) - 1px);
   border-right: 1px solid var(--border-color);
+  height: 100%;
 }

@@ -2,9 +2,21 @@
 
 .month {
   min-height: calc(100vh - var(--header-height));
-  min-width: calc(calc(100vw - var(--sidebar-width)) / 2 + 1px);
-  max-width: calc(calc(100vw - var(--sidebar-width)) / 2 + 1px);
-  border-right: 1px solid var(--border-color);
+  min-width: calc(100vw - var(--sidebar-width));
+  max-width: calc(100vw - var(--sidebar-width));
+  @media (min-width: 800px) {
+    min-width: calc(calc(100vw - var(--sidebar-width)) / 2);
+    max-width: calc(calc(100vw - var(--sidebar-width)) / 2);
+  }
+  @media (min-width: 1100px) {
+    min-width: calc(calc(100vw - var(--sidebar-width)) / 3);
+    max-width: calc(calc(100vw - var(--sidebar-width)) / 3);
+  }
+}
+
+.monthInner {
+  min-height: 100%;
+  border-right: 1px solid var(--element-border-color);
 }
 .title {
   text-align: center;
@@ -13,7 +25,7 @@
 }
 .header {
   position: sticky;
-  z-index: 1;
+  z-index: 20;
   top: 0px;
   height: var(--month-header-height);
   transition: height 200ms ease-out;
@@ -27,7 +39,6 @@
   right: 0;
   border: none;
   margin: 0;
-  border-bottom: 1px solid var(--border-color);
 }
 .headTable {
   width: 100%;

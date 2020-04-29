@@ -4,8 +4,23 @@ import styles from './Header.module.scss';
 
 type Props = {
   className?: string;
-  children: ReactNode;
+  center?: boolean;
+  children?: ReactNode;
 };
-export default function Header({ children, className }: Props) {
-  return <div className={classNames(className, styles.header)}>{children}</div>;
+export default function Header({ children, className, center }: Props) {
+  return (
+    <div
+      className={classNames(
+        className,
+        styles.header,
+        center && styles.trafficLightCounterSpacer,
+      )}
+    >
+      <div className={styles.trafficLightSpacer} />
+      {children}
+    </div>
+  );
+}
+export function HeaderSpacer() {
+  return <div className={styles.spacer} />;
 }

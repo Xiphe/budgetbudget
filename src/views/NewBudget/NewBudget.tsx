@@ -1,14 +1,12 @@
 import React, { useState, useReducer } from 'react';
 import { remote, ipcRenderer } from 'electron';
-import { Helmet } from 'react-helmet';
 import { BudgetState, VERSION } from '../../budget';
-import { Content, Button, Header } from '../../components';
+import { Content, Button, Header, HeaderSpacer } from '../../components';
 import startOfMonth from 'date-fns/startOfMonth';
 import subMonths from 'date-fns/subMonths';
 import General from '../Settings/General';
 import Categories from '../Settings/Categories';
 import budgetReducer from '../../budget/budgetReducer';
-import styles from './NewBudget.module.scss';
 import useMenu from '../../budget/useMenu';
 
 type Props = {
@@ -41,8 +39,9 @@ export default function NewBudget({ onCreate }: Props) {
     <Content
       padding
       header={
-        <Header className={styles.header}>
-          <h1>Create a new Budget</h1>
+        <Header>
+          <span>Create a new Budget</span>
+          <HeaderSpacer />
           {page === 'general' && (
             <Button
               primary
@@ -66,9 +65,6 @@ export default function NewBudget({ onCreate }: Props) {
         </Header>
       }
     >
-      <Helmet>
-        <title>New Budget - {remote.app.name}</title>
-      </Helmet>
       {page === 'general' && <General state={state} dispatch={dispatch} />}
       {page === 'categories' && (
         <Categories state={state} dispatch={dispatch} />

@@ -1,1 +1,1 @@
-export { default } from './Header';
+export { default, HeaderSpacer } from './Header';

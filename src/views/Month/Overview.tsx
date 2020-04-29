@@ -4,12 +4,17 @@ import format from 'date-fns/format';
 import subMonths from 'date-fns/subMonths';
 import { useRegisterHeaderHeight } from '../../lib';
 import styles from './Month.module.scss';
-import { Props } from './Types';
+import { Props as CommonProps } from './Types';
+import { MonthData, DetailedMonthData } from '../../budget';
 
+type Props = {
+  month: MonthData;
+  data?: DetailedMonthData;
+} & Pick<CommonProps, 'numberFormatter'>;
 export default function Overview({
-  date,
+  month: { name, date },
+  data,
   numberFormatter,
-  budget: { available, overspendPrevMonth, total, toBudget, uncategorized },
 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   const registerHeaderHeight = useRegisterHeaderHeight();
@@ -29,49 +34,61 @@ export default function Overview({
       cleanup();
     };
   }, [registerHeaderHeight]);
-  const budgetClasses = classNames(
-    toBudget !== 0 && styles.bigBudget,
-    toBudget < 0 && styles.negative,
-  );
+  const budgetClasses = data
+    ? classNames(
+        data.toBudget !== 0 && styles.bigBudget,
+        data.toBudget < 0 && styles.negative,
+      )
+    : '';
 
   return (
     <div ref={ref}>
-      <h3 className={styles.title}>{format(date, 'MMMM')}</h3>
-      <div className={styles.headTable}>
-        <div>{numberFormatter.format(available.amount)}</div>
-        <div>Available Funds</div>
-        <div>{numberFormatter.format(overspendPrevMonth)}</div>
-        <div>Overspend in {format(subMonths(date, 1), 'MMM')}</div>
-        {uncategorized.amount !== 0 && (
-          <>
-            <div>{numberFormatter.format(uncategorized.amount)}</div>
-            <div>Uncategorized</div>
-          </>
-        )}
-        <div>{numberFormatter.format(total.budgeted * -1)}</div>
-        <div>Budgeted</div>
-        <div className={budgetClasses}>{numberFormatter.format(toBudget)}</div>
-        <div className={budgetClasses}>
-          {toBudget >= 0 ? 'To Budget' : 'Overbudgeted'}
-        </div>
-      </div>
-      <div className={classNames(styles.budgetTotals)}>
-        <div>
-          Budgeted
-          <br />
-          <span>{numberFormatter.format(total.budgeted)}</span>
-        </div>
-        <div>
-          Spend
-          <br />
-          <span>{numberFormatter.format(total.spend)}</span>
-        </div>
-        <div>
-          Balance
-          <br />
-          <span>{numberFormatter.format(total.balance)}</span>
-        </div>
-      </div>
+      <h3 className={styles.title}>{name}</h3>
+      {data && (
+        <>
+          <div className={styles.headTable}>
+            <div>
+              {numberFormatter.format(
+                data.available[0] ? data.available[0].amount : 0,
+              )}
+            </div>
+            <div>Available Funds</div>
+            <div>{numberFormatter.format(data.overspendPrevMonth)}</div>
+            <div>Overspend in {format(subMonths(date, 1), 'MMM')}</div>
+            {data.uncategorized.amount !== 0 && (
+              <>
+                <div>{numberFormatter.format(data.uncategorized.amount)}</div>
+                <div>Uncategorized</div>
+              </>
+            )}
+            <div>{numberFormatter.format(data.total.budgeted * -1)}</div>
+            <div>Budgeted</div>
+            <div className={budgetClasses}>
+              {numberFormatter.format(data.toBudget)}
+            </div>
+            <div className={budgetClasses}>
+              {data.toBudget >= 0 ? 'To Budget' : 'Overbudgeted'}
+            </div>
+          </div>
+          <div className={classNames(styles.budgetTotals)}>
+            <div>
+              Budgeted
+              <br />
+              <span>{numberFormatter.format(data.total.budgeted)}</span>
+            </div>
+            <div>
+              Spend
+              <br />
+              <span>{numberFormatter.format(data.total.spend)}</span>
+            </div>
+            <div>
+              Balance
+              <br />
+              <span>{numberFormatter.format(data.total.balance)}</span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

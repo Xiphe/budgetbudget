@@ -1,9 +1,21 @@
 .header {
+  -webkit-app-region: drag;
   position: fixed;
   top: 0;
-  background: rgba(var(--undim-colors), 0.1);
-  border-bottom: 1px solid var(--border-color);
+  background: var(--header-background-color);
+  border-bottom: 1px solid var(--element-border-color);
   z-index: 10;
   height: var(--header-height);
   width: 100%;
+  display: flex;
+  align-items: center;
+}
+.trafficLightCounterSpacer {
+  padding-right: 78px;
+}
+.trafficLightSpacer {
+  margin-left: 78px;
+}
+.spacer {
+  flex-grow: 1;
 }

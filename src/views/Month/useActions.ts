@@ -11,7 +11,7 @@ export default function useSetBudgeted({
 }: Pick<Props, 'monthKey' | 'dispatch'>) {
   return useMemo(
     () => ({
-      setBudgeted({ amount, id }: { amount: number; id: number }) {
+      setBudgeted({ amount, id }: { amount: number; id: string }) {
         dispatch({
           type: ACTION_SET_CATEGORY_VALUE,
           payload: {
@@ -21,7 +21,7 @@ export default function useSetBudgeted({
           },
         });
       },
-      toggleRollover({ id, rollover }: { id: number; rollover: boolean }) {
+      toggleRollover({ id, rollover }: { id: string; rollover: boolean }) {
         dispatch({
           type: ACTION_SET_CATEGORY_ROLLOVER,
           payload: {

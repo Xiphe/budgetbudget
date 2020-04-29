@@ -1,13 +1,26 @@
-import { BudgetState as BudgetStateT } from './Types';
+import {
+  BudgetState as BudgetStateT,
+  BudgetRow as BudgetRowT,
+  Budget as BudgetT,
+  BudgetCategoryRow as BudgetCategoryRowT,
+  BudgetListEntry as BudgetListEntryT,
+  MonthData as MonthDataT,
+  InterMonthData,
+  BudgetCategoryGroup as BudgetCategoryGroupT,
+} from './Types';
 import { Action as ActionT } from './budgetReducer';
-import { BudgetListEntry as BudgetListEntryT } from './useBudgets';
 
 export * from './budgetReducer';
-export { VERSION } from './Types';
+export { VERSION, isBudgetCategoryRow } from './Types';
 export { default } from './useBudgetState';
-export { EMPTY_BUDGET } from './useBudgets';
 export { default as useBudgetData } from './useBudgetData';
 
 export type Action = ActionT;
 export type BudgetState = BudgetStateT;
 export type BudgetListEntry = BudgetListEntryT;
+export type BudgetRow = BudgetRowT;
+export type BudgetCategoryRow = BudgetCategoryRowT;
+export type BudgetCategoryGroup = BudgetCategoryGroupT;
+export type MonthData = MonthDataT;
+export type Budget = BudgetT;
+export type DetailedMonthData = InterMonthData;

@@ -42,7 +42,7 @@ export default function getSettings() {
   function watchRecentFiles(cb: (recentFiles: string[]) => void) {
     const obs = settings.watch('recentFiles', cb);
 
-    return obs.dispose;
+    return obs.dispose.bind(obs);
   }
 
   return {

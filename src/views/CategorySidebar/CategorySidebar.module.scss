@@ -1,6 +1,30 @@
 .row {
-  padding-left: calc(5px + var(--indent) * 10px);
+  padding-left: calc(1rem + var(--indent) * 1rem);
+  padding-right: 1rem;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+
+.sidebarWrap {
+  border-right: 1px solid var(--element-border-color);
+}
+
+.categorySidebar {
+  border-right: none;
+  height: calc(100% - var(--month-header-height));
+  transition: height 200ms ease-out;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.sidebarHeader {
+  height: var(--month-header-height);
+  transition: height 200ms ease-out;
+  padding: 0.5rem 1rem;
+  h3 {
+    margin: 0;
+  }
 }

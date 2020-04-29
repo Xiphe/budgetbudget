@@ -2,7 +2,6 @@
   line-height: var(--row-height);
   height: var(--row-height);
   background-color: rgba(var(--dim-colors), calc(0.1 - var(--indent) * 0.035));
-  border-bottom: 1px solid var(--border-color);
 }
 .leaf {
   background-color: transparent;

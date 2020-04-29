@@ -45,59 +45,12 @@ function withRetry<T extends (...args: any[]) => Promise<any>>(
 }
 
 export default function moneymoneyHandlers(ipcMain: IpcMain) {
-  const unusableAccounts: string[] = [];
-  const usableAccounts: string[] = [];
-  const canHandleTransactions = async (accountNumber: string) => {
-    if (unusableAccounts.includes(accountNumber)) {
-      return false;
-    }
-    if (usableAccounts.includes(accountNumber)) {
-      return true;
-    }
-
-    try {
-      await osascript(
-        join(scriptsDir, 'exportTransactions.applescript'),
-        accountNumber,
-        new Date().toLocaleDateString(),
-      );
-      usableAccounts.push(accountNumber);
-      return true;
-    } catch (err) {
-      unusableAccounts.push(accountNumber);
-      return false;
-    }
-  };
-
   ipcMain.handle(
     'MM_EXPORT_ACCOUNTS',
     withRetry(async () => {
-      const accounts = parse(
+      return parse(
         await osascript(join(scriptsDir, 'exportAccounts.applescript')),
       );
-      if (!Array.isArray(accounts)) {
-        throw new Error('Unexpectedly got non-array as accounts');
-      }
-      const usableAccountsOrFalse = await Promise.all(
-        accounts.map(
-          async (data: unknown): Promise<object | false> => {
-            if (typeof data !== 'object' || data === null) {
-              return false;
-            }
-            const accountNumber: unknown = (data as any).accountNumber;
-            if (typeof accountNumber !== 'string' || !accountNumber.length) {
-              return false;
-            }
-            if (!(await canHandleTransactions(accountNumber))) {
-              return false;
-            }
-
-            return data;
-          },
-        ),
-      );
-
-      return usableAccountsOrFalse.filter(Boolean);
     }),
   );
 
@@ -109,6 +62,15 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
           join(scriptsDir, 'exportTransactions.applescript'),
           ...args,
         ),
+      );
+    }),
+  );
+
+  ipcMain.handle(
+    'MM_EXPORT_CATEGORIES',
+    withRetry(async () => {
+      return parse(
+        await osascript(join(scriptsDir, 'exportCategories.applescript')),
       );
     }),
   );

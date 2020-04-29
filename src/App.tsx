@@ -1,7 +1,7 @@
 import './theme.scss';
 import React, { Suspense, useState } from 'react';
 import { useInit, INIT_EMPTY } from './lib';
-import { Loading } from './components';
+import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
 
 const Budget = React.lazy(() => import('./views/Budget'));
@@ -13,21 +13,21 @@ export default function App() {
   const [init, setInitialState] = useInit();
   return (
     <div className={styles.app}>
-      <Suspense fallback={<Loading />}>
-        {!init ? (
-          <Loading />
-        ) : init instanceof Error ? (
-          <p>Error: {init.message}</p>
-        ) : init === INIT_EMPTY ? (
-          welcome ? (
-            <Welcome onCreate={() => setWelcome(false)} />
+      <ErrorBoundary error={init instanceof Error ? init : undefined}>
+        <Suspense fallback={<Startup />}>
+          {!init ? (
+            <Startup />
+          ) : init instanceof Error ? null : init === INIT_EMPTY ? (
+            welcome ? (
+              <Welcome onCreate={() => setWelcome(false)} />
+            ) : (
+              <NewBudget onCreate={setInitialState} />
+            )
           ) : (
-            <NewBudget onCreate={setInitialState} />
-          )
-        ) : (
-          <Budget init={init} />
-        )}
-      </Suspense>
+            <Budget init={init} />
+          )}
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 }

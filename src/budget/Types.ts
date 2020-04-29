@@ -1,8 +1,14 @@
 import * as t from 'io-ts';
+import {
+  Balance,
+  Transaction,
+  AmountWithTransactions,
+  Category as MoneyMoneyCategory,
+} from '../moneymoney';
 import { isLeft } from 'fp-ts/lib/Either';
 import { ThrowReporter } from 'io-ts/lib/ThrowReporter';
 
-export const VERSION = '0.0.1';
+export const VERSION = '0.0.2';
 
 const categoryShape = t.intersection([
   t.type({
@@ -22,7 +28,7 @@ const budgetsShape = t.record(
 );
 const incomeCategoryShape = t.type(
   {
-    id: t.union([t.number, t.null]),
+    id: t.union([t.string, t.null]),
     availableIn: t.number,
   },
   'incomeCategories',
@@ -57,9 +63,77 @@ export type IncomeCategory = t.TypeOf<typeof incomeCategoryShape>;
 export type Settings = t.TypeOf<typeof settingsShape>;
 
 export function validateBudgetState(data: unknown): BudgetState {
+  if (typeof data !== 'object' || data === null) {
+    throw new Error('Invalid budget file format');
+  }
+  const version: unknown = (data as any).version;
+  if (!version || version === '0.0.1') {
+    throw new Error(
+      'File format not supported. Please use an earlier version of BudgetBudget to open this file',
+    );
+  }
+
   const c = budgetStateShape.decode(data);
   if (isLeft(c)) {
     throw ThrowReporter.report(c);
   }
   return data as BudgetState;
 }
+
+export type BudgetRow = { budgeted: number; spend: number; balance: number };
+
+export type AmountWithPartialTransactions = {
+  amount: number;
+  transactions: Pick<Transaction, 'amount' | 'name' | 'purpose'>[];
+};
+export type BudgetListEntry = {
+  key: string;
+  date: Date;
+  available: AmountWithPartialTransactions;
+  overspendPrevMonth: number;
+  toBudget: number;
+  total: BudgetRow;
+  uncategorized: AmountWithPartialTransactions;
+  categories: BudgetCategoryRow[];
+};
+
+export type BudgetCategoryGroup = BudgetRow & {
+  uuid: string;
+  indent: number;
+};
+export type BudgetCategoryRow = BudgetCategoryGroup & {
+  overspendRollover: boolean;
+  transactions: Transaction[];
+};
+export function isBudgetCategoryRow(
+  entry: BudgetCategoryGroup | BudgetCategoryRow,
+): entry is BudgetCategoryRow {
+  return typeof (entry as any).overspendRollover !== 'undefined';
+}
+export type OverspendRollover = { [key: string]: boolean };
+export type Rollover = { total: number; [key: string]: number };
+
+export type InterMonthData = {
+  uncategorized: AmountWithTransactions;
+  categories: (BudgetCategoryRow | BudgetCategoryGroup)[];
+  toBudget: number;
+  total: BudgetRow;
+  overspendPrevMonth: number;
+  overspendRolloverState: OverspendRollover;
+  available: AmountWithPartialTransactions[];
+  rollover: Rollover;
+};
+export type MonthData = {
+  key: string;
+  date: Date;
+  name: string;
+  get: () => InterMonthData;
+};
+export type MonthDataGetter<R> = (
+  getInitial: () => InterMonthData,
+  balance: Balance | undefined,
+  budget: Budget | undefined,
+  categories: MoneyMoneyCategory[],
+  incomeCategories: IncomeCategory[],
+  round: (value: number) => number,
+) => R;

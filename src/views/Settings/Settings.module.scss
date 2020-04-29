@@ -1,32 +1,5 @@
 @import '../../lib/mixins';
 
-.close {
-  position: absolute;
-  top: 1rem;
-  left: 1.5rem;
-  background: transparent;
-  border: none;
-  color: var(--main-color);
-  font-size: 1.5rem;
-  border-radius: 2px;
-  &:focus {
-    outline: none;
-  }
-  &:active {
-    opacity: 0.7;
-  }
-  &:global.focus-visible {
-    @include focusOutline();
-  }
-  &[disabled] {
-    opacity: 0.3;
-  }
-}
-.headline {
-  margin-top: 0;
-  padding-top: 1rem;
-  text-align: center;
-}
 .setting {
   margin: 1rem 0;
   display: flex;
@@ -99,4 +72,10 @@
 }
 .recalculateButton {
   margin-left: 1em;
+}
+.disabledCheckbox {
+  color: var(--secondary-color);
+}
+.accountListEntry {
+  margin-left: calc(var(--indentation) * 1em);
 }

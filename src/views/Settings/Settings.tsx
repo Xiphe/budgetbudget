@@ -1,10 +1,7 @@
 import React, { Dispatch, useState } from 'react';
-import { remote } from 'electron';
-import { Helmet } from 'react-helmet';
 import { BudgetState, Action } from '../../budget';
-import { Content, Tab, TabBar } from '../../components';
+import { Content, Tab, TabBar, Header, Button } from '../../components';
 import { useSetShowSettings } from '../../lib';
-import styles from './Settings.module.scss';
 import General from './General';
 import Categories from './Categories';
 
@@ -20,19 +17,22 @@ export default function Settings(props: Props) {
   const valid = accounts.length > 0;
 
   return (
-    <Content padding={true}>
-      <Helmet>
-        <title>Settings - {remote.app.name}</title>
-      </Helmet>
-      <h1 className={styles.headline}>Settings</h1>
-      <button
-        title="close"
-        disabled={!valid}
-        className={styles.close}
-        onClick={() => showSettings && showSettings(false)}
-      >
-        ✕
-      </button>
+    <Content
+      padding
+      background
+      header={
+        <Header>
+          <Button
+            title="close"
+            disabled={!valid}
+            onClick={() => showSettings && showSettings(false)}
+          >
+            X
+          </Button>
+          Settings
+        </Header>
+      }
+    >
       <TabBar>
         <Tab active={tab === 'general'} onClick={() => setTab('general')}>
           General
