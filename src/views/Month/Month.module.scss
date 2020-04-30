@@ -127,6 +127,7 @@
     @include focusOutline();
     cursor: text;
     z-index: 15;
+    color: var(--main-color);
     outline: none;
     background-color: var(--background-color);
   }

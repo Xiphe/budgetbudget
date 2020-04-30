@@ -9,20 +9,31 @@ type Props = {
   onChange: (ev: { amount: number; id: string }) => void;
 };
 
+function select({ target }: React.FocusEvent<HTMLInputElement>) {
+  setTimeout(() => {
+    target.select();
+  }, 0);
+}
+
 export default function BudgetInput({
   onChange,
   value,
   numberFormatter,
   categoryId,
 }: Props) {
-  const props = useAmountInputProps({
-    numberFormatter,
-    value,
-    onChange: useCallback(
-      (amount: number) => onChange({ amount, id: categoryId }),
-      [categoryId, onChange],
-    ),
-  });
-
-  return <input {...props} className={styles.budgetInput} type="string" />;
+  return (
+    <input
+      {...useAmountInputProps({
+        numberFormatter,
+        value,
+        onChange: useCallback(
+          (amount: number) => onChange({ amount, id: categoryId }),
+          [categoryId, onChange],
+        ),
+      })}
+      onFocus={select}
+      className={styles.budgetInput}
+      type="string"
+    />
+  );
 }
