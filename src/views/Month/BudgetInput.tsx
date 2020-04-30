@@ -15,6 +15,32 @@ function select({ target }: React.FocusEvent<HTMLInputElement>) {
   }, 0);
 }
 
+function handleEnterReturn(ev: React.KeyboardEvent<HTMLInputElement>) {
+  const target = ev.target as HTMLInputElement;
+  if (ev.nativeEvent.code === 'NumpadEnter') {
+    ev.stopPropagation();
+    ev.preventDefault();
+    target.blur();
+  } else if (ev.nativeEvent.code === 'Enter') {
+    ev.stopPropagation();
+    ev.preventDefault();
+    let container = target.parentElement;
+    while (container && !container.dataset.row) {
+      container = container.parentElement;
+    }
+    let nextLeaf = container
+      ? (container.nextElementSibling as HTMLElement)
+      : null;
+    while (nextLeaf && nextLeaf.dataset.row !== 'leaf') {
+      nextLeaf = nextLeaf.nextElementSibling as HTMLElement;
+    }
+    const input = nextLeaf ? nextLeaf.querySelector('input') : null;
+    if (input) {
+      input.focus();
+    }
+  }
+}
+
 export default function BudgetInput({
   onChange,
   value,
@@ -26,6 +52,7 @@ export default function BudgetInput({
       {...useAmountInputProps({
         numberFormatter,
         value,
+        onKeyDown: handleEnterReturn,
         onChange: useCallback(
           (amount: number) => onChange({ amount, id: categoryId }),
           [categoryId, onChange],

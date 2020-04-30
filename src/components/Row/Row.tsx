@@ -20,6 +20,7 @@ export default function Row({
 }: Props) {
   return (
     <div
+      data-row={leaf ? 'leaf' : 'group'}
       style={{ '--indent': indent } as any}
       className={classNames(
         className,

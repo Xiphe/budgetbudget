@@ -7,12 +7,14 @@ function isHTMLInputElement(elm: any): elm is HTMLInputElement {
 }
 type CurrencyInputConfig = {
   value: number;
+  onKeyDown?: (ev: React.KeyboardEvent<HTMLInputElement>) => void;
   onChange: (value: number) => void;
   numberFormatter: NumberFormatter;
 };
 export default function useCurrencyInput({
   value,
   onChange,
+  onKeyDown,
   numberFormatter: { fractionDelimiter, format, parse, fractionStep },
 }: CurrencyInputConfig) {
   const { error: _, ...inputProps } = useInputProps<number>({
@@ -28,7 +30,13 @@ export default function useCurrencyInput({
   const onInternalChange = inputProps.onChange;
   const handleKeyDown = useCallback(
     (ev: React.KeyboardEvent<HTMLInputElement>) => {
-      if (ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp') {
+      if (onKeyDown) {
+        onKeyDown(ev);
+      }
+      if (
+        ev.isPropagationStopped ||
+        (ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp')
+      ) {
         return;
       }
       const target = ev.target;
@@ -53,7 +61,14 @@ export default function useCurrencyInput({
       );
       onInternalChange(ev as any);
     },
-    [fractionDelimiter, format, fractionStep, onInternalChange, value],
+    [
+      fractionDelimiter,
+      format,
+      fractionStep,
+      onInternalChange,
+      value,
+      onKeyDown,
+    ],
   );
 
   return { onKeyDown: handleKeyDown, ...inputProps };
