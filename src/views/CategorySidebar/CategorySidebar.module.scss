@@ -1,6 +1,32 @@
+@import '../../lib/mixins.scss';
+
+.showHide {
+  opacity: 0;
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--secondary-color);
+  padding: 0 0.1rem 0.1rem;
+  border-radius: 2px;
+  &:focus {
+    outline: none;
+  }
+  &:global.focus-visible {
+    opacity: 1;
+    @include focusOutline();
+  }
+}
+
 .row {
   padding-left: calc(1rem + var(--indent) * 1rem);
   padding-right: 1rem;
+  &:hover {
+    .showHide {
+      opacity: 1;
+    }
+  }
+}
+.title {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -36,4 +62,8 @@
   background-position: -0.3rem top;
   background-size: 1.3rem;
   background-repeat: no-repeat;
+}
+
+.spacer {
+  flex-grow: 1;
 }

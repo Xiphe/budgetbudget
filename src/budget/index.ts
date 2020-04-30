@@ -11,7 +11,7 @@ import {
 import { Action as ActionT } from './budgetReducer';
 
 export * from './budgetReducer';
-export { VERSION, isBudgetCategoryRow } from './Types';
+export { VERSION } from './Types';
 export { default } from './useBudgetState';
 export { default as useBudgetData } from './useBudgetData';
 

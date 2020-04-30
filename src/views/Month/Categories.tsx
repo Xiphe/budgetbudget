@@ -1,15 +1,11 @@
 import React, { useCallback } from 'react';
 import classNames from 'classnames';
 import { remote } from 'electron';
-import {
-  BudgetCategoryRow,
-  BudgetCategoryGroup,
-  isBudgetCategoryRow,
-} from '../../budget';
+import { BudgetCategoryRow, BudgetCategoryGroup } from '../../budget';
 import { Row } from '../../components';
 import { Props } from './Types';
 import styles from './Month.module.scss';
-import { NumberFormatter } from '../../lib';
+import { NumberFormatter, mapCategories } from '../../lib';
 import { ActionCreators } from './useActions';
 import BudgetInput from './BudgetInput';
 
@@ -18,21 +14,23 @@ type CategoriesProps = Omit<Props, 'budget'> & {
   actions: ActionCreators;
 };
 
-type BudgetRowProps = {
+type BudgetRowProps = BudgetCategoryRow & {
   actions: CategoriesProps['actions'];
   numberFormatter: NumberFormatter;
   groupClosed: boolean;
   odd: boolean;
-  entry: BudgetCategoryRow;
-  indent: number;
 };
 function BudgetRow({
   numberFormatter,
   groupClosed,
   odd,
-  entry: { uuid, overspendRollover, budgeted, spend, balance },
+  uuid,
+  overspendRollover,
+  budgeted,
+  spend,
+  balance,
   actions: { setBudgeted, toggleRollover },
-  indent,
+  indentation,
 }: BudgetRowProps) {
   const { format } = numberFormatter;
 
@@ -62,7 +60,7 @@ function BudgetRow({
     <Row
       odd={odd}
       className={styles.budgetRow}
-      indent={indent}
+      indent={indentation}
       leaf={true}
       groupClosed={groupClosed}
     >
@@ -94,65 +92,55 @@ export default function Categories({
   budgetCategories = [],
   numberFormatter,
   actions,
+  collapsedCategories = [],
 }: CategoriesProps) {
   const { format } = numberFormatter;
-  let prevIndent = 0;
-  let i = -1;
   return (
     <>
-      {budgetCategories.map((entry) => {
-        const groupIndentation = !isBudgetCategoryRow(entry)
-          ? entry.indent + 1
-          : entry.indent;
-        const groupClosed = prevIndent > groupIndentation;
-        prevIndent = groupIndentation;
-
-        if (!isBudgetCategoryRow(entry)) {
-          i = -1;
-        } else if (groupClosed) {
-          i = 0;
-        } else {
-          i += 1;
-        }
-        if (!isBudgetCategoryRow(entry)) {
-          return (
-            <Row
-              odd={!(i % 2)}
-              key={entry.uuid}
-              className={classNames(styles.budgetRow, styles.budgetRowGroup)}
-              indent={entry.indent}
-              groupClosed={groupClosed}
-            >
-              <span className={classNames(entry.budgeted === 0 && styles.zero)}>
-                {format(entry.budgeted)}
-              </span>
-              <span className={classNames(entry.spend === 0 && styles.zero)}>
-                {format(entry.spend)}
-              </span>
-              <span
-                className={classNames(
-                  entry.balance === 0 && styles.zero,
-                  entry.balance < 0 && styles.negativeBalance,
-                )}
+      {mapCategories(
+        budgetCategories,
+        collapsedCategories,
+        (entry, i, groupClosed) => {
+          if (entry.group) {
+            const { uuid, indentation, budgeted, spend, balance } = entry;
+            return (
+              <Row
+                odd={!(i % 2)}
+                key={uuid}
+                className={classNames(styles.budgetRow, styles.budgetRowGroup)}
+                indent={indentation}
+                groupClosed={groupClosed}
               >
-                {format(entry.balance)}
-              </span>
-            </Row>
-          );
-        }
+                <span className={classNames(budgeted === 0 && styles.zero)}>
+                  {format(budgeted)}
+                </span>
+                <span className={classNames(spend === 0 && styles.zero)}>
+                  {format(spend)}
+                </span>
+                <span
+                  className={classNames(
+                    balance === 0 && styles.zero,
+                    balance < 0 && styles.negativeBalance,
+                  )}
+                >
+                  {format(balance)}
+                </span>
+              </Row>
+            );
+          }
 
-        return (
-          <BudgetRow
-            key={entry.uuid}
-            indent={entry.indent}
-            actions={actions}
-            entry={entry}
-            odd={!(i % 2)}
-            groupClosed={groupClosed}
-            numberFormatter={numberFormatter}
-          />
-        );
-      })}
+          return (
+            <BudgetRow
+              {...entry}
+              key={entry.uuid}
+              actions={actions}
+              odd={!(i % 2)}
+              groupClosed={groupClosed}
+              numberFormatter={numberFormatter}
+            />
+          );
+        },
+      )}
     </>
   );
 }

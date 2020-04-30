@@ -105,7 +105,8 @@ function getCategoryRows({
       const row = {
         ...emptyBudgetRow(),
         uuid,
-        indent: indentation,
+        group: true as const,
+        indentation,
       };
       parentRows[indentation + 1] = row;
       return row;
@@ -142,8 +143,9 @@ function getCategoryRows({
       }
 
       return {
-        indent: indentation,
+        indentation,
         overspendRollover,
+        group: false as const,
         budgeted: round(budgeted),
         spend: round(spend.amount),
         balance: budgetCategoryBalance,

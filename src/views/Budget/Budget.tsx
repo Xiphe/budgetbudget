@@ -101,6 +101,8 @@ export default function Budget({ state, dispatch }: Props) {
             syncScrollY={sliderRef}
             innerRef={sidebarRef}
             budgetName={state.name}
+            dispatch={dispatch}
+            collapsedCategories={state.settings.collapsedCategories}
             categories={categories || []}
           />
           <InfiniteSlider
@@ -117,6 +119,7 @@ export default function Budget({ state, dispatch }: Props) {
                 monthKey={month.key}
                 date={month.date}
                 dispatch={dispatch}
+                collapsedCategories={state.settings.collapsedCategories}
                 month={month}
                 categories={categories || []}
                 numberFormatter={numberFormatter}

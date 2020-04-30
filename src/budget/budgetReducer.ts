@@ -32,6 +32,9 @@ export const ACTION_SETTINGS_ADD_INCOME_CATEGORY = Symbol(
 export const ACTION_SETTINGS_SET_INCOME_AVAILABLE_IN = Symbol(
   'ACTION_SETTINGS_SET_INCOME_AVAILABLE_IN',
 );
+export const ACTION_SETTINGS_SET_CATEGORY_COLLAPSED = Symbol(
+  'ACTION_SETTINGS_SET_CATEGORY_COLLAPSED',
+);
 export const ACTION_SET_CATEGORY_VALUE = Symbol('ACTION_SET_CATEGORY_VALUE');
 export const ACTION_SET_CATEGORY_ROLLOVER = Symbol(
   'ACTION_SET_CATEGORY_ROLLOVER',
@@ -103,6 +106,13 @@ type SetSettingsCurrency = {
   type: typeof ACTION_SETTINGS_SET_CURRENCY;
   payload: string;
 };
+type SetSettingsCategoryCollapsedAction = {
+  type: typeof ACTION_SETTINGS_SET_CATEGORY_COLLAPSED;
+  payload: {
+    id: string;
+    collapsed: boolean;
+  };
+};
 type InitAction = {
   type: typeof ACTION_INIT;
   payload: BudgetState;
@@ -120,6 +130,7 @@ export type Action =
   | SetSettingsCurrency
   | UpdateSettingsIncomeCategory
   | SetSettingsIncomeAvailableIn
+  | SetSettingsCategoryCollapsedAction
   | RemoveSettingsIncomeCategory
   | AddSettingsIncomeCategory;
 
@@ -277,6 +288,16 @@ export default function budgetReducer(
             id: null,
             availableIn: 0,
           }),
+        },
+      };
+    case ACTION_SETTINGS_SET_CATEGORY_COLLAPSED:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          collapsedCategories: (state.settings.collapsedCategories || [])
+            .filter((id) => id !== action.payload.id)
+            .concat(action.payload.collapsed ? [action.payload.id] : []),
         },
       };
   }

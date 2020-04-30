@@ -45,12 +45,18 @@ const settingsShape = t.type(
   },
   'settings',
 );
+const optionalSettingsShape = t.partial(
+  {
+    collapsedCategories: t.array(t.string),
+  },
+  'optionalSettings',
+);
 const budgetStateShape = t.type(
   {
     name: t.string,
     version: t.string,
     budgets: budgetsShape,
-    settings: settingsShape,
+    settings: t.intersection([settingsShape, optionalSettingsShape]),
   },
   'budget',
 );
@@ -99,17 +105,14 @@ export type BudgetListEntry = {
 
 export type BudgetCategoryGroup = BudgetRow & {
   uuid: string;
-  indent: number;
+  group: true;
+  indentation: number;
 };
-export type BudgetCategoryRow = BudgetCategoryGroup & {
+export type BudgetCategoryRow = Omit<BudgetCategoryGroup, 'group'> & {
   overspendRollover: boolean;
+  group: false;
   transactions: Transaction[];
 };
-export function isBudgetCategoryRow(
-  entry: BudgetCategoryGroup | BudgetCategoryRow,
-): entry is BudgetCategoryRow {
-  return typeof (entry as any).overspendRollover !== 'undefined';
-}
 export type OverspendRollover = { [key: string]: boolean };
 export type Rollover = { total: number; [key: string]: number };
 
