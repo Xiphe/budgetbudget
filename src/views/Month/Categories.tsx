@@ -21,12 +21,15 @@ type CategoriesProps = Omit<Props, 'budget'> & {
 type BudgetRowProps = {
   actions: CategoriesProps['actions'];
   numberFormatter: NumberFormatter;
-
+  groupClosed: boolean;
+  odd: boolean;
   entry: BudgetCategoryRow;
   indent: number;
 };
 function BudgetRow({
   numberFormatter,
+  groupClosed,
+  odd,
   entry: { uuid, overspendRollover, budgeted, spend, balance },
   actions: { setBudgeted, toggleRollover },
   indent,
@@ -35,7 +38,7 @@ function BudgetRow({
 
   const showContextMenu = useCallback(
     (ev) => {
-      ev.preventDefault();
+      ev.proddtDefault();
       const menu = new remote.Menu();
       menu.append(
         new remote.MenuItem({
@@ -56,7 +59,13 @@ function BudgetRow({
   );
 
   return (
-    <Row className={styles.budgetRow} indent={indent} leaf={true}>
+    <Row
+      odd={odd}
+      className={styles.budgetRow}
+      indent={indent}
+      leaf={true}
+      groupClosed={groupClosed}
+    >
       <span className={classNames(budgeted === 0 && styles.zero)}>
         <BudgetInput
           onChange={setBudgeted}
@@ -87,15 +96,32 @@ export default function Categories({
   actions,
 }: CategoriesProps) {
   const { format } = numberFormatter;
+  let prevIndent = 0;
+  let i = -1;
   return (
     <>
       {budgetCategories.map((entry) => {
+        const groupIndentation = !isBudgetCategoryRow(entry)
+          ? entry.indent + 1
+          : entry.indent;
+        const groupClosed = prevIndent > groupIndentation;
+        prevIndent = groupIndentation;
+
+        if (!isBudgetCategoryRow(entry)) {
+          i = -1;
+        } else if (groupClosed) {
+          i = 0;
+        } else {
+          i += 1;
+        }
         if (!isBudgetCategoryRow(entry)) {
           return (
             <Row
+              odd={!(i % 2)}
               key={entry.uuid}
               className={classNames(styles.budgetRow, styles.budgetRowGroup)}
               indent={entry.indent}
+              groupClosed={groupClosed}
             >
               <span className={classNames(entry.budgeted === 0 && styles.zero)}>
                 {format(entry.budgeted)}
@@ -121,6 +147,8 @@ export default function Categories({
             indent={entry.indent}
             actions={actions}
             entry={entry}
+            odd={!(i % 2)}
+            groupClosed={groupClosed}
             numberFormatter={numberFormatter}
           />
         );

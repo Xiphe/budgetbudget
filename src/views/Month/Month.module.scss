@@ -81,17 +81,29 @@
   width: calc(100% / 3);
 }
 .budgetRow {
-  padding: 0 0.5rem;
+  padding-right: 0.5rem;
+  padding-left: 3px;
   span {
     @include budgetRowEntry();
     font-weight: 300;
     transition: color 400ms ease-in;
     font-family: var(--font-mono);
+    &:first-child {
+      width: calc(100% / 3 + 0.5rem - 3px);
+    }
   }
 }
 .budgetRowGroup {
+  letter-spacing: 0.12rem;
   span {
     font-weight: bold;
+    transform: translate(0.1rem, 0);
+    &:first-child {
+      transform: none;
+    }
+    &.negativeBalance {
+      color: var(--group-color);
+    }
   }
 }
 .budgetInput {
@@ -107,7 +119,10 @@
   color: var(--main-color);
   border: none;
   position: relative;
-  cursor: default;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 0 0 0 3px var(--secondary-color);
+  }
   &:focus {
     @include focusOutline();
     cursor: text;

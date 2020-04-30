@@ -1,8 +1,19 @@
 .row {
-  line-height: var(--row-height);
+  display: flex;
   height: var(--row-height);
-  background-color: rgba(var(--dim-colors), calc(0.1 - var(--indent) * 0.035));
+  align-items: center;
 }
-.leaf {
+.odd {
+  background-color: rgba(var(--dim-colors), 0.05);
+}
+.group {
+  padding-bottom: 0.15rem;
+  color: var(--group-color);
+  font-weight: bold;
+  font-size: 0.8rem;
   background-color: transparent;
+  align-items: flex-end;
+}
+.groupClosed {
+  margin-top: 1rem;
 }

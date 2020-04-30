@@ -4,7 +4,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  display: flex;
 }
 
 .sidebarWrap {
@@ -32,9 +31,9 @@
 
 .icon {
   display: block;
-  width: 1.6rem;
+  width: 1.2rem;
   height: 1.5rem;
-  background-position: center left;
+  background-position: -0.3rem top;
   background-size: 1.3rem;
   background-repeat: no-repeat;
 }
