@@ -32,8 +32,14 @@ export default function FractionDigitsSetting({
   });
 
   return (
-    <Setting label="Fraction Digits">
-      <Input {...inputProps} type="number" min="0" placeholder="2, 3, ..." />
+    <Setting label="Fraction Digits" id="setting-fraction-digits">
+      <Input
+        {...inputProps}
+        type="number"
+        id="setting-fraction-digits"
+        min="0"
+        placeholder="2, 3, ..."
+      />
     </Setting>
   );
 }

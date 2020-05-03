@@ -23,8 +23,13 @@ export default function NameSetting({ state: { name }, dispatch }: Props) {
   });
 
   return (
-    <Setting label="Name">
-      <Input {...inputProps} type="text" placeholder="Private, Band, ..." />
+    <Setting label="Name" id="setting-name">
+      <Input
+        {...inputProps}
+        type="text"
+        id="setting-name"
+        placeholder="Private, Band, ..."
+      />
     </Setting>
   );
 }

@@ -7,7 +7,10 @@ type Props = {
 };
 export default function Loading({ center }: Props) {
   return (
-    <div className={classNames(styles.lds, center && styles.center)}>
+    <div
+      className={classNames(styles.lds, center && styles.center)}
+      data-testid="loading-spinner"
+    >
       <div></div>
       <div></div>
       <div></div>

@@ -28,8 +28,13 @@ export default function CurrencySetting({
   });
 
   return (
-    <Setting label="Currency">
-      <Input {...inputProps} type="text" placeholder="EUR, USD, ..." />
+    <Setting label="Currency" id="setting-currency">
+      <Input
+        {...inputProps}
+        type="text"
+        id="setting-currency"
+        placeholder="EUR, USD, ..."
+      />
     </Setting>
   );
 }

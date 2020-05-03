@@ -3,13 +3,16 @@ import styles from './Settings.module.scss';
 
 type Props = {
   children: ReactNode;
-  label: String;
+  label: string;
+  id?: string;
 };
 
-export default function Setting({ children, label }: Props) {
+export default function Setting({ children, label, id }: Props) {
   return (
     <div className={styles.setting}>
-      <label className={styles.label}>{label}:</label>
+      <label className={styles.label} htmlFor={id}>
+        {label}:
+      </label>
       <div className={styles.inputWrap}>{children}</div>
     </div>
   );

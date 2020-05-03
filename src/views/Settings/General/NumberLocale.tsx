@@ -33,8 +33,13 @@ export default function NumberLocaleSetting({
   });
 
   return (
-    <Setting label="Number format Locale">
-      <Input {...inputProps} type="text" placeholder="en, de-AT, ..." />
+    <Setting label="Number format Locale" id="setting-number-locale">
+      <Input
+        {...inputProps}
+        type="text"
+        id="setting-number-locale"
+        placeholder="en, de-AT, ..."
+      />
     </Setting>
   );
 }

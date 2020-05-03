@@ -88,8 +88,9 @@ export default function StartBalanceSetting({
   );
 
   return (
-    <Setting label="Starting Balance">
+    <Setting label="Starting Balance" id="setting-start-balace">
       <Input
+        id="setting-start-balace"
         disabled={loading === true}
         {...inputProps}
         type="text"

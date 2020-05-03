@@ -40,8 +40,9 @@ export default function StartDateSetting({
   });
 
   return (
-    <Setting label="Start Date">
+    <Setting label="Start Date" id="setting-start-date">
       <Input
+        id="setting-start-date"
         className={styles.dateInput}
         {...inputProps}
         type="date"
