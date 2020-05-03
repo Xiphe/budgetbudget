@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": "../node_modules",
+    "target": "es5",
+    "lib": ["esnext", "dom"],
+    "types": [
+      "cypress",
+      "@types/testing-library__cypress",
+      "cypress-wait-until"
+    ]
+  },
+  "include": ["**/*.ts"]
+}
