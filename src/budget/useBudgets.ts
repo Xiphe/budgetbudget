@@ -2,7 +2,7 @@ import { useMemo, useState, useCallback } from 'react';
 import addMonths from 'date-fns/addMonths';
 import isAfter from 'date-fns/isAfter';
 import differenceInCalendarMonths from 'date-fns/differenceInCalendarMonths';
-import { formatDateKey, roundWithFractions } from '../lib';
+import { formatDateKey, roundWithFractions, getToday } from '../lib';
 import getMonthData from './getMonthData';
 import { Transaction, Category, calculateBalances } from '../moneymoney';
 import { BudgetState, MonthData, InterMonthData } from './Types';
@@ -49,7 +49,7 @@ export default function useBudgets(
   ]);
   const [future, setFuture] = useState<number>(0);
   const displayDates = useMemo(() => {
-    const today = new Date();
+    const today = getToday();
     const sorted = Object.keys(balances).concat(Object.keys(budgets)).sort();
     const lastExisting = sorted[sorted.length - 1];
     const lastPlusFuture = lastExisting

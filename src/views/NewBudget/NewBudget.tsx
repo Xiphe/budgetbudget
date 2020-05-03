@@ -8,6 +8,7 @@ import General from '../Settings/General';
 import Categories from '../Settings/Categories';
 import budgetReducer from '../../budget/budgetReducer';
 import useMenu from '../../budget/useMenu';
+import { getToday } from '../../lib';
 
 type Props = {
   onCreate: (budget: BudgetState) => void;
@@ -25,7 +26,7 @@ export default function NewBudget({ onCreate }: Props) {
       currency: 'EUR',
       incomeCategories: [],
       fractionDigits: 2,
-      startDate: startOfMonth(subMonths(new Date(), 1)).getTime(),
+      startDate: startOfMonth(subMonths(getToday(), 1)).getTime(),
       startBalance: 0,
       numberLocale: remote.app.getLocale(),
     },

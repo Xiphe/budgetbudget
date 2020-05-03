@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import format from 'date-fns/format';
-import { useInputProps } from '../../../lib';
+import { useInputProps, getToday } from '../../../lib';
 import { ACTION_SETTINGS_SET_START_DATE } from '../../../budget';
 import Input from '../Input';
 import Setting from '../Setting';
@@ -15,7 +15,7 @@ export default function StartDateSetting({
   },
   dispatch,
 }: Props) {
-  const someDateString = useMemo(() => new Date().toLocaleDateString(), []);
+  const someDateString = useMemo(() => getToday().toLocaleDateString(), []);
   const inputProps = useInputProps({
     value: startDate,
     format: timeStampToDate,

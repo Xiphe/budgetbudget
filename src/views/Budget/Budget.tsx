@@ -15,7 +15,11 @@ import {
   ScrollTo,
   Startup,
 } from '../../components';
-import { HeaderHeightProvider, VisibleMothContextProvider } from '../../lib';
+import {
+  HeaderHeightProvider,
+  VisibleMothContextProvider,
+  getToday,
+} from '../../lib';
 import Month from '../Month';
 import BudgetHeader from './Header';
 import CategorySidebar from '../CategorySidebar/CategorySidebar';
@@ -64,7 +68,7 @@ export default function Budget({ state, dispatch }: Props) {
   );
   useEffect(() => {
     if (scrollTo) {
-      const today = new Date();
+      const today = getToday();
       scrollTo(
         months.findIndex(({ date }) => isSameMonth(today, date)),
         'auto',
