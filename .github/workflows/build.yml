@@ -3,7 +3,43 @@ name: build & release
 on: push
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2]
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - uses: actions/cache@v1
+        id: dependencies-v1
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-dependencies-v1-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dependencies-v1-
+      - run: npm install
+        if: steps.dependencies-v1.outputs.cache-hit != 'true'
+        env:
+          ADBLOCK: true
+      - uses: cypress-io/github-action@v1
+        with:
+          parallel: true
+          record: true
+          group: ubuntu-node-12
+          start: npm run start:testserver
+          wait-on: http://localhost:8765
+        env:
+          PORT: 8765
+          CYPRESS_VIDEO: true
+          CYPRESS_BASE_URL: http://localhost:8765
+          CYPRESS_RECORD_KEY: ${{ secrets.cypress_record_key }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   release:
+    needs: [test]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v1
@@ -17,14 +53,15 @@ jobs:
           key: ${{ runner.os }}-dependencies-v1-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-dependencies-v1-
+      - run: npm install
+        if: steps.dependencies-v1.outputs.cache-hit != 'true'
+        env:
+          CYPRESS_INSTALL_BINARY: 0
+          ADBLOCK: true
       - name: Prepare for app notarization
         run: |
           mkdir -p ~/private_keys/
           echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
-      - run: npm ci
-        if: steps.dependencies-v1.outputs.cache-hit != 'true'
-        env:
-          ADBLOCK: true
       - run: npm run build
       - run: npx --no-install semantic-release || true
         env:
