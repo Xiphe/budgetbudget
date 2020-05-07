@@ -9,7 +9,6 @@ const date = new t.Type<Date, Date, unknown>(
     input instanceof Date ? t.success(input) : t.failure(input, context),
   t.identity,
 );
-
 const transactionShape = t.intersection(
   [
     t.type(
@@ -19,7 +18,6 @@ const transactionShape = t.intersection(
         currency: t.string,
         categoryUuid: t.string,
         accountUuid: t.string,
-        accountNumber: t.string,
         booked: t.boolean,
         bookingDate: date,
       },
@@ -37,6 +35,11 @@ const transactionShape = t.intersection(
     ),
   ],
   'transaction',
+);
+const transactionsByAccountShape = t.array(
+  t.type({
+    transactions: t.array(transactionShape),
+  }),
 );
 const interopAccountShape = t.type(
   {
@@ -78,6 +81,7 @@ const categoryShape = t.type({
 export type Category = t.TypeOf<typeof categoryShape>;
 export type Transaction = t.TypeOf<typeof transactionShape>;
 type InteropAccount = t.TypeOf<typeof interopAccountShape>;
+type TransactionsByAccount = t.TypeOf<typeof transactionsByAccountShape>;
 export type Account = {
   name: string;
   balance: number;
@@ -89,12 +93,14 @@ export type Account = {
   number: string;
 };
 
-export function validateTransaction(data: unknown): Transaction {
-  const c = transactionShape.decode(data);
+export function validateTransactionByAccount(
+  data: unknown,
+): TransactionsByAccount {
+  const c = transactionsByAccountShape.decode(data);
   if (isLeft(c)) {
     throw ThrowReporter.report(c);
   }
-  return data as Transaction;
+  return data as TransactionsByAccount;
 }
 export function validateAccount(data: unknown): InteropAccount {
   const c = interopAccountShape.decode(data);

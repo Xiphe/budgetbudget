@@ -79,12 +79,17 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
 
   ipcMain.handle(
     'MM_EXPORT_TRANSACTIONS',
-    withRetry(async (_, ...args) => {
-      return parse(
-        await osascript(
-          join(scriptsDir, 'exportTransactions.applescript'),
-          ...args,
-        ),
+    withRetry(async (_, accountNumbers: string[], startDate: string) => {
+      return Promise.all(
+        accountNumbers.map(async (accountNumber) => {
+          return parse(
+            await osascript(
+              join(scriptsDir, 'exportTransactions.applescript'),
+              accountNumber,
+              startDate,
+            ),
+          );
+        }),
       );
     }),
   );
