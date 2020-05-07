@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { useInputProps } from '../../../lib';
+import { useInputProps, isError } from '../../../lib';
 import { Loading, LoadingError } from '../../../components';
 import { useAccounts } from '../../../moneymoney';
 import styles from '../Settings.module.scss';
@@ -39,7 +39,7 @@ export default function AccountSettings({
   >(null);
   const [allAccounts, retry] = useAccounts(currency);
   useEffect(() => {
-    if (allAccounts instanceof Error) {
+    if (isError(allAccounts)) {
       return;
     }
     if (currentLoadedAccounts === null) {
@@ -54,7 +54,7 @@ export default function AccountSettings({
     return <Loading />;
   }
 
-  if (allAccounts instanceof Error) {
+  if (isError(allAccounts)) {
     return (
       <LoadingError
         className={styles.loadingError}

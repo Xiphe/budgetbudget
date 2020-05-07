@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { useAmountInputProps, NumberFormatter } from '../../../lib';
+import { useAmountInputProps, NumberFormatter, isError } from '../../../lib';
 import { ACTION_SETTINGS_SET_START_BALANCE } from '../../../budget';
 import { Button } from '../../../components';
 import Input from '../Input';
@@ -105,7 +105,7 @@ export default function StartBalanceSetting({
       >
         Re-Calculate
       </Button>
-      {loading instanceof Error ? (
+      {isError(loading) ? (
         <p className={styles.error}>{cleanMessage(loading.message)}</p>
       ) : null}
     </Setting>

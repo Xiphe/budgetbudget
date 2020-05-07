@@ -1,6 +1,6 @@
 import './theme.scss';
 import React, { Suspense, useState } from 'react';
-import { useInit, INIT_EMPTY } from './lib';
+import { useInit, INIT_EMPTY, isError } from './lib';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
 
@@ -13,11 +13,11 @@ export default function App() {
   const [init, setInitialState] = useInit();
   return (
     <div className={styles.app}>
-      <ErrorBoundary error={init instanceof Error ? init : undefined}>
+      <ErrorBoundary error={isError(init) ? init : undefined}>
         <Suspense fallback={<Startup />}>
           {!init ? (
             <Startup />
-          ) : init instanceof Error ? null : init === INIT_EMPTY ? (
+          ) : isError(init) ? null : init === INIT_EMPTY ? (
             welcome ? (
               <Welcome onCreate={() => setWelcome(false)} />
             ) : (

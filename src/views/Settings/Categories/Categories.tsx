@@ -5,6 +5,7 @@ import { Loading, LoadingError } from '../../../components';
 import styles from '../Settings.module.scss';
 import { Props } from './Types';
 import IncomeCategories from './IncomeCategories';
+import { isError } from '../../../lib';
 
 export default function CategorySettings(props: Omit<Props, 'categories'>) {
   const { currency } = props.state.settings;
@@ -15,7 +16,7 @@ export default function CategorySettings(props: Omit<Props, 'categories'>) {
     return <Loading center />;
   }
 
-  if (categories instanceof Error) {
+  if (isError(categories)) {
     return (
       <LoadingError
         className={classNames(styles.loadingError, styles.categoryLoadingError)}

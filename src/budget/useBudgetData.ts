@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { createNumberFormatter } from '../lib';
+import { createNumberFormatter, isError } from '../lib';
 import {
   useTransactions,
   Transaction,
@@ -61,24 +61,28 @@ export default function useBudgetData(state: BudgetState) {
     state,
   );
   const retry = useMemo(() => {
-    if (transactions instanceof Error && categories instanceof Error) {
+    if (isError(transactions) && isError(categories)) {
       return () => {
         retryLoadTransactions();
         retryLoadCategories();
       };
     }
-    if (transactions instanceof Error) {
+    if (isError(transactions)) {
       return retryLoadTransactions;
     }
-    if (categories instanceof Error) {
-      return retryLoadCategories();
+    if (isError(categories)) {
+      return retryLoadCategories;
     }
     return null;
   }, [transactions, retryLoadTransactions, categories, retryLoadCategories]);
 
   return {
     loading: !transactionsLoaded(transactions) || !categoriesLoaded(categories),
-    error: transactions instanceof Error ? transactions : null,
+    error: isError(transactions)
+      ? transactions
+      : isError(categories)
+      ? categories
+      : null,
     retry,
     months,
     categories: usableCategories,

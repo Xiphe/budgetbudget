@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { writeFile } from 'fs';
 import { ipcRenderer, Menu } from 'electron';
-import { getSharedSettings } from '../lib';
+import { getSharedSettings, isError } from '../lib';
 import { MENU_ID_SAVE, MENU_ID_SAVE_AS } from './useMenu';
 import { BudgetState } from './Types';
 
@@ -52,11 +52,11 @@ export default function useSave(menu: Menu, state: BudgetState | null) {
       setSaved(state);
       return;
     }
-    if (saved === state || !state || !state.name || saved instanceof Error) {
+    if (saved === state || !state || !state.name || isError(saved)) {
       enable(false);
       return;
     }
     enable(true);
   }, [enable, state, saved]);
-  return saved instanceof Error ? saved : null;
+  return isError(saved) ? saved : null;
 }
