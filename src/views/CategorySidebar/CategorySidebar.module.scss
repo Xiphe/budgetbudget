@@ -51,6 +51,9 @@
   transition: height 200ms ease-out;
   padding: 0.5rem 1rem;
   h3 {
+    max-width: calc(var(--sidebar-width) - 2rem);
+    text-overflow: ellipsis;
+    overflow: hidden;
     margin: 0;
   }
 }
