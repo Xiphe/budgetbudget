@@ -11,6 +11,7 @@ const NewBudget = React.lazy(() => import('./views/NewBudget'));
 export default function App() {
   const [welcome, setWelcome] = useState<boolean>(true);
   const [init, setInitialState] = useInit();
+
   return (
     <div className={styles.app}>
       <ErrorBoundary error={isError(init) ? init : undefined}>
