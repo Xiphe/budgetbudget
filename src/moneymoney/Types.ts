@@ -2,11 +2,32 @@ import * as t from 'io-ts';
 import { isLeft } from 'fp-ts/lib/Either';
 import { ThrowReporter } from 'io-ts/lib/ThrowReporter';
 
+function isSomeDate(input: unknown): input is Date {
+  if (input instanceof Date) {
+    return true;
+  }
+  /* In tests, the date might come from a different window */
+  if (process.env.REACT_APP_ENV === 'test') {
+    if (typeof input !== 'object') {
+      return false;
+    }
+    const getTime = (input as any).getTime;
+    if (typeof getTime !== 'function') {
+      return false;
+    }
+    const time: unknown = getTime.call(input);
+    if (typeof time !== 'number') {
+      return false;
+    }
+    return time === new Date(time).getTime();
+  }
+  return false;
+}
 const date = new t.Type<Date, Date, unknown>(
   'date',
-  (input: unknown): input is Date => input instanceof Date,
+  isSomeDate,
   (input, context) =>
-    input instanceof Date ? t.success(input) : t.failure(input, context),
+    isSomeDate(input) ? t.success(input) : t.failure(input, context),
   t.identity,
 );
 const transactionShape = t.intersection(
