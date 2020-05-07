@@ -36,7 +36,7 @@ function BudgetRow({
 
   const showContextMenu = useCallback(
     (ev) => {
-      ev.proddtDefault();
+      ev.preventDefault();
       const menu = new remote.Menu();
       menu.append(
         new remote.MenuItem({
