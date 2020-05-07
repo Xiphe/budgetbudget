@@ -21,10 +21,12 @@ export default function Overview({
   useEffect(() => {
     let cleanup: () => void = () => {};
     const registerHeight = () => {
-      cleanup();
-      cleanup = registerHeaderHeight(
-        Math.ceil(ref.current!.getBoundingClientRect().height),
-      );
+      requestAnimationFrame(() => {
+        cleanup();
+        cleanup = registerHeaderHeight(
+          Math.ceil(ref.current!.getBoundingClientRect().height),
+        );
+      });
     };
     const observer = new ResizeObserver(registerHeight);
     observer.observe(ref.current!);
