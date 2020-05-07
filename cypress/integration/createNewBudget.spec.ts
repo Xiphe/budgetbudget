@@ -1,4 +1,4 @@
-describe('Categories', () => {
+describe('Create New Budget', () => {
   let categories: any;
   let accounts: any;
   beforeEach(() => {
@@ -6,12 +6,26 @@ describe('Categories', () => {
     cy.fixture('empty-accounts.json').then((a) => (accounts = a));
   });
 
-  it('tests', () => {
+  afterEach(() => {
+    cy.BB().then(({ electron: { cleanup } }) => cleanup());
+  });
+
+  it('creates a new budget files with options', () => {
     cy.visit('/');
-    cy.BB().then(({ startApp, electron: { ipcMain }, fs }) => {
+    cy.BB().then(({ startApp, electron: { ipcMain, ignoreChannel }, fs }) => {
+      ignoreChannel(
+        'FILE_EDITED',
+        'UPDATE_COLOR_PREFERENCES',
+        'UPDATE_SCHEME',
+        'FOCUS',
+        'BLUR',
+      );
       ipcMain.handleOnce('INIT', () => undefined);
       ipcMain.handleOnce('MM_EXPORT_ACCOUNTS', () => accounts);
       ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => categories);
+      ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () => ({
+        transactions: [],
+      }));
 
       startApp();
 

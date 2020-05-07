@@ -1,8 +1,5 @@
-import createIPCMock from 'electron-mock-ipc';
-import { IpcMain, Remote, IpcRenderer } from 'electron';
+import { Remote } from 'electron';
 import expose from './_expose.win';
-
-const { ipcRenderer, ipcMain } = createIPCMock();
 
 type PartialRemote = {
   app: Pick<Remote['app'], 'name' | 'getPath' | 'getLocale'>;
@@ -52,38 +49,111 @@ const remote: PartialRemote = {
   },
 };
 
-// const ipcRendererEmitter = new EventEmitter();
-// const pendingInvocations: {
-//   [key: string]: {
-//     args: any[];
-//     resolve: (arg: any) => void;
-//     reject: (err: Error) => void;
-//   }[];
-// } = {};
-// const ipcRenderer = {
-//   on: ipcRendererEmitter.on.bind(ipcRendererEmitter),
-//   off: ipcRendererEmitter.off.bind(ipcRendererEmitter),
-//   async invoke(channel: string, ...args: any[]) {
-//     if (!pendingInvocations[channel]) {
-//       pendingInvocations[channel] = [];
-//     }
+const ignoredChannels: string[] = [];
+type Handler = (...args: any[]) => any;
+function createHandler(name: string) {
+  let handlers: {
+    [channel: string]: Handler[];
+  } = {};
 
-//     return new Promise((resolve, reject) => {
-//       // const
-//       pendingInvocations[channel].push({
-//         args,
-//         resolve,
-//         reject,
-//       });
-//     });
-//   },
-// };
+  function invoke(channel: string, ...args: any[]) {
+    if (ignoredChannels.includes(channel)) {
+      return;
+    }
+    const handler = (handlers[channel] || []).shift();
+
+    if (!handler) {
+      throw new Error(
+        `Unexpected invocation on channel "${channel}" on ${name} with args: ${JSON.stringify(
+          args,
+        )}`,
+      );
+    }
+
+    return handler(...args);
+  }
+
+  return {
+    cleanup() {
+      const errors = Object.entries(handlers)
+        .map(([channel, hs]) => {
+          if (hs.length) {
+            return `${hs.length} trailing handlers for channel "${channel}" on ${name}`;
+          }
+          return null;
+        })
+        .filter((v: null | string): v is string => v !== null);
+
+      handlers = {};
+      if (errors.length) {
+        throw new Error(errors.join('\n'));
+      }
+    },
+    add(channel: string, handler: Handler) {
+      if (ignoredChannels.includes(channel)) {
+        return;
+      }
+      if (!handlers[channel]) {
+        handlers[channel] = [];
+      }
+      handlers[channel].push(handler);
+    },
+    remove(channel: string, handler: Handler) {
+      if (ignoredChannels.includes(channel)) {
+        return;
+      }
+      const i = (handlers[channel] || []).indexOf(handler);
+      if (i === -1) {
+        throw new Error(
+          `Can not remove unknown handler "${handler.name}" from channel "${channel}" on ${name}`,
+        );
+      }
+      handlers[channel].splice(i, 1);
+    },
+    send(channel: string, ...args: any[]) {
+      invoke(channel, Symbol('FAKE_EVENT'), ...args);
+    },
+    async invoke(channel: string, ...args: any[]) {
+      return invoke(channel, ...args);
+    },
+  };
+}
+
+const invokeHandlers = createHandler('invoke');
+const rendererEvents = createHandler('renderer');
+const mainEvents = createHandler('main');
+const ipcRenderer = {
+  on: rendererEvents.add,
+  off: rendererEvents.remove,
+  send: mainEvents.send,
+  invoke: invokeHandlers.invoke,
+};
+const ipcMain = {
+  once: mainEvents.add,
+  send: rendererEvents.send,
+  handleOnce: invokeHandlers.add,
+};
+
+function ignoreChannel(...channels: string[]) {
+  channels.forEach((c) => {
+    ignoredChannels.push(c);
+  });
+}
+
+function cleanup() {
+  ignoredChannels.length = 0;
+  invokeHandlers.cleanup();
+  rendererEvents.cleanup();
+  mainEvents.cleanup();
+}
 
 export type Exposed = {
-  ipcMain: IpcMain & Pick<IpcRenderer, 'send'>;
+  ipcMain: typeof ipcMain;
+  ignoreChannel: typeof ignoreChannel;
+  cleanup: typeof cleanup;
   remote: PartialRemote;
 };
-expose<Exposed>('electron', { ipcMain, remote });
+expose<Exposed>('electron', { ipcMain, remote, ignoreChannel, cleanup });
 // expose('pendingInvocations', pendingInvocations);
 
 export { ipcRenderer, remote };
