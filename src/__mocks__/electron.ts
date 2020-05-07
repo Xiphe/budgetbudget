@@ -134,7 +134,7 @@ const ipcMain = {
   handleOnce: invokeHandlers.add,
 };
 
-function ignoreChannel(...channels: string[]) {
+function ignoreChannels(channels: string[]) {
   channels.forEach((c) => {
     ignoredChannels.push(c);
   });
@@ -149,10 +149,13 @@ function cleanup() {
 
 export type Exposed = {
   ipcMain: typeof ipcMain;
-  ignoreChannel: typeof ignoreChannel;
-  cleanup: typeof cleanup;
   remote: PartialRemote;
 };
-expose<Exposed>('electron', { ipcMain, remote, ignoreChannel, cleanup });
+export type ExposedInternal = {
+  ignoreChannels: typeof ignoreChannels;
+  cleanup: typeof cleanup;
+};
+expose<Exposed>('electron', { ipcMain, remote });
+expose<ExposedInternal>('_electron', { cleanup, ignoreChannels });
 
 export { ipcRenderer, remote };

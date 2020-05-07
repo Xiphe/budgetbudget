@@ -4,7 +4,7 @@ import initTheme from './initTheme';
 (process.env.REACT_APP_ENV === 'test'
   ? /* Delay app startup until test environment calls startApp */
     import('./__mocks__').then(({ default: expose }) => {
-      return new Promise((res) => expose('startApp', res));
+      return new Promise((res) => expose('_startApp', res));
     })
   : /* Non-ticking Promise.resolve() */
     { then: (cb: () => any) => cb() }
