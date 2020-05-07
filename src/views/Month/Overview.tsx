@@ -61,7 +61,11 @@ export default function Overview({
                 <div>Uncategorized</div>
               </>
             )}
-            <div>{numberFormatter.format(data.total.budgeted * -1)}</div>
+            <div>
+              {numberFormatter.format(
+                data.total.budgeted === 0 ? 0 : data.total.budgeted * -1,
+              )}
+            </div>
             <div>Budgeted</div>
             <div className={budgetClasses}>
               {numberFormatter.format(data.toBudget)}
