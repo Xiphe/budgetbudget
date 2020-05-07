@@ -37,9 +37,13 @@ const transactionShape = t.intersection(
   'transaction',
 );
 const transactionsByAccountShape = t.array(
-  t.type({
-    transactions: t.array(transactionShape),
-  }),
+  t.type(
+    {
+      transactions: t.array(transactionShape),
+    },
+    'byAccount',
+  ),
+  'transactions',
 );
 const interopAccountShape = t.type(
   {
@@ -80,8 +84,8 @@ const categoryShape = t.type({
 
 export type Category = t.TypeOf<typeof categoryShape>;
 export type Transaction = t.TypeOf<typeof transactionShape>;
-type InteropAccount = t.TypeOf<typeof interopAccountShape>;
-type TransactionsByAccount = t.TypeOf<typeof transactionsByAccountShape>;
+export type InteropAccount = t.TypeOf<typeof interopAccountShape>;
+export type TransactionsByAccount = t.TypeOf<typeof transactionsByAccountShape>;
 export type Account = {
   name: string;
   balance: number;

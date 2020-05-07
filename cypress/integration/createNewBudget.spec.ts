@@ -1,16 +1,13 @@
-describe('Create New Budget', () => {
-  let categories: any;
-  let accounts: any;
-  beforeEach(() => {
-    cy.fixture('basic-categories.json').then((c) => (categories = c));
-    cy.fixture('empty-accounts.json').then((a) => (accounts = a));
-  });
+import { account, category } from '../factories';
 
+describe('Create New Budget', () => {
   afterEach(() => {
     cy.BB().then(({ electron: { cleanup } }) => cleanup());
   });
 
   it('creates a new budget files with options', () => {
+    const accounts = [account(), account()];
+    const categories = [category(), category(), category()];
     cy.visit('/');
     cy.BB().then(({ startApp, electron: { ipcMain, ignoreChannel }, fs }) => {
       ignoreChannel(
@@ -23,15 +20,13 @@ describe('Create New Budget', () => {
       ipcMain.handleOnce('INIT', () => undefined);
       ipcMain.handleOnce('MM_EXPORT_ACCOUNTS', () => accounts);
       ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => categories);
-      ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () => ({
-        transactions: [],
-      }));
+      ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () => []);
 
       startApp();
 
       cy.findByText(/Ok, I understand. Create a new Budget/i).click();
       cy.findByLabelText(/Name/i).type('My New Budget');
-      cy.findByText(/Some Account/i).click();
+      cy.findByText(accounts[0].name).click();
       cy.findByLabelText(/Number format/i)
         .type('{selectall}')
         .type('de-DE');
@@ -41,7 +36,7 @@ describe('Create New Budget', () => {
       cy.findByText(/^\+$/).click();
       cy.findByText(/please select/i)
         .parent('select')
-        .select('Sale of fruit');
+        .select(categories[1].name);
 
       cy.BB().then(({ electron: { ipcMain } }) => {
         ipcMain.once('SAVE_AS', () => {
@@ -61,13 +56,11 @@ describe('Create New Budget', () => {
         expect(file.name).to.equal('My New Budget');
         expect(file.version).to.equal('0.0.2');
         expect(file.settings).to.be.an('object');
-        expect(file.settings.accounts).to.deep.equal([
-          'de1b0787-ec69-442f-8883-0057a21abd3d',
-        ]);
+        expect(file.settings.accounts).to.deep.equal([accounts[0].uuid]);
         expect(file.settings.numberLocale).to.equal('de-DE');
         expect(file.settings.startDate).to.equal(1562457600000);
         expect(file.settings.incomeCategories).to.deep.equal([
-          { id: '65e2e6c4-c821-4485-87c8-230f0e4f23bf', availableIn: 0 },
+          { id: categories[1].uuid, availableIn: 0 },
         ]);
       });
     });

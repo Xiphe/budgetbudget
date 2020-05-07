@@ -64,7 +64,7 @@ function createHandler(name: string) {
 
     if (!handler) {
       throw new Error(
-        `Unexpected invocation on channel "${channel}" on ${name} with args: ${JSON.stringify(
+        `Unexpected invocation of channel "${channel}" on ${name} with args: ${JSON.stringify(
           args,
         )}`,
       );
@@ -154,6 +154,5 @@ export type Exposed = {
   remote: PartialRemote;
 };
 expose<Exposed>('electron', { ipcMain, remote, ignoreChannel, cleanup });
-// expose('pendingInvocations', pendingInvocations);
 
 export { ipcRenderer, remote };
