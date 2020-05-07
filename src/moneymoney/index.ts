@@ -10,7 +10,7 @@ export { default as getTransactions } from './getTransactions';
 export { default as useAccounts } from './useAccounts';
 export { default as useTransactions } from './useTransactions';
 // export { getCategories, getFlatCategories } from './_getCategories';
-export { default as useCategories } from './useCategores';
+export { default as useCategories } from './useCategories';
 export { default as calculateBalances } from './calculateBalances';
 export * from './errors';
 export type Transaction = TransactionT;

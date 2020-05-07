@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Category } from './Types';
 import getCategories from './getCategories';
 
-export default function useCategores(
+export default function useCategories(
   currency: string,
 ): [Category[] | null | Error, Category[], () => void] {
   const [categories, setCategories] = useState<Category[] | null | Error>(null);
