@@ -114,7 +114,7 @@ function getCategoryRows({
       const budgetCat = (budget && budget.categories[uuid]) || {
         amount: 0,
       };
-      const budgeted = budgetCat.amount;
+      const budgeted = budgetCat.amount || 0;
       const spend = (balance && balance.categories[uuid]) || {
         amount: 0,
         transactions: [],

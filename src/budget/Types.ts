@@ -10,14 +10,10 @@ import { ThrowReporter } from 'io-ts/lib/ThrowReporter';
 
 export const VERSION = '0.0.2';
 
-const categoryShape = t.intersection([
-  t.type({
-    amount: t.number,
-  }),
-  t.partial({
-    rollover: t.boolean,
-  }),
-]);
+const categoryShape = t.partial({
+  amount: t.number,
+  rollover: t.boolean,
+});
 const budgetShape = t.type({
   categories: t.record(t.string, t.union([categoryShape, t.undefined])),
 });

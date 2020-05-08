@@ -67,6 +67,7 @@
     ]
   },
   "dependencies": {
+    "@types/lodash.isequal": "4.5.5",
     "classnames": "2.2.6",
     "date-fns": "2.11.0",
     "electron-settings": "3.2.0",
@@ -74,6 +75,7 @@
     "fp-ts": "2.5.3",
     "io-ts": "2.1.2",
     "lodash.debounce": "4.0.8",
+    "lodash.isequal": "4.5.0",
     "memoize-one": "5.1.1",
     "plist": "3.0.1",
     "react": "16.13.0",

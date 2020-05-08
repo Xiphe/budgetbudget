@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { writeFile } from 'fs';
+import isEqual from 'lodash.isequal';
 import { ipcRenderer, Menu, remote } from 'electron';
 import { getSharedSettings, isError } from '../lib';
 import { MENU_ID_SAVE, MENU_ID_SAVE_AS } from './useMenu';
@@ -107,7 +108,13 @@ export default function useSave(menu: Menu, state: BudgetState | null) {
         return;
       }
     }
-    if (saved === state || !state || !state.name || isError(saved)) {
+    if (
+      !state ||
+      isError(saved) ||
+      !state.name ||
+      state === saved ||
+      isEqual(state, saved)
+    ) {
       enable(false);
       return;
     }

@@ -139,20 +139,36 @@ function updateCategory(
   { monthKey, categoryId }: MonthCategory,
   update: (category: Category) => Category,
 ): BudgetState {
-  const monthlyBudget = state.budgets[monthKey] || { categories: {} };
-  const category = monthlyBudget.categories[categoryId] || { amount: 0 };
+  const {
+    [monthKey]: monthlyBudget = { categories: {} },
+    ...budgets
+  } = state.budgets;
+  const { categories: budgetCategories, ...other } = monthlyBudget;
+  const newMonthlyBudget = other as typeof monthlyBudget;
+  const { [categoryId]: category, ...categories } = budgetCategories;
+
+  const newCategory = update(category || {});
+  /* remove defaults */
+  if (newCategory.amount === 0) {
+    delete newCategory.amount;
+  }
+  if (newCategory.rollover === false) {
+    delete newCategory.rollover;
+  }
+
+  if (Object.keys(newCategory).length) {
+    categories[categoryId] = newCategory;
+  }
+  if (Object.keys(categories).length) {
+    newMonthlyBudget.categories = categories;
+  }
+  if (Object.keys(newMonthlyBudget).length) {
+    budgets[monthKey] = newMonthlyBudget;
+  }
+
   return {
     ...state,
-    budgets: {
-      ...state.budgets,
-      [monthKey]: {
-        ...monthlyBudget,
-        categories: {
-          ...monthlyBudget.categories,
-          [categoryId]: update(category),
-        },
-      },
-    },
+    budgets,
   };
 }
 
