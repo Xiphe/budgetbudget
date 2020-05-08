@@ -12,6 +12,7 @@ describe('Create New Budget', () => {
     cy.open({
       ignoreChannels: [
         'FILE_EDITED',
+        'SAVE_CANCELED',
         'UPDATE_COLOR_PREFERENCES',
         'UPDATE_SCHEME',
         'FOCUS',
