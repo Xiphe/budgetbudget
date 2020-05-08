@@ -20,7 +20,7 @@ export default function registerSave(
   }
   ipcMain.on('SAVE_AS', saveAs);
   ipcMain.on('SAVE', async (ev, name) => {
-    const existing = windowManager.getFile(ev.sender);
+    const existing = windowManager.findFile(ev.sender);
     if (existing) {
       save(existing, ev.sender);
     } else {

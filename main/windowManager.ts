@@ -15,30 +15,43 @@ export default function createWindowManager(
     appIsQuitting = true;
   });
 
-  function getFile(sender: WebContents): string | undefined {
+  function getFile(win: BrowserWindow | undefined): string | undefined {
+    return (Object.entries(windows).find(([_, w]) => w === win) || [])[0];
+  }
+
+  function findFile(sender: WebContents) {
     return (Object.entries(windows).find(
       ([_, { webContents }]) => webContents === sender,
     ) || [])[0];
   }
 
-  function unregisterWindow(sender: WebContents) {
-    const file = getFile(sender);
-    if (file) {
-      settings.removeOpenBudget(file);
-      const win = windows[file];
-      delete windows[file];
-      return win;
-    } else {
-      const i = newWindows.findIndex(
-        ({ webContents }) => webContents === sender,
-      );
-      if (i !== -1) {
-        const [win] = newWindows.splice(i, 1);
-        return win;
-      } else {
-        throw new Error(`Unable to de-register window ${sender}`);
-      }
+  function getWindow(sender: WebContents) {
+    return (
+      newWindows.find(({ webContents }) => webContents === sender) ||
+      (Object.entries(windows).find(
+        ([_, { webContents }]) => webContents === sender,
+      ) || [])[1]
+    );
+  }
+
+  function unregisterWindow(win: BrowserWindow | undefined) {
+    if (!win) {
+      throw new Error(`Unable to de-register window ${win}`);
     }
+    const newWinI = newWindows.findIndex((w) => w === win);
+    if (newWinI !== -1) {
+      const [win] = newWindows.splice(newWinI, 1);
+      return win;
+    }
+
+    const file = getFile(win);
+    if (!file) {
+      throw new Error(`Unable to de-register window ${win}`);
+    }
+
+    settings.removeOpenBudget(file);
+    delete windows[file];
+    return win;
   }
 
   function registerWindow(win: BrowserWindow, file?: string) {
@@ -90,21 +103,25 @@ export default function createWindowManager(
 
     registerWindow(win, file);
 
-    win.once('close', (ev: any) => {
+    win.once('closed', (ev: any) => {
       if (!appIsQuitting) {
-        unregisterWindow(ev.sender.webContents);
+        unregisterWindow(win);
       }
     });
   }
 
   ipcMain.handle('INIT', (ev) => {
-    return getFile(ev.sender);
+    return findFile(ev.sender);
+  });
+  ipcMain.on('QUIT', (ev) => {
+    const win = getWindow(ev.sender);
+    if (!win) {
+      throw new Error('Can not quit unregistered window');
+    }
+    win.close();
   });
   ipcMain.on('FILE_EDITED', (ev, edited) => {
-    const file = getFile(ev.sender);
-    const win =
-      (file && windows[file]) ||
-      newWindows.find(({ webContents }) => webContents === ev.sender);
+    const win = getWindow(ev.sender);
     if (!win) {
       throw new Error('Can not set edited for unregistered window');
     }
@@ -128,8 +145,9 @@ export default function createWindowManager(
     },
     createWindow,
     getFile,
+    findFile,
     updateFile(sender: WebContents, file: string) {
-      registerWindow(unregisterWindow(sender), file);
+      registerWindow(unregisterWindow(getWindow(sender)), file);
     },
     broadcast(data: any) {
       newWindows.concat(Object.values(windows)).forEach((win: any) => {
