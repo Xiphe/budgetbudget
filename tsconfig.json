@@ -19,7 +19,8 @@
       {
         "name": "typescript-plugin-css-modules",
         "options": {
-          "customMatcher": "\\.module.scss$"
+          "customMatcher": "\\.module.scss$",
+          "customRenderer": "./tpcm-renderer.config.js"
         }
       }
     ]
