@@ -39,14 +39,16 @@ describe('Create New Budget', () => {
     cy.findByDisplayValue(/please select/i).select(categories[1].name);
 
     cy.bb().then(({ electron: { ipcMain } }) => {
-      ipcMain.once('SAVE_AS', () => {
-        ipcMain.send('SAVE', '/my_new.budget');
-      });
       ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => []);
       ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () => []);
     });
 
     cy.findByText(/Create "My New Budget"/i).click();
+    cy.findByText(/My new Budget/i).should('be.visible');
+
+    cy.bb().then(({ electron: { ipcMain } }) =>
+      ipcMain.send('SAVE', '/my_new.budget'),
+    );
 
     cy.readBudget('/my_new.budget')
       .should('include', {

@@ -57,9 +57,6 @@ export default function NewBudget({ onCreate }: Props) {
               primary
               onClick={() => {
                 onCreate(state);
-                setTimeout(() => {
-                  ipcRenderer.send('SAVE_AS');
-                }, 100);
               }}
             >
               Create "{state.name}"
