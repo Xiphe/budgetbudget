@@ -4,6 +4,7 @@ const allowedElectronModules = new Set([
   'nativeTheme',
   'systemPreferences',
   'Menu',
+  'dialog',
   'app',
   'MenuItem',
 ]);

@@ -1,6 +1,6 @@
 import React, { useState, useReducer } from 'react';
-import { remote, ipcRenderer } from 'electron';
-import { BudgetState, VERSION } from '../../budget';
+import { remote } from 'electron';
+import { BudgetState, VERSION, unsaved } from '../../budget';
 import { Content, Button, Header, HeaderSpacer } from '../../components';
 import startOfMonth from 'date-fns/startOfMonth';
 import subMonths from 'date-fns/subMonths';
@@ -56,7 +56,7 @@ export default function NewBudget({ onCreate }: Props) {
             <Button
               primary
               onClick={() => {
-                onCreate(state);
+                onCreate(unsaved(state));
               }}
             >
               Create "{state.name}"

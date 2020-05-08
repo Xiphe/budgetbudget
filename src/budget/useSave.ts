@@ -1,27 +1,66 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { writeFile } from 'fs';
-import { ipcRenderer, Menu } from 'electron';
+import { ipcRenderer, Menu, remote } from 'electron';
 import { getSharedSettings, isError } from '../lib';
 import { MENU_ID_SAVE, MENU_ID_SAVE_AS } from './useMenu';
 import { BudgetState } from './Types';
 
+const UNSAVED = Symbol('UNSAVED');
+export function unsaved(state: BudgetState): BudgetState {
+  (state as any)[UNSAVED] = true;
+  return state;
+}
+function warnUnsavedChanges(quitAfterSave: React.MutableRefObject<boolean>) {
+  return (e: any) => {
+    if (quitAfterSave.current) {
+      return;
+    }
+    const answer = remote.dialog.showMessageBoxSync({
+      type: 'question',
+      message: 'You have unsaved changes, do you really want to quit?',
+      buttons: ['Save & Quit', 'Discard & Quit', 'Cancel'],
+    });
+    if (answer === 1) {
+      return;
+    }
+    if (answer === 0) {
+      quitAfterSave.current = true;
+      ipcRenderer.send('SAVE');
+    }
+    e.returnValue = false;
+    return false;
+  };
+}
+
 export default function useSave(menu: Menu, state: BudgetState | null) {
   const [saved, setSaved] = useState<BudgetState | null | Error>(null);
   const stateRef = useRef<BudgetState | null>();
+  const enabledRef = useRef<null | boolean>(null);
+  const quitAfterSave = useRef<boolean>(false);
   stateRef.current = state;
   const enable = useCallback(
     (enable: boolean) => {
-      let enabled: null | boolean = null;
-      if (enable === enabled) {
+      if (enable === enabledRef.current) {
         return;
       }
+      quitAfterSave.current = false;
+      window.onbeforeunload = enable ? warnUnsavedChanges(quitAfterSave) : null;
       ipcRenderer.send('FILE_EDITED', enable);
       menu.getMenuItemById(MENU_ID_SAVE).enabled = enable;
       menu.getMenuItemById(MENU_ID_SAVE_AS).enabled = enable;
-      enabled = enable;
+      enabledRef.current = enable;
     },
     [menu],
   );
+  useEffect(() => {
+    const saveCanceled = () => {
+      quitAfterSave.current = false;
+    };
+    ipcRenderer.on('SAVE_CANCELED', saveCanceled);
+    return () => {
+      ipcRenderer.off('SAVE_CANCELED', saveCanceled);
+    };
+  }, []);
   useEffect(() => {
     let canceled = false;
     const save = (ev: unknown, file: unknown) => {
@@ -34,10 +73,18 @@ export default function useSave(menu: Menu, state: BudgetState | null) {
         return;
       }
 
-      getSharedSettings().addRecentFile(file, state.name);
       writeFile(file, JSON.stringify(state), (err) => {
+        if (err) {
+          setSaved(err);
+          return;
+        }
+        getSharedSettings().addRecentFile(file, state.name);
+        if (quitAfterSave.current) {
+          ipcRenderer.send('QUIT');
+          return;
+        }
         if (!canceled) {
-          setSaved(err || state);
+          setSaved(state);
         }
       });
     };
@@ -49,8 +96,12 @@ export default function useSave(menu: Menu, state: BudgetState | null) {
   }, [stateRef]);
   useEffect(() => {
     if (saved === null && state) {
-      setSaved(state);
-      return;
+      if ((state as any)[UNSAVED]) {
+        delete (state as any)[UNSAVED];
+      } else {
+        setSaved(state);
+        return;
+      }
     }
     if (saved === state || !state || !state.name || isError(saved)) {
       enable(false);
