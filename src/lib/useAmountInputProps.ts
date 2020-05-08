@@ -34,7 +34,7 @@ export default function useCurrencyInput({
         onKeyDown(ev);
       }
       if (
-        ev.isPropagationStopped ||
+        ev.isPropagationStopped() ||
         (ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp')
       ) {
         return;
