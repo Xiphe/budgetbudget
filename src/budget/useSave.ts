@@ -47,11 +47,15 @@ export default function useSave(menu: Menu, state: BudgetState | null) {
       window.onbeforeunload = enable ? warnUnsavedChanges(quitAfterSave) : null;
       ipcRenderer.send('FILE_EDITED', enable);
       menu.getMenuItemById(MENU_ID_SAVE).enabled = enable;
-      menu.getMenuItemById(MENU_ID_SAVE_AS).enabled = enable;
       enabledRef.current = enable;
     },
     [menu],
   );
+  useEffect(() => {
+    menu.getMenuItemById(MENU_ID_SAVE_AS).enabled = Boolean(
+      state && !isError(state) && state.name,
+    );
+  }, [menu, state]);
   useEffect(() => {
     const saveCanceled = () => {
       quitAfterSave.current = false;
