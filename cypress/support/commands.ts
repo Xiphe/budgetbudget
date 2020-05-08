@@ -27,6 +27,7 @@ declare global {
       open: (config: OpenConfig) => Cypress.Chainable<void>;
       cleanup: () => Cypress.Chainable<void>;
       bb: () => Cypress.Chainable<BB>;
+      _bb: () => Cypress.Chainable<BBexposed>;
       readBudget: (file: string) => Cypress.Chainable<BudgetState>;
       waitUntil<NewSubject>(
         checkFunction: (
@@ -45,13 +46,15 @@ function checkBB(win: any) {
   return loaded && win.__BB;
 }
 Cypress.Commands.add('bb', () => {
-  return cy.window().waitUntil((win) => checkBB(win), {
+  cy.window().waitUntil((win) => checkBB(win), {
     errorMsg: 'Could not find __BB on window',
   });
 });
+Cypress.Commands.add('_bb', () => {
+  cy.bb();
+});
 Cypress.Commands.add('readBudget', (file: string) => {
-  return cy
-    .bb()
+  cy.bb()
     .waitUntil(
       ({ fs }) => {
         try {
@@ -67,14 +70,13 @@ Cypress.Commands.add('readBudget', (file: string) => {
     .then((data) => validateBudgetState(data));
 });
 Cypress.Commands.add('cleanup', () => {
-  return cy.bb().then((bb: any) => (bb as BBexposed)._electron.cleanup());
+  cy._bb().then(({ _electron }) => _electron.cleanup());
 });
 Cypress.Commands.add('open', ({ setup, ignoreChannels }) => {
   cy.visit('/');
-  return cy.bb().then(async (bbexp: any) => {
-    const bb: BBexposed = bbexp;
-    bb._electron.ignoreChannels(ignoreChannels);
-    await setup(bb);
-    bb._startApp();
+  cy._bb().then(({ _electron }) => {
+    _electron.ignoreChannels(ignoreChannels);
   });
+  cy.bb().then(setup);
+  cy._bb().then(({ _startApp }) => _startApp());
 });

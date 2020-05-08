@@ -29,7 +29,7 @@ jobs:
         with:
           parallel: true
           record: true
-          group: ubuntu-node-12
+          group: 2x-ubuntu-node-12
           start: npm run start:testserver
           wait-on: http://localhost:8765
         env:
