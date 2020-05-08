@@ -7,14 +7,15 @@ import {
 } from '../../src/__mocks__/electron';
 import { BudgetState, validateBudgetState } from '../../src/budget/Types';
 
-type BBexposed = {
+type BB = {
   electron: ExposedElectron;
-  _electron: ExposedInternal;
-  _startApp: () => void;
   fs: IFs;
   vol: typeof Volume;
 };
-type BB = Omit<BBexposed, '_electron' | '_startApp'>;
+type BBexposed = BB & {
+  _electron: ExposedInternal;
+  _startApp: () => void;
+};
 type OpenConfig = {
   setup?: (bb: BB) => void | Promise<void>;
   ignoreChannels: string[];
@@ -22,39 +23,47 @@ type OpenConfig = {
 
 declare global {
   namespace Cypress {
-    interface Chainable {
+    interface Chainable<Subject = any> {
       open: (config: OpenConfig) => Cypress.Chainable<void>;
       cleanup: () => Cypress.Chainable<void>;
       bb: () => Cypress.Chainable<BB>;
       readBudget: (file: string) => Cypress.Chainable<BudgetState>;
+      waitUntil<NewSubject>(
+        checkFunction: (
+          subject: Subject,
+        ) => NewSubject | Chainable<NewSubject> | Promise<NewSubject>,
+        options?: WaitUntilOptions,
+      ): Chainable<NewSubject>;
     }
   }
 }
 
 function checkBB(win: any) {
   const { fs, vol, electron, _electron, _startApp } = win.__BB || {};
-  return fs && vol && electron && _startApp && _electron;
+  const loaded = Boolean(fs && vol && electron && _startApp && _electron);
+
+  return loaded && win.__BB;
 }
 Cypress.Commands.add('bb', () => {
-  return cy.window().then((win: any) => {
-    if (checkBB(win)) {
-      return win.__BB;
-    }
-
-    return cy.waitUntil(() => checkBB(win)).then(() => win.__BB);
+  return cy.window().waitUntil((win) => checkBB(win), {
+    errorMsg: 'Could not find __BB on window',
   });
 });
 Cypress.Commands.add('readBudget', (file: string) => {
   return cy
-    .waitUntil(() => {
-      return cy.bb().then(({ fs }) => {
+    .bb()
+    .waitUntil(
+      ({ fs }) => {
         try {
           return JSON.parse(fs.readFileSync(file).toString());
         } catch (e) {
           return false;
         }
-      });
-    })
+      },
+      {
+        errorMsg: `Could not open budget ${file}`,
+      },
+    )
     .then((data) => validateBudgetState(data));
 });
 Cypress.Commands.add('cleanup', () => {
