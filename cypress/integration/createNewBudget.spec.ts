@@ -48,16 +48,18 @@ describe('Create New Budget', () => {
 
     cy.findByText(/Create "My New Budget"/i).click();
 
-    cy.readBudget('/my_new.budget').then(({ name, version, settings }) => {
-      expect(name).to.equal('My New Budget');
-      expect(version).to.equal('0.0.2');
-      expect(settings).to.be.an('object');
-      expect(settings.accounts).to.deep.equal([accounts[0].uuid]);
-      expect(settings.numberLocale).to.equal('de-DE');
-      expect(settings.startDate).to.equal(1562457600000);
-      expect(settings.incomeCategories).to.deep.equal([
-        { id: categories[1].uuid, availableIn: 0 },
-      ]);
-    });
+    cy.readBudget('/my_new.budget')
+      .should('include', {
+        name: 'My New Budget',
+        version: '0.0.2',
+      })
+      .and('deep.nested.include', {
+        'settings.accounts': [accounts[0].uuid],
+        'settings.numberLocale': 'de-DE',
+        'settings.startDate': 1562457600000,
+        'settings.incomeCategories': [
+          { id: categories[1].uuid, availableIn: 0 },
+        ],
+      });
   });
 });
