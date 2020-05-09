@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, Suspense } from 'react';
 import { createNumberFormatter } from '../../../lib';
 import Setting from '../Setting';
 import NameSetting from './Name';
@@ -9,6 +9,7 @@ import StartDateSetting from './StartDate';
 import StartBalanceSetting from './StartBalance';
 import CurrencySetting from './Currency';
 import { Props } from './Types';
+import { Loading } from '../../../components';
 
 export default function Settings(props: Props) {
   const { numberLocale, fractionDigits } = props.state.settings;
@@ -23,7 +24,9 @@ export default function Settings(props: Props) {
       <CurrencySetting {...props} />
       <hr />
       <Setting label="Accounts">
-        <AccountSetting {...props} />
+        <Suspense fallback={<Loading />}>
+          <AccountSetting {...props} />
+        </Suspense>
       </Setting>
       <hr />
       <Setting label="Number format Example">

@@ -4,9 +4,11 @@ import { Content, Tab, TabBar, Header, Button } from '../../components';
 import { useSetShowSettings } from '../../lib';
 import General from './General';
 import Categories from './Categories';
+import { AccountsResource } from '../../moneymoney';
 
 type Props = {
   state: BudgetState;
+  accountsRes: AccountsResource;
   dispatch: Dispatch<Action>;
 };
 

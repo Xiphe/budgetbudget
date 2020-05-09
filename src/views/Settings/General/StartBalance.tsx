@@ -6,14 +6,11 @@ import Input from '../Input';
 import Setting from '../Setting';
 import styles from '../Settings.module.scss';
 import { Props } from './Types';
-import {
-  getAccounts,
-  getTransactions,
-  cleanMessage,
-} from '../../../moneymoney';
+import { getTransactions, cleanMessage, Account } from '../../../moneymoney';
 
 function useReCalculate(
   accounts: string[],
+  allAccounts: Account[],
   startDate: number,
   update: (value: number) => void,
   currency: string,
@@ -30,10 +27,11 @@ function useReCalculate(
 
     (async () => {
       try {
-        const [transactions, allAccounts] = await Promise.all([
-          getTransactions(accounts, currency, startDate),
-          getAccounts(currency),
-        ]);
+        const transactions = await getTransactions(
+          accounts,
+          currency,
+          startDate,
+        );
         const transactionsSum = transactions.reduce(
           (memo, { amount }) => memo + amount,
           0,
@@ -57,7 +55,7 @@ function useReCalculate(
     return () => {
       canceled = true;
     };
-  }, [loading, accounts, startDate, currency, update]);
+  }, [loading, accounts, allAccounts, startDate, currency, update]);
 
   return [loading, recalculate];
 }
@@ -68,7 +66,11 @@ export default function StartBalanceSetting({
   },
   dispatch,
   numberFormatter,
-}: Props & { numberFormatter: NumberFormatter }) {
+  accountsRes,
+}: Props & {
+  numberFormatter: NumberFormatter;
+}) {
+  const allAccounts = accountsRes.read(currency);
   const update = useCallback(
     (payload: number) => {
       dispatch({ type: ACTION_SETTINGS_SET_START_BALANCE, payload });
@@ -82,6 +84,7 @@ export default function StartBalanceSetting({
   });
   const [loading, recalculate] = useReCalculate(
     accounts,
+    allAccounts,
     startDate,
     update,
     currency,

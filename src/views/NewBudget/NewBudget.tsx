@@ -9,12 +9,14 @@ import Categories from '../Settings/Categories';
 import { budgetReducer } from '../../budget';
 import useMenu from '../../lib/useMenu';
 import { getToday, unsaved } from '../../lib';
+import { AccountsResource } from '../../moneymoney';
 
 type Props = {
+  accountsRes: AccountsResource;
   onCreate: (budget: BudgetState) => void;
 };
 
-export default function NewBudget({ onCreate }: Props) {
+export default function NewBudget({ onCreate, accountsRes }: Props) {
   const [page, setPage] = useState<'general' | 'categories'>('general');
   useMenu();
   const [state, dispatch] = useReducer(budgetReducer, {
@@ -65,7 +67,9 @@ export default function NewBudget({ onCreate }: Props) {
         </Header>
       }
     >
-      {page === 'general' && <General state={state} dispatch={dispatch} />}
+      {page === 'general' && (
+        <General state={state} dispatch={dispatch} accountsRes={accountsRes} />
+      )}
       {page === 'categories' && (
         <Categories state={state} dispatch={dispatch} />
       )}
