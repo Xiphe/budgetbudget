@@ -2,14 +2,12 @@ import { useReducer } from 'react';
 import useMenu from './useMenu';
 import budgetReducer from './budgetReducer';
 import useSave from './useSave';
-import useInit from './useInit';
 import { BudgetState } from './Types';
 
-export default function useBudget(init: string | BudgetState) {
-  const [state, dispatch] = useReducer(budgetReducer, null);
+export default function useBudget(initialState: BudgetState) {
+  const [state, dispatch] = useReducer(budgetReducer, initialState);
   const menu = useMenu();
   const error = useSave(menu, state);
-  const loadingError = useInit(init, dispatch);
 
-  return { error: error || loadingError, state, dispatch };
+  return { error, state, dispatch };
 }

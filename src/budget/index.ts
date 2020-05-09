@@ -14,6 +14,7 @@ export * from './budgetReducer';
 export { VERSION } from './Types';
 export { default } from './useBudgetState';
 export { default as useBudgetData } from './useBudgetData';
+export { default as getInitData, INIT_EMPTY } from './getInitData';
 export { unsaved } from './useSave';
 
 export type Action = ActionT;
