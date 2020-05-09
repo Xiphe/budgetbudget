@@ -1,12 +1,12 @@
 import { ipcRenderer } from 'electron';
 import { readFile } from 'fs';
-import { wrapPromise } from '../lib';
+import { createResource } from '../lib';
 import { validateBudgetState, BudgetState } from './Types';
 
 export const INIT_EMPTY = Symbol('INIT_EMPTY');
 
 export default function getInitData() {
-  return wrapPromise(
+  return createResource(() =>
     ipcRenderer.invoke('INIT').then(
       (response: unknown): Promise<BudgetState | typeof INIT_EMPTY> => {
         if (typeof response === 'undefined') {

@@ -1,8 +1,8 @@
-export default function wrapPromise<R>(promise: Promise<R>) {
+export default function createResource<R>(get: () => Promise<R>) {
   let status: 'pending' | 'success' | 'error' = 'pending';
   let error: Error;
   let result: R;
-  let suspender = promise.then(
+  let suspender = get().then(
     (r) => {
       status = 'success';
       result = r;
