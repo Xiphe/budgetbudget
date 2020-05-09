@@ -6,27 +6,31 @@ import {
   useMenu,
   useSave,
 } from '../../lib';
-import Settings from '../Settings';
+import { AccountsResource } from '../../moneymoney';
 
 type Props = {
+  accountsRes: AccountsResource;
   initialState: BudgetState;
 };
 
+const Settings = lazy(() => import('../Settings'));
 const Budget = lazy(() => import('./Budget'));
 
-export default withShowSettingsProvider(({ initialState }: Props) => {
-  const [state, dispatch] = useReducer(budgetReducer, initialState);
-  const menu = useMenu();
-  const error = useSave(menu, state);
-  const showSettings = useShowSettings();
+export default withShowSettingsProvider(
+  ({ initialState, accountsRes }: Props) => {
+    const [state, dispatch] = useReducer(budgetReducer, initialState);
+    const menu = useMenu();
+    const error = useSave(menu, state);
+    const showSettings = useShowSettings();
 
-  if (error) {
-    throw error;
-  }
+    if (error) {
+      throw error;
+    }
 
-  return showSettings ? (
-    <Settings state={state} dispatch={dispatch} />
-  ) : (
-    <Budget state={state} dispatch={dispatch} />
-  );
-});
+    return showSettings ? (
+      <Settings state={state} dispatch={dispatch} accountsRes={accountsRes} />
+    ) : (
+      <Budget state={state} dispatch={dispatch} />
+    );
+  },
+);

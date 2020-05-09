@@ -1,4 +1,8 @@
-export default function createResource<R>(get: () => Promise<R>) {
+export type Resource<T> = {
+  read: () => T;
+};
+
+export default function createResource<R>(get: () => Promise<R>): Resource<R> {
   let status: 'pending' | 'success' | 'error' = 'pending';
   let error: Error;
   let result: R;

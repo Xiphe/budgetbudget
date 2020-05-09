@@ -1,4 +1,5 @@
 import { NumberFormatter as NumberFormatterT } from './createNumberFormatter';
+import { Resource as ResourceT } from './createResource';
 export { default as formatDateKey } from './formatDateKey';
 export { default as roundWithFractions } from './roundWithFractions';
 export { default as createNumberFormatter } from './createNumberFormatter';
@@ -28,3 +29,4 @@ export {
 export * from './guards';
 export * from './useIsVisible';
 export type NumberFormatter = NumberFormatterT;
+export type Resource<T> = ResourceT<T>;
