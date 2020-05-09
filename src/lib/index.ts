@@ -4,10 +4,10 @@ export { default as roundWithFractions } from './roundWithFractions';
 export { default as createNumberFormatter } from './createNumberFormatter';
 export { default as useInputProps } from './useInputProps';
 export { default as useAmountInputProps } from './useAmountInputProps';
-export { default as useInit, INIT_EMPTY } from './useInit';
 export { default as getSharedSettings } from './getSharedSettings';
 export { default as getToday } from './getToday';
 export { default as isError } from './isError';
+export { default as wrapPromise } from './wrapPromise';
 export { default as mapCategories } from './mapCategories';
 export {
   withShowSettingsProvider,

@@ -1,32 +1,40 @@
 import './theme.scss';
 import React, { Suspense, useState } from 'react';
-import { useInit, INIT_EMPTY, isError } from './lib';
+import { getInitData, INIT_EMPTY } from './budget';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
+import { BudgetState } from './budget/Types';
 
 const Budget = React.lazy(() => import('./views/Budget'));
 const Welcome = React.lazy(() => import('./views/Welcome'));
 const NewBudget = React.lazy(() => import('./views/NewBudget'));
 
-export default function App() {
-  const [welcome, setWelcome] = useState<boolean>(true);
-  const [init, setInitialState] = useInit();
+const initRes = getInitData();
 
+function App() {
+  const init = initRes.read();
+  const [welcome, setWelcome] = useState<boolean>(true);
+  const [initialState, setInitialState] = useState<
+    typeof INIT_EMPTY | BudgetState
+  >(init);
+
+  return initialState === INIT_EMPTY ? (
+    welcome ? (
+      <Welcome onCreate={() => setWelcome(false)} />
+    ) : (
+      <NewBudget onCreate={setInitialState} />
+    )
+  ) : (
+    <Budget initialState={initialState} />
+  );
+}
+
+export default function AppWrapper() {
   return (
     <div className={styles.app}>
-      <ErrorBoundary error={isError(init) ? init : undefined}>
+      <ErrorBoundary>
         <Suspense fallback={<Startup />}>
-          {!init ? (
-            <Startup />
-          ) : isError(init) ? null : init === INIT_EMPTY ? (
-            welcome ? (
-              <Welcome onCreate={() => setWelcome(false)} />
-            ) : (
-              <NewBudget onCreate={setInitialState} />
-            )
-          ) : (
-            <Budget init={init} />
-          )}
+          <App />
         </Suspense>
       </ErrorBoundary>
     </div>

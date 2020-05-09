@@ -5,14 +5,14 @@ import { withShowSettingsProvider, useShowSettings } from '../../lib';
 import Settings from '../Settings';
 
 type Props = {
-  init: string | BudgetState;
+  initialState: BudgetState;
 };
 
 const Budget = lazy(() => import('./Budget'));
 
-export default withShowSettingsProvider(({ init }: Props) => {
+export default withShowSettingsProvider(({ initialState }: Props) => {
   const showSettings = useShowSettings();
-  const { error, state, dispatch } = useBudgetState(init);
+  const { error, state, dispatch } = useBudgetState(initialState);
   if (error) {
     throw error;
   }
