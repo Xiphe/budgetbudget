@@ -198,10 +198,7 @@ function updateSettingsIncomeCategory(
   };
 }
 
-export default function budgetReducer(
-  state: BudgetState,
-  action: Action,
-): BudgetState {
+export function budgetReducer(state: BudgetState, action: Action): BudgetState {
   if (action.type === ACTION_INIT) {
     return action.payload;
   }
