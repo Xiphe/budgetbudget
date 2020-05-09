@@ -18,6 +18,10 @@ import initTheme from './initTheme';
       import('./App'),
     ] as any);
   })
-  .then(([{ createElement }, { render }, { default: App }]: any) => {
-    render(createElement(App), document.getElementById('root'));
-  });
+  .then(
+    ([{ createElement }, { unstable_createRoot }, { default: App }]: any) => {
+      unstable_createRoot(document.getElementById('root')).render(
+        createElement(App),
+      );
+    },
+  );
