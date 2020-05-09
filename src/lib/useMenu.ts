@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ipcRenderer, remote } from 'electron';
-import { getSharedSettings, useSetShowSettings } from '../lib';
+import getSharedSettings from './getSharedSettings';
+import { useSetShowSettings } from './ShowSettingsContext';
+
 import {
   createMenu,
   createFileMenu,

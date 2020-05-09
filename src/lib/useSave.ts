@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { writeFile } from 'fs';
 import isEqual from 'lodash.isequal';
 import { ipcRenderer, Menu, remote } from 'electron';
-import { getSharedSettings, isError } from '../lib';
+import { getSharedSettings, isError } from '.';
 import { MENU_ID_SAVE, MENU_ID_SAVE_AS } from './useMenu';
-import { BudgetState } from './Types';
+import { BudgetState } from '../budget/Types';
 
 const UNSAVED = Symbol('UNSAVED');
 export function unsaved(state: BudgetState): BudgetState {

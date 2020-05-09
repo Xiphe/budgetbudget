@@ -1,6 +1,6 @@
 import React from 'react';
 import { remote } from 'electron';
-import useMenu from '../../budget/useMenu';
+import { useMenu } from '../../lib';
 import { Content, Button, Header } from '../../components';
 import styles from './Welcome.module.scss';
 
