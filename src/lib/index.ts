@@ -7,7 +7,7 @@ export { default as useAmountInputProps } from './useAmountInputProps';
 export { default as getSharedSettings } from './getSharedSettings';
 export { default as getToday } from './getToday';
 export { default as isError } from './isError';
-export { default as wrapPromise } from './wrapPromise';
+export { default as createResource } from './createResource';
 export { default as useMenu } from './useMenu';
 export { default as useSave, unsaved } from './useSave';
 export { default as mapCategories } from './mapCategories';
