@@ -15,44 +15,53 @@ export async function getAccounts(): Promise<InteropAccount[]> {
   return probablyAccounts.map(validateAccount);
 }
 
-export default function getAccountsResource(): AccountsResource {
-  const res = createResource(() => getAccounts());
+const getAccountsResource: {
+  (): AccountsResource;
+  cache?: AccountsResource;
+} = () => {
+  if (!getAccountsResource.cache) {
+    const res = createResource(() => getAccounts());
 
-  return {
-    read(currency: string) {
-      const interopAccounts = res.read();
+    getAccountsResource.cache = {
+      read(currency: string) {
+        const interopAccounts = res.read();
 
-      return interopAccounts
-        .map(
-          ({
-            accountNumber,
-            balance,
-            currency: accountCurrency,
-            name,
-            indentation,
-            uuid,
-            icon,
-            group,
-            portfolio,
-          }) => {
-            const currencyBalance = balance.find(([_, c]) => c === currency);
-            if (accountCurrency !== currency || !currencyBalance) {
-              return false;
-            }
-
-            return {
+        return interopAccounts
+          .map(
+            ({
+              accountNumber,
+              balance,
+              currency: accountCurrency,
+              name,
+              indentation,
               uuid,
               icon,
               group,
-              indentation,
               portfolio,
-              name,
-              number: accountNumber,
-              balance: currencyBalance[0],
-            };
-          },
-        )
-        .filter((data: Account | false): data is Account => Boolean(data));
-    },
-  };
-}
+            }) => {
+              const currencyBalance = balance.find(([_, c]) => c === currency);
+              if (accountCurrency !== currency || !currencyBalance) {
+                return false;
+              }
+
+              return {
+                uuid,
+                icon,
+                group,
+                indentation,
+                portfolio,
+                name,
+                number: accountNumber,
+                balance: currencyBalance[0],
+              };
+            },
+          )
+          .filter((data: Account | false): data is Account => Boolean(data));
+      },
+    };
+  }
+
+  return getAccountsResource.cache!;
+};
+
+export default getAccountsResource;
