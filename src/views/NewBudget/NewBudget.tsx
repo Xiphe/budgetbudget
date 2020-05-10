@@ -9,14 +9,14 @@ import Categories from '../Settings/Categories';
 import { budgetReducer } from '../../budget';
 import useMenu from '../../lib/useMenu';
 import { getToday, unsaved } from '../../lib';
-import { AccountsResource } from '../../moneymoney';
+import { getAccounts } from '../../moneymoney';
 
 type Props = {
-  accountsRes: AccountsResource;
   onCreate: (budget: BudgetState) => void;
 };
+const accountsRes = getAccounts();
 
-export default function NewBudget({ onCreate, accountsRes }: Props) {
+export default function NewBudget({ onCreate }: Props) {
   const [page, setPage] = useState<'general' | 'categories'>('general');
   useMenu();
   const [state, dispatch] = useReducer(budgetReducer, {

@@ -4,13 +4,14 @@ import { Content, Tab, TabBar, Header, Button } from '../../components';
 import { useSetShowSettings } from '../../lib';
 import General from './General';
 import Categories from './Categories';
-import { AccountsResource } from '../../moneymoney';
+import { getAccounts } from '../../moneymoney';
 
 type Props = {
   state: BudgetState;
-  accountsRes: AccountsResource;
   dispatch: Dispatch<Action>;
 };
+
+const accountsRes = getAccounts();
 
 export default function Settings(props: Props) {
   const showSettings = useSetShowSettings();
@@ -43,7 +44,7 @@ export default function Settings(props: Props) {
           Categories
         </Tab>
       </TabBar>
-      {tab === 'general' && <General {...props} />}
+      {tab === 'general' && <General {...props} accountsRes={accountsRes} />}
       {tab === 'categories' && <Categories {...props} />}
     </Content>
   );
