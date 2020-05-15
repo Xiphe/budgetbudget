@@ -1,22 +1,21 @@
 import './theme.scss';
 import React, { Suspense, useState } from 'react';
-import { getInitData, INIT_EMPTY } from './budget';
+import { getInitData, INIT_EMPTY, BudgetState, InitRes } from './budget';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
-import { BudgetState } from './budget';
+import { useRefreshResource } from './lib';
 
 const Budget = React.lazy(() => import('./views/Budget'));
 const Welcome = React.lazy(() => import('./views/Welcome'));
 const NewBudget = React.lazy(() => import('./views/NewBudget'));
 
-const initRes = getInitData();
+const initialInitRes = getInitData();
 
-function App() {
-  const init = initRes.read();
-  const [welcome, setWelcome] = useState<boolean>(true);
+function App({ initRes }: { initRes: InitRes }) {
   const [initialState, setInitialState] = useState<
     typeof INIT_EMPTY | BudgetState
-  >(init);
+  >(initRes.read());
+  const [welcome, setWelcome] = useState<boolean>(true);
 
   return initialState === INIT_EMPTY ? (
     welcome ? (
@@ -30,11 +29,12 @@ function App() {
 }
 
 export default function AppWrapper() {
+  const [initRes] = useRefreshResource(initialInitRes);
   return (
     <div className={styles.app}>
       <ErrorBoundary>
         <Suspense fallback={<Startup />}>
-          <App />
+          <App initRes={initRes} />
         </Suspense>
       </ErrorBoundary>
     </div>
