@@ -1,6 +1,6 @@
 import './theme.scss';
 import React, { Suspense, useState } from 'react';
-import { getInitData, INIT_EMPTY, BudgetState, InitRes } from './budget';
+import { INIT_EMPTY, BudgetState, InitRes } from './budget';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
 import { useRefreshResource } from './lib';
@@ -8,8 +8,6 @@ import { useRefreshResource } from './lib';
 const Budget = React.lazy(() => import('./views/Budget'));
 const Welcome = React.lazy(() => import('./views/Welcome'));
 const NewBudget = React.lazy(() => import('./views/NewBudget'));
-
-const initialInitRes = getInitData();
 
 function App({ initRes }: { initRes: InitRes }) {
   const [initialState, setInitialState] = useState<
@@ -28,7 +26,11 @@ function App({ initRes }: { initRes: InitRes }) {
   );
 }
 
-export default function AppWrapper() {
+export default function AppWrapper({
+  initialInitRes,
+}: {
+  initialInitRes: InitRes;
+}) {
   const [initRes] = useRefreshResource(initialInitRes);
   return (
     <div className={styles.app}>
