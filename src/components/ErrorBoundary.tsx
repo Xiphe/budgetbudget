@@ -4,10 +4,16 @@ import Header, { HeaderSpacer } from './Header';
 import LoadingError from './LoadingError';
 
 type ErrorWithRetry = Error & {
-  retry?: null | (() => void);
+  retry?: () => void;
 };
 
-export function FullScreenError({ error }: { error: ErrorWithRetry }) {
+export function FullScreenError({
+  error,
+  retry,
+}: {
+  error: ErrorWithRetry;
+  retry?: () => void;
+}) {
   return (
     <Content
       background
@@ -21,33 +27,37 @@ export function FullScreenError({ error }: { error: ErrorWithRetry }) {
       }
     >
       <h3>An Error Ocurred</h3>
-      <LoadingError message={error.message} retry={error.retry || undefined} />
+      <LoadingError message={error.message} retry={retry} />
     </Content>
   );
 }
 
 export default class ErrorBoundary extends React.Component<
-  { children: ReactNode; error?: Error },
-  { error: Error | null }
+  { children: ReactNode },
+  { error: ErrorWithRetry | undefined }
 > {
   constructor(props: any) {
     super(props);
-    this.state = { error: null };
+    this.state = { error: undefined };
+    this.resetError = this.resetError.bind(this);
   }
 
   static getDerivedStateFromError(error: Error) {
     return { error };
   }
 
-  componentDidCatch() {
-    // You can also log the error to an error reporting service
-    // logErrorToMyService(error, errorInfo);
+  resetError() {
+    if (this.state.error && this.state.error.retry) {
+      this.state.error.retry();
+    }
+    this.setState({ error: undefined });
   }
 
   render() {
-    const error = this.state.error || this.props.error;
+    const error = this.state.error;
+    const retry = error && error.retry;
     if (error) {
-      return <FullScreenError error={error} />;
+      return <FullScreenError error={error} retry={retry && this.resetError} />;
     }
 
     return this.props.children;

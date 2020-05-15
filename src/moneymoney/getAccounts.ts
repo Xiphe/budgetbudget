@@ -3,6 +3,7 @@ import { ipcRenderer } from 'electron';
 import { createResource } from '../lib';
 
 export type AccountsResource = {
+  reCreate: () => AccountsResource;
   read: (currency: string) => Account[];
 };
 export async function getAccounts(): Promise<InteropAccount[]> {
@@ -23,6 +24,10 @@ const getAccountsResource: {
     const res = createResource(() => getAccounts());
 
     getAccountsResource.cache = {
+      reCreate() {
+        getAccountsResource.cache = undefined;
+        return getAccountsResource();
+      },
       read(currency: string) {
         const interopAccounts = res.read();
 

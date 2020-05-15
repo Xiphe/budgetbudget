@@ -1,23 +1,30 @@
 import React, { useState, useReducer } from 'react';
 import { remote } from 'electron';
 import { BudgetState, VERSION } from '../../budget';
-import { Content, Button, Header, HeaderSpacer } from '../../components';
+import {
+  Content,
+  Button,
+  Header,
+  HeaderSpacer,
+  ErrorBoundary,
+} from '../../components';
 import startOfMonth from 'date-fns/startOfMonth';
 import subMonths from 'date-fns/subMonths';
 import General from '../Settings/General';
 import Categories from '../Settings/Categories';
 import { budgetReducer } from '../../budget';
 import useMenu from '../../lib/useMenu';
-import { getToday, unsaved } from '../../lib';
+import { getToday, unsaved, useRefreshResource } from '../../lib';
 import { getAccounts } from '../../moneymoney';
 
 type Props = {
   onCreate: (budget: BudgetState) => void;
 };
-const accountsRes = getAccounts();
+const initialAccountsRes = getAccounts();
 
 export default function NewBudget({ onCreate }: Props) {
   const [page, setPage] = useState<'general' | 'categories'>('general');
+  const [accountsRes] = useRefreshResource(initialAccountsRes);
   useMenu();
   const [state, dispatch] = useReducer(budgetReducer, {
     name: '',
@@ -39,40 +46,46 @@ export default function NewBudget({ onCreate }: Props) {
   }
 
   return (
-    <Content
-      padding
-      header={
-        <Header>
-          <span>Create a new Budget</span>
-          <HeaderSpacer />
-          {page === 'general' && (
-            <Button
-              primary
-              disabled={!state.name.length || !state.settings.accounts.length}
-              onClick={() => setPage('categories')}
-            >
-              Choose Income Categories
-            </Button>
-          )}
-          {page === 'categories' && (
-            <Button
-              primary
-              onClick={() => {
-                onCreate(unsaved(state));
-              }}
-            >
-              Create "{state.name}"
-            </Button>
-          )}
-        </Header>
-      }
-    >
-      {page === 'general' && (
-        <General state={state} dispatch={dispatch} accountsRes={accountsRes} />
-      )}
-      {page === 'categories' && (
-        <Categories state={state} dispatch={dispatch} />
-      )}
-    </Content>
+    <ErrorBoundary>
+      <Content
+        padding
+        header={
+          <Header>
+            <span>Create a new Budget</span>
+            <HeaderSpacer />
+            {page === 'general' && (
+              <Button
+                primary
+                disabled={!state.name.length || !state.settings.accounts.length}
+                onClick={() => setPage('categories')}
+              >
+                Choose Income Categories
+              </Button>
+            )}
+            {page === 'categories' && (
+              <Button
+                primary
+                onClick={() => {
+                  onCreate(unsaved(state));
+                }}
+              >
+                Create "{state.name}"
+              </Button>
+            )}
+          </Header>
+        }
+      >
+        {page === 'general' && (
+          <General
+            state={state}
+            dispatch={dispatch}
+            accountsRes={accountsRes}
+          />
+        )}
+        {page === 'categories' && (
+          <Categories state={state} dispatch={dispatch} />
+        )}
+      </Content>
+    </ErrorBoundary>
   );
 }
