@@ -41,9 +41,7 @@ export default function useBudgetData(state: BudgetState) {
     accounts,
   );
 
-  const [categories, defaultCategories, retryLoadCategories] = useCategories(
-    currency,
-  );
+  const [categories, defaultCategories] = useCategories().read(currency);
   const usableCategories = useMemo(() => {
     if (!categoriesLoaded(categories)) {
       return [];
@@ -61,20 +59,16 @@ export default function useBudgetData(state: BudgetState) {
     state,
   );
   const retry = useMemo(() => {
-    if (isError(transactions) && isError(categories)) {
+    if (isError(transactions)) {
       return () => {
         retryLoadTransactions();
-        retryLoadCategories();
       };
     }
     if (isError(transactions)) {
       return retryLoadTransactions;
     }
-    if (isError(categories)) {
-      return retryLoadCategories;
-    }
     return null;
-  }, [transactions, retryLoadTransactions, categories, retryLoadCategories]);
+  }, [transactions, retryLoadTransactions]);
 
   return {
     loading: !transactionsLoaded(transactions) || !categoriesLoaded(categories),
