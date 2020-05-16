@@ -4,15 +4,15 @@ import { useInputProps } from '../../../lib';
 import styles from '../Settings.module.scss';
 import { Props } from './Types';
 import { ACTION_SETTINGS_SET_SELECTED_ACCOUNTS } from '../../../budget';
+import { useAccounts } from '../../../moneymoney';
 
 export default function AccountSettings({
   dispatch,
   state: {
     settings: { accounts, currency },
   },
-  accountsRes,
 }: Props) {
-  const allAccounts = accountsRes.read(currency);
+  const allAccounts = useAccounts().read(currency);
   const { value, onChange, error, ...rest } = useInputProps({
     internal: false,
     value: accounts,

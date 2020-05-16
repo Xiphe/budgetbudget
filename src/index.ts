@@ -34,6 +34,7 @@ const appEntry = document.getElementById('root')!;
 
   unstable_createRoot(appEntry).render(createElement(App, { initialInitRes }));
 })().catch((err) => {
+  console.error(err);
   appEntry.innerHTML = `<div>
       <h1>Really really really unexpected Error:</h1>
       <p>${err.message}</p>

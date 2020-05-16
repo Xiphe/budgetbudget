@@ -2,6 +2,7 @@ declare module '*.module.scss' {
   const content: { [className: string]: string };
   export default content;
 }
+declare module 'recoil';
 
 /* from https://gist.github.com/strothj/708afcf4f01dd04de8f49c92e88093c3 */
 /**

@@ -1,6 +1,8 @@
 import './theme.scss';
 import React, { Suspense, useState } from 'react';
+import { RecoilRoot } from 'recoil';
 import { INIT_EMPTY, BudgetState, InitRes } from './budget';
+import { useInitiateAccounts } from './moneymoney';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
 import { useRefreshResource } from './lib';
@@ -14,6 +16,7 @@ function App({ initRes }: { initRes: InitRes }) {
     typeof INIT_EMPTY | BudgetState
   >(initRes.read());
   const [welcome, setWelcome] = useState<boolean>(true);
+  useInitiateAccounts(initialState === INIT_EMPTY);
 
   return initialState === INIT_EMPTY ? (
     welcome ? (
@@ -34,11 +37,13 @@ export default function AppWrapper({
   const [initRes] = useRefreshResource(initialInitRes);
   return (
     <div className={styles.app}>
-      <ErrorBoundary>
+      <RecoilRoot>
         <Suspense fallback={<Startup />}>
-          <App initRes={initRes} />
+          <ErrorBoundary>
+            <App initRes={initRes} />
+          </ErrorBoundary>
         </Suspense>
-      </ErrorBoundary>
+      </RecoilRoot>
     </div>
   );
 }

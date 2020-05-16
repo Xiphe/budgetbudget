@@ -15,6 +15,7 @@
     "downlevelIteration": true,
     "noEmit": true,
     "jsx": "react",
+    "types": ["react/experimental"],
     "plugins": [
       {
         "name": "typescript-plugin-css-modules",

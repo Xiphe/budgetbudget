@@ -1,4 +1,4 @@
-import React, { lazy, useReducer } from 'react';
+import React, { lazy, useReducer, Suspense } from 'react';
 import { BudgetState, budgetReducer } from '../../budget';
 import {
   withShowSettingsProvider,
@@ -6,6 +6,8 @@ import {
   useMenu,
   useSave,
 } from '../../lib';
+import { useInitiateAccounts } from '../../moneymoney';
+import { Startup } from '../../components';
 
 type Props = {
   initialState: BudgetState;
@@ -19,14 +21,19 @@ export default withShowSettingsProvider(({ initialState }: Props) => {
   const menu = useMenu();
   const error = useSave(menu, state);
   const showSettings = useShowSettings();
+  useInitiateAccounts(showSettings);
 
   if (error) {
     throw error;
   }
 
-  return showSettings ? (
-    <Settings state={state} dispatch={dispatch} />
-  ) : (
-    <Budget state={state} dispatch={dispatch} />
+  return (
+    <Suspense fallback={<Startup />}>
+      {showSettings ? (
+        <Settings state={state} dispatch={dispatch} />
+      ) : (
+        <Budget state={state} dispatch={dispatch} />
+      )}
+    </Suspense>
   );
 });

@@ -8,6 +8,12 @@ type Props = {
   onCreate: () => void;
 };
 export default function Welcome({ onCreate }: Props) {
+  const [
+    startTransition,
+    transitioning,
+  ] = (React as any).unstable_useTransition({
+    timeoutMs: 3000,
+  });
   useMenu();
 
   return (
@@ -44,7 +50,11 @@ export default function Welcome({ onCreate }: Props) {
         </ol>
       </div>
       <div className={styles.center}>
-        <Button primary onClick={onCreate}>
+        <Button
+          primary
+          disabled={transitioning}
+          onClick={() => startTransition(() => onCreate())}
+        >
           Ok, I understand. Create a new Budget
         </Button>
         <p>Or use the File menu to open an existing one</p>
