@@ -11,7 +11,8 @@ export { default as getToday } from './getToday';
 export { default as isError } from './isError';
 export {
   default as createResource,
-  useRefreshResource,
+  useRetryResource,
+  withRetry,
 } from './createResource';
 export { default as useMenu } from './useMenu';
 export { default as useSave, unsaved } from './useSave';

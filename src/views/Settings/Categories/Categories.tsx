@@ -4,8 +4,7 @@ import { Props } from './Types';
 import IncomeCategories from './IncomeCategories';
 
 export default function CategorySettings(props: Omit<Props, 'categories'>) {
-  const { currency } = props.state.settings;
-  const [categories] = useCategories().read(currency);
+  const [categories] = useCategories().read();
 
   return <IncomeCategories {...props} categories={categories} />;
 }

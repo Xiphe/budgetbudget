@@ -12,9 +12,12 @@ export {
   default as getTransactionsRes,
   getTransactions,
 } from './getTransactions';
-export { default as useTransactions } from './useTransactions';
-export { useAccounts } from './useAccounts';
-export { default as useCategories } from './useCategories';
+export {
+  useAccounts,
+  useCategories,
+  useTransactions,
+  useRefresh,
+} from './useMoneyMoney';
 export { default as calculateBalances } from './calculateBalances';
 export * from './errors';
 export type AccountsResource = AccountsResourceT;

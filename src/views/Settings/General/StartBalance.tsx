@@ -9,13 +9,13 @@ import { Props } from './Types';
 import { useTransactions, useAccounts } from '../../../moneymoney';
 
 function RecalculateButton({
-  settings: { currency, accounts },
+  settings: { accounts },
   update,
 }: {
   settings: Props['state']['settings'];
   update: (payload: number) => void;
 }) {
-  const allAccounts = useAccounts().read(currency);
+  const allAccounts = useAccounts().read();
   const transactions = useTransactions().read();
   const recalculate = useCallback(() => {
     const transactionsSum = transactions.reduce(

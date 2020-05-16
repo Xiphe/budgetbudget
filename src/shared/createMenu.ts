@@ -4,6 +4,7 @@ import { RecentFile } from './settings';
 
 type MenuConfig = MenuItemConstructorOptions;
 export type CreateMenuCallbacks = {
+  refresh?: () => void;
   setShowSettings?: (show: boolean) => void;
 };
 

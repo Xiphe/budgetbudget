@@ -8,19 +8,20 @@ const readFile = promisify(rf);
 export const INIT_EMPTY = Symbol('INIT_EMPTY');
 export type InitRes = Resource<BudgetState | typeof INIT_EMPTY>;
 
-export default function getInitData() {
-  return createResource(
-    async (): Promise<BudgetState | typeof INIT_EMPTY> => {
-      const response = await ipcRenderer.invoke('INIT');
-      if (typeof response === 'undefined') {
-        return Promise.resolve(INIT_EMPTY);
-      }
-      if (typeof response === 'string') {
-        return validateBudgetState(
-          JSON.parse((await readFile(response)).toString()),
-        );
-      }
-      throw new Error(`Unexpected init response ${response}`);
-    },
-  );
+async function getInitData(): Promise<BudgetState | typeof INIT_EMPTY> {
+  const response = await ipcRenderer.invoke('INIT');
+
+  if (typeof response === 'undefined') {
+    return Promise.resolve(INIT_EMPTY);
+  }
+  if (typeof response === 'string') {
+    return validateBudgetState(
+      JSON.parse((await readFile(response)).toString()),
+    );
+  }
+  throw new Error(`Unexpected init response ${response}`);
+}
+
+export default function getInitDataRes() {
+  return createResource(getInitData());
 }

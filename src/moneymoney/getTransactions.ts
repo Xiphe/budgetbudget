@@ -8,7 +8,7 @@ import { Resource } from '../lib/createResource';
 export type TransacionsResource = Resource<Transaction[]>;
 
 const filterCurrency = memoizeOne(
-  (transactions: Transaction[], currency: string) =>
+  (currency: string, transactions: Transaction[]) =>
     transactions.filter(({ currency: c }) => c === currency),
 );
 export async function getTransactions(
@@ -33,17 +33,20 @@ export async function getTransactions(
     [] as Transaction[],
   );
 }
-const getTransactionsMemo = memoizeOne(getTransactions);
+const getTransactionsMemo = memoizeOne(
+  (accountNumbers: string[], startDateTimestamp: number, cacheToken: symbol) =>
+    getTransactions(accountNumbers, startDateTimestamp),
+);
 
 function getTransactionsResource(
   accountNumbers: string[],
   currency: string,
   startDateTimestamp: number,
+  cacheToken: symbol,
 ): TransacionsResource {
-  return createResource(async () =>
-    filterCurrency(
-      await getTransactionsMemo(accountNumbers, startDateTimestamp),
-      currency,
+  return createResource(
+    getTransactionsMemo(accountNumbers, startDateTimestamp, cacheToken).then(
+      filterCurrency.bind(null, currency),
     ),
   );
 }
