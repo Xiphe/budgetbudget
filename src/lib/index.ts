@@ -6,6 +6,7 @@ export { default as createNumberFormatter } from './createNumberFormatter';
 export { default as useInputProps } from './useInputProps';
 export { default as useAmountInputProps } from './useAmountInputProps';
 export { default as getSharedSettings } from './getSharedSettings';
+export { default as initialSettings } from './initialSettings';
 export { default as getToday } from './getToday';
 export { default as isError } from './isError';
 export {

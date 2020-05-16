@@ -1,46 +1,17 @@
-import { atom, useSetRecoilState, useRecoilState } from 'recoil';
+import { selector, useRecoilState } from 'recoil';
 import getAccountsRes, { AccountsResource } from './getAccounts';
-import { useEffect, useMemo } from 'react';
-import createResource, { withRefresh } from '../lib/createResource';
+import { useMemo } from 'react';
+import { withRefresh } from '../lib/createResource';
+import { settingsState, BudgetState } from '../budget';
 
-const accountsResState = atom({
+const accountsResState = selector({
   key: 'accountsRes',
-  default: null,
+  get: ({ get }: any) =>
+    getAccountsRes((get(settingsState) as BudgetState['settings']).currency),
 });
 
-export function useInitiateAccounts(ini: boolean) {
-  const setAccounts = useSetRecoilState(accountsResState);
-  useEffect(() => {
-    if (ini) {
-      setAccounts((prev: AccountsResource | null) => {
-        return prev || getAccountsRes();
-      });
-    }
-  }, [ini, setAccounts]);
-}
-
-function useLazyRecoilState(recoilState: any, fallback: any) {
-  const [state, setState] = useRecoilState(recoilState);
-  return [state || fallback, setState];
-}
-
 export function useAccounts(): AccountsResource {
-  const [accounts, setAccounts] = useLazyRecoilState(
-    accountsResState,
-    useMemo(
-      () =>
-        createResource(
-          () =>
-            new Promise((_, rej) => {
-              setTimeout(
-                () => rej(new Error('Failed to initiate accounts')),
-                3000,
-              );
-            }),
-        ),
-      [],
-    ),
-  );
+  const [accounts, setAccounts] = useRecoilState(accountsResState);
 
   return useMemo(
     () => withRefresh(accounts, () => setAccounts(accounts.reCreate())),

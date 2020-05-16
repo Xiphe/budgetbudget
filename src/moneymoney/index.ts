@@ -8,9 +8,12 @@ import {
 } from './Types';
 import { AccountsResource as AccountsResourceT } from './getAccounts';
 export { default as getAccounts } from './getAccounts';
-export { default as getTransactions } from './getTransactions';
+export {
+  default as getTransactionsRes,
+  getTransactions,
+} from './getTransactions';
 export { default as useTransactions } from './useTransactions';
-export { useInitiateAccounts, useAccounts } from './useAccounts';
+export { useAccounts } from './useAccounts';
 export { default as useCategories } from './useCategories';
 export { default as calculateBalances } from './calculateBalances';
 export * from './errors';

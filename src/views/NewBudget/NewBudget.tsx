@@ -1,5 +1,4 @@
-import React, { useState, useReducer } from 'react';
-import { remote } from 'electron';
+import React, { useState } from 'react';
 import { BudgetState, VERSION } from '../../budget';
 import {
   Content,
@@ -8,13 +7,11 @@ import {
   HeaderSpacer,
   ErrorBoundary,
 } from '../../components';
-import startOfMonth from 'date-fns/startOfMonth';
-import subMonths from 'date-fns/subMonths';
 import General from '../Settings/General';
 import Categories from '../Settings/Categories';
-import { budgetReducer } from '../../budget';
+import { useBudgetReducer } from '../../budget';
 import useMenu from '../../lib/useMenu';
-import { getToday, unsaved } from '../../lib';
+import { initialSettings, unsaved } from '../../lib';
 
 type Props = {
   onCreate: (budget: BudgetState) => void;
@@ -23,19 +20,11 @@ type Props = {
 export default function NewBudget({ onCreate }: Props) {
   const [page, setPage] = useState<'general' | 'categories'>('general');
   useMenu();
-  const [state, dispatch] = useReducer(budgetReducer, {
+  const [state, dispatch] = useBudgetReducer({
     name: '',
     version: VERSION,
     budgets: {},
-    settings: {
-      accounts: [],
-      currency: 'EUR',
-      incomeCategories: [],
-      fractionDigits: 2,
-      startDate: startOfMonth(subMonths(getToday(), 1)).getTime(),
-      startBalance: 0,
-      numberLocale: remote.app.getLocale(),
-    },
+    settings: initialSettings,
   });
 
   if (state === null) {

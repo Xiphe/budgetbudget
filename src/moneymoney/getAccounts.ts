@@ -1,6 +1,6 @@
 import { Account, validateAccount, InteropAccount } from './Types';
 import { ipcRenderer } from 'electron';
-import { createResource } from '../lib';
+import { createResource, Resource } from '../lib';
 import memoizeOne from 'memoize-one';
 
 const filterAccounts = memoizeOne(
@@ -39,10 +39,7 @@ const filterAccounts = memoizeOne(
   },
 );
 
-export type AccountsResource = {
-  reCreate: () => AccountsResource;
-  read: (currency: string) => Account[];
-};
+export type AccountsResource = Resource<Account[]>;
 export async function getAccounts(): Promise<InteropAccount[]> {
   const probablyAccounts = await ipcRenderer.invoke('MM_EXPORT_ACCOUNTS');
 
@@ -53,15 +50,12 @@ export async function getAccounts(): Promise<InteropAccount[]> {
   return probablyAccounts.map(validateAccount);
 }
 
-export default function getAccountsResource() {
-  const res = createResource(() => getAccounts());
+const getAccountsMemo = memoizeOne(getAccounts);
 
-  return {
-    reCreate() {
-      return getAccountsResource();
-    },
-    read(currency: string) {
-      return filterAccounts(res.read(), currency);
-    },
-  };
+function getAccountsResource(currency: string): AccountsResource {
+  return createResource(async () =>
+    filterAccounts(await getAccountsMemo(), currency),
+  );
 }
+
+export default memoizeOne(getAccountsResource);
