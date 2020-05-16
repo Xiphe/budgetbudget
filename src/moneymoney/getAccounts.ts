@@ -1,6 +1,43 @@
 import { Account, validateAccount, InteropAccount } from './Types';
 import { ipcRenderer } from 'electron';
 import { createResource } from '../lib';
+import memoizeOne from 'memoize-one';
+
+const filterAccounts = memoizeOne(
+  (interopAccounts: InteropAccount[], currency: string): Account[] => {
+    return interopAccounts
+      .map(
+        ({
+          accountNumber,
+          balance,
+          currency: accountCurrency,
+          name,
+          indentation,
+          uuid,
+          icon,
+          group,
+          portfolio,
+        }) => {
+          const currencyBalance = balance.find(([_, c]) => c === currency);
+          if (accountCurrency !== currency || !currencyBalance) {
+            return false;
+          }
+
+          return {
+            uuid,
+            icon,
+            group,
+            indentation,
+            portfolio,
+            name,
+            number: accountNumber,
+            balance: currencyBalance[0],
+          };
+        },
+      )
+      .filter((data: Account | false): data is Account => Boolean(data));
+  },
+);
 
 export type AccountsResource = {
   reCreate: () => AccountsResource;
@@ -24,39 +61,7 @@ export default function getAccountsResource() {
       return getAccountsResource();
     },
     read(currency: string) {
-      const interopAccounts = res.read();
-
-      return interopAccounts
-        .map(
-          ({
-            accountNumber,
-            balance,
-            currency: accountCurrency,
-            name,
-            indentation,
-            uuid,
-            icon,
-            group,
-            portfolio,
-          }) => {
-            const currencyBalance = balance.find(([_, c]) => c === currency);
-            if (accountCurrency !== currency || !currencyBalance) {
-              return false;
-            }
-
-            return {
-              uuid,
-              icon,
-              group,
-              indentation,
-              portfolio,
-              name,
-              number: accountNumber,
-              balance: currencyBalance[0],
-            };
-          },
-        )
-        .filter((data: Account | false): data is Account => Boolean(data));
+      return filterAccounts(res.read(), currency);
     },
   };
 }
