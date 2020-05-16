@@ -1,42 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Category } from './Types';
-import getCategories from './getCategories';
+import { atom, useRecoilState } from 'recoil';
+import getCategories, { CategoryResource } from './getCategories';
+import { useMemo } from 'react';
+import { withRefresh } from '../lib/createResource';
 
-export default function useCategories(
-  currency: string,
-): [Category[] | null | Error, Category[], () => void] {
-  const [categories, setCategories] = useState<Category[] | null | Error>(null);
-  const [defaultCategories, setDefaultCategories] = useState<Category[]>([]);
-  useEffect(() => {
-    setCategories(null);
-  }, [currency]);
-  useEffect(() => {
-    if (categories !== null) {
-      return;
-    }
-    let canceled = false;
-    getCategories(currency)
-      .then(([cat, def]) => {
-        if (!canceled) {
-          setCategories(cat);
-          setDefaultCategories(def);
-        }
-      })
-      .catch((err) => {
-        if (!canceled) {
-          setCategories(err);
-          setDefaultCategories([]);
-        }
-      });
+const categoriesResState = atom({
+  key: 'categoriesRes',
+  default: getCategories(),
+});
 
-    return () => {
-      canceled = true;
-    };
-  }, [categories, currency]);
-
-  return [
-    categories,
-    defaultCategories,
-    useCallback(() => setCategories(null), []),
-  ];
+export default function useCategories(): CategoryResource {
+  const [categoriesRes, setCategoriesRes] = useRecoilState(categoriesResState);
+  return useMemo(
+    () =>
+      withRefresh(categoriesRes, () =>
+        setCategoriesRes(categoriesRes.reCreate()),
+      ),
+    [categoriesRes, setCategoriesRes],
+  );
 }
