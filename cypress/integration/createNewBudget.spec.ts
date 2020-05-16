@@ -22,6 +22,7 @@ describe('Create New Budget', () => {
         ipcMain.handleOnce('INIT', () => undefined);
         ipcMain.handleOnce('MM_EXPORT_ACCOUNTS', () => accounts);
         ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => categories);
+        ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () => []);
       },
     });
 
@@ -33,16 +34,14 @@ describe('Create New Budget', () => {
     cy.findByLabelText(/Number format/i)
       .type('{selectall}')
       .type('de-DE');
+    cy.bb().then(({ electron: { ipcMain } }) => {
+      ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () => []);
+    });
     cy.findByLabelText(/Start Date/i).type('2019-07-07');
     cy.findByRole('button', { name: /choose income categories/i }).click();
 
     cy.findByText(/^\+$/).click();
     cy.findByDisplayValue(/please select/i).select(categories[1].name);
-
-    cy.bb().then(({ electron: { ipcMain } }) => {
-      ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => []);
-      ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () => []);
-    });
 
     cy.findByText(/Create "My New Budget"/i).click();
     cy.findByText(/My new Budget/i).should('be.visible');
