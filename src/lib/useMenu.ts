@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer, remote, MenuItemConstructorOptions } from 'electron';
 import getSharedSettings from './getSharedSettings';
 import { useSetShowSettings } from './ShowSettingsContext';
 
@@ -10,11 +10,44 @@ import {
   createOpenRecent,
   CreateMenuCallbacks,
 } from '../shared/createMenu';
+import { useRefresh } from '../moneymoney';
 
 export const MENU_ID_SAVE = 'MENU_SAVE';
 export const MENU_ID_SAVE_AS = 'MENU_SAVE_AS';
 
 function buildMenu(callbacks: CreateMenuCallbacks) {
+  const refresh: MenuItemConstructorOptions[] = callbacks.refresh
+    ? [
+        { type: 'separator' },
+        {
+          label: 'Refresh MoneyMoney Data',
+          enabled: true,
+          accelerator: 'CommandOrControl+R',
+          click: callbacks.refresh,
+        },
+      ]
+    : [];
+  const fileMenuEntries: MenuItemConstructorOptions[] = [
+    {
+      label: 'Save',
+      id: MENU_ID_SAVE,
+      enabled: false,
+      accelerator: 'CommandOrControl+S',
+      async click() {
+        ipcRenderer.send('SAVE');
+      },
+    },
+    {
+      label: 'Save As...',
+      id: MENU_ID_SAVE_AS,
+      enabled: false,
+      accelerator: 'CommandOrControl+Shift+S',
+      async click() {
+        ipcRenderer.send('SAVE_AS');
+      },
+    },
+  ];
+
   return remote.Menu.buildFromTemplate(
     createMenu(
       remote.app.name,
@@ -26,26 +59,7 @@ function buildMenu(callbacks: CreateMenuCallbacks) {
             getSharedSettings().getRecentFiles(),
             ipcRenderer.invoke.bind(null, 'MENU_FILE_OPEN_EXISTING'),
           ),
-          entries: [
-            {
-              label: 'Save',
-              id: MENU_ID_SAVE,
-              enabled: false,
-              accelerator: 'CommandOrControl+S',
-              async click() {
-                ipcRenderer.send('SAVE');
-              },
-            },
-            {
-              label: 'Save As...',
-              id: MENU_ID_SAVE_AS,
-              enabled: false,
-              accelerator: 'CommandOrControl+Shift+S',
-              async click() {
-                ipcRenderer.send('SAVE_AS');
-              },
-            },
-          ],
+          entries: fileMenuEntries.concat(refresh),
         }),
         createEditMenu(),
       ],
@@ -56,12 +70,13 @@ function buildMenu(callbacks: CreateMenuCallbacks) {
 
 export default function useMenu() {
   const setShowSettings = useSetShowSettings();
+  const refresh = useRefresh();
   const [recentSignal, setRecentSignal] = useState<symbol>(Symbol());
   const [focus, updateFocus] = useState<boolean>(true);
   const menu = useMemo(
-    () => buildMenu({ setShowSettings }),
+    () => buildMenu({ setShowSettings, refresh }),
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [setShowSettings, recentSignal],
+    [setShowSettings, recentSignal, refresh],
   );
   useEffect(() => {
     const unwatch = getSharedSettings().watchRecentFiles(() => {

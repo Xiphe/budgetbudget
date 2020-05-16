@@ -9,10 +9,10 @@ import { useAccounts } from '../../../moneymoney';
 export default function AccountSettings({
   dispatch,
   state: {
-    settings: { accounts, currency },
+    settings: { accounts },
   },
 }: Props) {
-  const allAccounts = useAccounts().read(currency);
+  const allAccounts = useAccounts().read();
   const { value, onChange, error, ...rest } = useInputProps({
     internal: false,
     value: accounts,

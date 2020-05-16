@@ -1,10 +1,10 @@
 import './theme.scss';
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useCallback } from 'react';
 import { RecoilRoot } from 'recoil';
-import { INIT_EMPTY, BudgetState, InitRes } from './budget';
+import { INIT_EMPTY, BudgetState, InitRes, getInitData } from './budget';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
-import { useRefreshResource } from './lib';
+import { useRetryResource } from './lib';
 
 const Budget = React.lazy(() => import('./views/Budget'));
 const Welcome = React.lazy(() => import('./views/Welcome'));
@@ -32,13 +32,17 @@ export default function AppWrapper({
 }: {
   initialInitRes: InitRes;
 }) {
-  const [initRes] = useRefreshResource(initialInitRes);
+  const [initRes, setInitRes] = useState(initialInitRes);
+  const retryInitRes = useRetryResource(
+    initRes,
+    useCallback(() => setInitRes(getInitData()), []),
+  );
   return (
     <div className={styles.app}>
       <RecoilRoot>
         <Suspense fallback={<Startup />}>
           <ErrorBoundary>
-            <App initRes={initRes} />
+            <App initRes={retryInitRes} />
           </ErrorBoundary>
         </Suspense>
       </RecoilRoot>

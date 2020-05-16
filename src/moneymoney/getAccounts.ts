@@ -4,7 +4,7 @@ import { createResource, Resource } from '../lib';
 import memoizeOne from 'memoize-one';
 
 const filterAccounts = memoizeOne(
-  (interopAccounts: InteropAccount[], currency: string): Account[] => {
+  (currency: string, interopAccounts: InteropAccount[]): Account[] => {
     return interopAccounts
       .map(
         ({
@@ -50,11 +50,14 @@ export async function getAccounts(): Promise<InteropAccount[]> {
   return probablyAccounts.map(validateAccount);
 }
 
-const getAccountsMemo = memoizeOne(getAccounts);
+const getAccountsMemo = memoizeOne((cacheToken: symbol) => getAccounts());
 
-function getAccountsResource(currency: string): AccountsResource {
-  return createResource(async () =>
-    filterAccounts(await getAccountsMemo(), currency),
+function getAccountsResource(
+  currency: string,
+  cacheToken: symbol,
+): AccountsResource {
+  return createResource(
+    getAccountsMemo(cacheToken).then(filterAccounts.bind(null, currency)),
   );
 }
 

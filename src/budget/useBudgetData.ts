@@ -22,20 +22,14 @@ function categoriesLoaded(
 }
 
 export default function useBudgetData(state: BudgetState) {
-  const {
-    fractionDigits,
-    numberLocale,
-    incomeCategories,
-    currency,
-  } = state.settings;
+  const { fractionDigits, numberLocale, incomeCategories } = state.settings;
 
   const numberFormatter = useMemo(
     () => createNumberFormatter(fractionDigits, numberLocale),
     [fractionDigits, numberLocale],
   );
-  const transactions = useTransactions().read(currency);
-
-  const [categories, defaultCategories] = useCategories().read(currency);
+  const transactions = useTransactions().read();
+  const [categories, defaultCategories] = useCategories().read();
   const usableCategories = useMemo(() => {
     if (!categoriesLoaded(categories)) {
       return [];

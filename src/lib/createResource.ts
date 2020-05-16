@@ -1,17 +1,13 @@
-import { useState, useMemo, Dispatch, SetStateAction } from 'react';
+import { useMemo } from 'react';
 export type Resource<T> = {
-  reCreate: () => Resource<T>;
-  read: (...props: any[]) => T;
-};
-export type RefreshResource<T> = Resource<T> & {
-  refresh: () => void;
+  read: () => T;
 };
 
-export default function createResource<R>(get: () => Promise<R>): Resource<R> {
+export default function createResource<R>(promise: Promise<R>): Resource<R> {
   let status: 'pending' | 'success' | 'error' = 'pending';
   let error: Error;
   let result: R;
-  let suspender = get().then(
+  let suspender = promise.then(
     (r) => {
       status = 'success';
       result = r;
@@ -22,9 +18,6 @@ export default function createResource<R>(get: () => Promise<R>): Resource<R> {
     },
   );
   return {
-    reCreate(): Resource<R> {
-      return createResource(get);
-    },
     read(): R {
       switch (status) {
         case 'pending':
@@ -38,13 +31,9 @@ export default function createResource<R>(get: () => Promise<R>): Resource<R> {
   };
 }
 
-export function withRefresh<R>(
-  res: Resource<R>,
-  refresh: () => void,
-): RefreshResource<R> {
+export function withRetry<R>(res: Resource<R>, retry: () => void): Resource<R> {
   return {
     ...res,
-    refresh,
     read(...args): R {
       try {
         return res.read(...args);
@@ -53,20 +42,16 @@ export function withRefresh<R>(
           throw e;
         }
         throw Object.assign(e, {
-          retry: refresh,
+          retry,
         });
       }
     },
   };
 }
 
-export function useRefreshResource<R>(
-  initialRes: Resource<R>,
-): [RefreshResource<R>, Dispatch<SetStateAction<Resource<R>>>] {
-  const [res, setRes] = useState(initialRes);
-
-  return [
-    useMemo(() => withRefresh(res, () => setRes(res.reCreate())), [res]),
-    setRes,
-  ];
+export function useRetryResource<R>(
+  res: Resource<R>,
+  retry: () => void,
+): Resource<R> {
+  return useMemo(() => withRetry(res, retry), [res, retry]);
 }
