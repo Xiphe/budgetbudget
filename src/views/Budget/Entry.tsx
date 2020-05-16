@@ -1,12 +1,11 @@
-import React, { lazy, useReducer, Suspense } from 'react';
-import { BudgetState, budgetReducer } from '../../budget';
+import React, { lazy, Suspense } from 'react';
+import { BudgetState, useBudgetReducer } from '../../budget';
 import {
   withShowSettingsProvider,
   useShowSettings,
   useMenu,
   useSave,
 } from '../../lib';
-import { useInitiateAccounts } from '../../moneymoney';
 import { Startup } from '../../components';
 
 type Props = {
@@ -17,11 +16,10 @@ const Settings = lazy(() => import('../Settings'));
 const Budget = lazy(() => import('./Budget'));
 
 export default withShowSettingsProvider(({ initialState }: Props) => {
-  const [state, dispatch] = useReducer(budgetReducer, initialState);
+  const [state, dispatch] = useBudgetReducer(initialState);
   const menu = useMenu();
   const error = useSave(menu, state);
   const showSettings = useShowSettings();
-  useInitiateAccounts(showSettings);
 
   if (error) {
     throw error;

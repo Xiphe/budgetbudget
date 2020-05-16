@@ -1,36 +1,47 @@
-import getTransactions from './getTransactions';
-import { Transaction } from './Types';
-import { useState, useEffect, useCallback } from 'react';
+import { selector, useRecoilState } from 'recoil';
+import getTransactions, { TransacionsResource } from './getTransactions';
+import { useMemo } from 'react';
+import createResource, { withRefresh } from '../lib/createResource';
+import { settingsState, BudgetState } from '../budget';
 
-export default function useTransactions(
-  startDateTimeStamp: number,
-  currency: string,
-  accountNumbers?: string[],
-): [Transaction[] | null | Error, () => void] {
-  const [state, setState] = useState<Transaction[] | null | Error>(null);
-  useEffect(() => {
-    if (!accountNumbers || !accountNumbers.length || state !== null) {
-      return;
-    }
-    let canceled = false;
-    const setUnlessCanceled = (data: Transaction[] | Error) => {
-      if (!canceled) {
-        setState(data);
-      }
-    };
-    getTransactions(accountNumbers, currency, startDateTimeStamp)
-      .then(setUnlessCanceled)
-      .catch(setUnlessCanceled);
+const transactionsResState = selector({
+  key: 'transactionsRes',
+  get({ get }: any) {
+    const { accounts, currency, startDate } = get(
+      settingsState,
+    ) as BudgetState['settings'];
+    return getTransactions(accounts, currency, startDate);
+  },
+});
 
-    return () => {
-      canceled = true;
-    };
-  }, [state, accountNumbers, currency, startDateTimeStamp]);
-  useEffect(() => {
-    setState(null);
-  }, [accountNumbers]);
+function useLazyRecoilState(recoilState: any, fallback: any) {
+  const [state, setState] = useRecoilState(recoilState);
+  return [state || fallback, setState];
+}
 
-  const refresh = useCallback(() => setState(null), []);
+export default function useTransactions(): TransacionsResource {
+  const [transactionsRes, settransactionsRes] = useLazyRecoilState(
+    transactionsResState,
+    useMemo(
+      () =>
+        createResource(
+          () =>
+            new Promise((_, rej) => {
+              setTimeout(
+                () => rej(new Error('Failed to initiate accounts')),
+                3000,
+              );
+            }),
+        ),
+      [],
+    ),
+  );
 
-  return [state, refresh];
+  return useMemo(
+    () =>
+      withRefresh(transactionsRes, () =>
+        settransactionsRes(transactionsRes.reCreate()),
+      ),
+    [transactionsRes, settransactionsRes],
+  );
 }

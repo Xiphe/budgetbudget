@@ -8,13 +8,7 @@ import React, {
 import isSameMonth from 'date-fns/isSameMonth';
 import differenceInCalendarMonths from 'date-fns/differenceInCalendarMonths';
 import { BudgetState, Action, useBudgetData } from '../../budget';
-import {
-  Content,
-  FullScreenError,
-  InfiniteSlider,
-  ScrollTo,
-  Startup,
-} from '../../components';
+import { Content, InfiniteSlider, ScrollTo } from '../../components';
 import {
   HeaderHeightProvider,
   VisibleMothContextProvider,
@@ -37,15 +31,9 @@ export default function Budget({ state, dispatch }: Props) {
     null,
   );
   const [scrollTo, setScrollTo] = useState<ScrollTo | null>(null);
-  const {
-    loading,
-    error,
-    retry,
-    months,
-    numberFormatter,
-    extendFuture,
-    categories,
-  } = useBudgetData(state);
+  const { months, numberFormatter, extendFuture, categories } = useBudgetData(
+    state,
+  );
   const handleHeaderMonthClick = useCallback(
     (key: string) => {
       if (!scrollTo) {
@@ -79,14 +67,6 @@ export default function Budget({ state, dispatch }: Props) {
   const loadMore = useCallback(() => {
     extendFuture(12);
   }, [extendFuture]);
-
-  if (error) {
-    return <FullScreenError error={Object.assign(error, { retry }) as any} />;
-  }
-
-  if (loading) {
-    return <Startup />;
-  }
 
   return (
     <VisibleMothContextProvider>

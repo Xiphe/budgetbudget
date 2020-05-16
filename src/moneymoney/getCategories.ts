@@ -1,13 +1,10 @@
 import { Category, validateCategory } from './Types';
 import { ipcRenderer } from 'electron';
 import memoizeOne from 'memoize-one';
-import { createResource } from '../lib';
+import { createResource, Resource } from '../lib';
 
 type SplitCategories = [Category[], Category[]];
-export type CategoryResource = {
-  reCreate: () => CategoryResource;
-  read: (currency: string) => SplitCategories;
-};
+export type CategoryResource = Resource<SplitCategories>;
 
 const splitCurrencyCategories = memoizeOne(
   (categories: Category[], currency: string) =>
@@ -36,16 +33,12 @@ export async function getCategories(): Promise<Category[]> {
 
   return probablyCategories.map(validateCategory);
 }
+const getCategoriesMemo = memoizeOne(getCategories);
 
-export default function getCategoryResource() {
-  const res = createResource(() => getCategories());
-
-  return {
-    reCreate() {
-      return getCategoryResource();
-    },
-    read(currency: string) {
-      return splitCurrencyCategories(res.read(), currency);
-    },
-  };
+function getCategoryResource(currency: string) {
+  return createResource(async () =>
+    splitCurrencyCategories(await getCategoriesMemo(), currency),
+  );
 }
+
+export default memoizeOne(getCategoryResource);
