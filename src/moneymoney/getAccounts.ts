@@ -16,57 +16,47 @@ export async function getAccounts(): Promise<InteropAccount[]> {
   return probablyAccounts.map(validateAccount);
 }
 
-const getAccountsResource: {
-  (): AccountsResource;
-  cache?: AccountsResource;
-} = () => {
-  if (!getAccountsResource.cache) {
-    const res = createResource(() => getAccounts());
+export default function getAccountsResource() {
+  const res = createResource(() => getAccounts());
 
-    getAccountsResource.cache = {
-      reCreate() {
-        getAccountsResource.cache = undefined;
-        return getAccountsResource();
-      },
-      read(currency: string) {
-        const interopAccounts = res.read();
+  return {
+    reCreate() {
+      return getAccountsResource();
+    },
+    read(currency: string) {
+      const interopAccounts = res.read();
 
-        return interopAccounts
-          .map(
-            ({
-              accountNumber,
-              balance,
-              currency: accountCurrency,
-              name,
-              indentation,
+      return interopAccounts
+        .map(
+          ({
+            accountNumber,
+            balance,
+            currency: accountCurrency,
+            name,
+            indentation,
+            uuid,
+            icon,
+            group,
+            portfolio,
+          }) => {
+            const currencyBalance = balance.find(([_, c]) => c === currency);
+            if (accountCurrency !== currency || !currencyBalance) {
+              return false;
+            }
+
+            return {
               uuid,
               icon,
               group,
+              indentation,
               portfolio,
-            }) => {
-              const currencyBalance = balance.find(([_, c]) => c === currency);
-              if (accountCurrency !== currency || !currencyBalance) {
-                return false;
-              }
-
-              return {
-                uuid,
-                icon,
-                group,
-                indentation,
-                portfolio,
-                name,
-                number: accountNumber,
-                balance: currencyBalance[0],
-              };
-            },
-          )
-          .filter((data: Account | false): data is Account => Boolean(data));
-      },
-    };
-  }
-
-  return getAccountsResource.cache!;
-};
-
-export default getAccountsResource;
+              name,
+              number: accountNumber,
+              balance: currencyBalance[0],
+            };
+          },
+        )
+        .filter((data: Account | false): data is Account => Boolean(data));
+    },
+  };
+}

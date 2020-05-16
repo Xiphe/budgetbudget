@@ -6,7 +6,12 @@ import Input from '../Input';
 import Setting from '../Setting';
 import styles from '../Settings.module.scss';
 import { Props } from './Types';
-import { getTransactions, cleanMessage, Account } from '../../../moneymoney';
+import {
+  getTransactions,
+  cleanMessage,
+  Account,
+  useAccounts,
+} from '../../../moneymoney';
 
 function useReCalculate(
   accounts: string[],
@@ -66,11 +71,10 @@ export default function StartBalanceSetting({
   },
   dispatch,
   numberFormatter,
-  accountsRes,
 }: Props & {
   numberFormatter: NumberFormatter;
 }) {
-  const allAccounts = accountsRes.read(currency);
+  const allAccounts = useAccounts().read(currency);
   const update = useCallback(
     (payload: number) => {
       dispatch({ type: ACTION_SETTINGS_SET_START_BALANCE, payload });
