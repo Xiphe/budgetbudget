@@ -1,3 +1,9 @@
 .app {
   color: var(--main-color);
 }
+
+.appTest {
+  * {
+    transition: none !important;
+  }
+}
