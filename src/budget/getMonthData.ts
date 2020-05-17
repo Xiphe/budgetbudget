@@ -170,7 +170,7 @@ const calcMonth: MonthDataGetter<InterMonthData> = function calcMonth(
   categories,
   incomeCategories,
   round,
-) {
+): InterMonthData {
   const {
     overspendRolloverState: prevOverspendRolloverState,
     toBudget: prevToBudget,
@@ -208,6 +208,7 @@ const calcMonth: MonthDataGetter<InterMonthData> = function calcMonth(
     toBudget,
     total,
     available,
+    availableThisMonth,
     rollover,
     overspendPrevMonth,
     categories: budgetCategories,

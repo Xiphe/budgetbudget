@@ -35,6 +35,10 @@ export default function useBudgets(
       toBudget: 0,
       overspendRolloverState: {},
       rollover: { total: 0 },
+      availableThisMonth: {
+        amount: 0,
+        transactions: [],
+      },
       available: [
         {
           amount: startBalance,
