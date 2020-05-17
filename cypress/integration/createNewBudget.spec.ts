@@ -10,6 +10,7 @@ describe('Create New Budget', () => {
     const categories = [category(), category(), category()];
 
     cy.open({
+      waitUntilLoaded: false,
       ignoreChannels: [
         'FILE_EDITED',
         'SAVE_CANCELED',
