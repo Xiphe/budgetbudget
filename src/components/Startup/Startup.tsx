@@ -9,7 +9,7 @@ export default function Startup() {
       header={
         <Header center>
           <HeaderSpacer />
-          BudgetBudget
+          BudgetBudget - Loading
           <HeaderSpacer />
         </Header>
       }

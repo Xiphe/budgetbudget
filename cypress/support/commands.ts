@@ -79,4 +79,6 @@ Cypress.Commands.add('open', ({ setup, ignoreChannels }) => {
   });
   cy.bb().then(setup);
   cy._bb().then(({ _startApp }) => _startApp());
+  cy.findByText(/BudgetBudget - Loading/i).should('be.visible');
+  cy.findByText(/BudgetBudget - Loading/i).should('not.be.visible');
 });
