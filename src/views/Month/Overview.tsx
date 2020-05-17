@@ -7,6 +7,23 @@ import styles from './Month.module.scss';
 import { Props as CommonProps } from './Types';
 import { MonthData, DetailedMonthData } from '../../budget';
 
+function ListItem({
+  amount,
+  title,
+  className,
+}: {
+  amount: string;
+  title: string;
+  className?: string;
+}) {
+  return (
+    <li aria-label={`${amount} ${title}`} className={className}>
+      <span>{amount}</span>
+      <span>{title}</span>
+    </li>
+  );
+}
+
 type Props = {
   month: MonthData;
   data?: DetailedMonthData;
@@ -48,34 +65,33 @@ export default function Overview({
       <h3 className={styles.title}>{name}</h3>
       {data && (
         <>
-          <div className={styles.headTable}>
-            <div>
-              {numberFormatter.format(
-                data.available[0] ? data.available[0].amount : 0,
-              )}
-            </div>
-            <div>Available Funds</div>
-            <div>{numberFormatter.format(data.overspendPrevMonth)}</div>
-            <div>Overspend in {format(subMonths(date, 1), 'MMM')}</div>
+          <ul className={styles.headTable}>
+            <ListItem
+              amount={numberFormatter.format(data.availableThisMonth.amount)}
+              title="Available Funds"
+            />
+            <ListItem
+              amount={numberFormatter.format(data.overspendPrevMonth)}
+              title={`Overspend in ${format(subMonths(date, 1), 'MMM')}`}
+            />
             {data.uncategorized.amount !== 0 && (
-              <>
-                <div>{numberFormatter.format(data.uncategorized.amount)}</div>
-                <div>Uncategorized</div>
-              </>
+              <ListItem
+                amount={numberFormatter.format(data.uncategorized.amount)}
+                title="Uncategorized"
+              />
             )}
-            <div>
-              {numberFormatter.format(
+            <ListItem
+              amount={numberFormatter.format(
                 data.total.budgeted === 0 ? 0 : data.total.budgeted * -1,
               )}
-            </div>
-            <div>Budgeted</div>
-            <div className={budgetClasses}>
-              {numberFormatter.format(data.toBudget)}
-            </div>
-            <div className={budgetClasses}>
-              {data.toBudget >= 0 ? 'To Budget' : 'Overbudgeted'}
-            </div>
-          </div>
+              title="Budgeted"
+            />
+            <ListItem
+              className={budgetClasses}
+              amount={numberFormatter.format(data.toBudget)}
+              title={data.toBudget >= 0 ? 'To Budget' : 'Overbudgeted'}
+            />
+          </ul>
           <div className={classNames(styles.budgetTotals)}>
             <div>
               Budgeted
