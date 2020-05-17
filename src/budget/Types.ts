@@ -120,6 +120,7 @@ export type InterMonthData = {
   overspendPrevMonth: number;
   overspendRolloverState: OverspendRollover;
   available: AmountWithPartialTransactions[];
+  availableThisMonth: AmountWithPartialTransactions;
   rollover: Rollover;
 };
 export type MonthData = {
