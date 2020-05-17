@@ -15,7 +15,7 @@ export default function useBudgets(
   defaultCategories: Category[] = [],
   {
     budgets,
-    settings: { incomeCategories, fractionDigits, startBalance },
+    settings: { incomeCategories, fractionDigits, startBalance, startDate },
   }: BudgetState,
 ): [MonthData[], (add: number) => void] {
   const defaultCategoryIds = useMemo(
@@ -50,7 +50,10 @@ export default function useBudgets(
   const [future, setFuture] = useState<number>(0);
   const displayDates = useMemo(() => {
     const today = getToday();
-    const sorted = Object.keys(balances).concat(Object.keys(budgets)).sort();
+    const sorted = Object.keys(balances)
+      .concat(Object.keys(budgets))
+      .concat(formatDateKey(new Date(startDate)))
+      .sort();
     const lastExisting = sorted[sorted.length - 1];
     const lastPlusFuture = lastExisting
       ? addMonths(new Date(lastExisting), future)
@@ -79,6 +82,7 @@ export default function useBudgets(
       });
   }, [
     getInitial,
+    startDate,
     balances,
     budgets,
     future,
