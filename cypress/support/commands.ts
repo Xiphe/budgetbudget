@@ -18,6 +18,7 @@ type BBexposed = BB & {
 };
 type OpenConfig = {
   setup?: (bb: BB) => void | Promise<void>;
+  waitUntilLoaded?: boolean;
   ignoreChannels: string[];
 };
 
@@ -72,13 +73,18 @@ Cypress.Commands.add('readBudget', (file: string) => {
 Cypress.Commands.add('cleanup', () => {
   cy._bb().then(({ _electron }) => _electron.cleanup());
 });
-Cypress.Commands.add('open', ({ setup, ignoreChannels }) => {
-  cy.visit('/');
-  cy._bb().then(({ _electron }) => {
-    _electron.ignoreChannels(ignoreChannels);
-  });
-  cy.bb().then(setup);
-  cy._bb().then(({ _startApp }) => _startApp());
-  cy.findByText(/BudgetBudget - Loading/i).should('be.visible');
-  cy.findByText(/BudgetBudget - Loading/i).should('not.be.visible');
-});
+Cypress.Commands.add(
+  'open',
+  ({ setup, ignoreChannels, waitUntilLoaded = true }) => {
+    cy.visit('/');
+    cy._bb().then(({ _electron }) => {
+      _electron.ignoreChannels(ignoreChannels);
+    });
+    cy.bb().then(setup);
+    cy._bb().then(({ _startApp }) => _startApp());
+    if (waitUntilLoaded) {
+      cy.findByText(/BudgetBudget - Loading/i).should('be.visible');
+      cy.findByText(/BudgetBudget - Loading/i).should('not.be.visible');
+    }
+  },
+);
