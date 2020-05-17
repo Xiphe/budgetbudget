@@ -6,6 +6,7 @@ import Categories from './Categories';
 import { Props } from './Types';
 import styles from './Month.module.scss';
 import useActions from './useActions';
+import format from 'date-fns/format';
 
 export default function MonthContainer(props: Props) {
   const { date, month, numberFormatter } = props;
@@ -24,7 +25,11 @@ export default function MonthContainer(props: Props) {
 
   return (
     <div className={styles.month}>
-      <div ref={ref} className={styles.monthInner}>
+      <section
+        ref={ref}
+        className={styles.monthInner}
+        aria-label={format(date, 'MMMM yyyy')}
+      >
         <Header>
           <Overview
             month={month}
@@ -39,7 +44,7 @@ export default function MonthContainer(props: Props) {
             actions={actions}
           />
         ) : null}
-      </div>
+      </section>
     </div>
   );
 }

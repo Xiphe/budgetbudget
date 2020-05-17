@@ -42,25 +42,31 @@
 }
 .headTable {
   width: 100%;
-  display: grid;
-  grid-template-columns: 50% 50%;
-  padding-bottom: 3.3rem;
-  div:nth-child(odd) {
-    text-align: right;
-    padding-right: 0.5rem;
-    font-family: var(--font-mono);
-    &.bigBudget {
-      padding-right: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 3.3rem;
+  li {
+    span {
+      display: inline-block;
+      width: 50%;
+    }
+    span:first-child {
+      text-align: right;
+      padding-right: 0.5rem;
+      font-family: var(--font-mono);
+      &.bigBudget {
+        padding-right: 0.4rem;
+      }
+    }
+    span:last-child {
+      line-height: 1.45em;
+      padding-left: 0.5rem;
+      &.bigBudget {
+        padding-left: 0.4rem;
+      }
     }
   }
-  div:nth-child(even) {
-    line-height: 1.45em;
-    padding-left: 0.5rem;
-    &.bigBudget {
-      padding-left: 0.4rem;
-    }
-  }
-  div.bigBudget {
+  span.bigBudget {
     line-height: 1.1em;
   }
 }
