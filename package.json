@@ -35,8 +35,7 @@
       }
     ],
     "mac": {
-      "category": "public.app-category.finance",
-      "target": "dmg"
+      "category": "public.app-category.finance"
     },
     "directories": {
       "buildResources": "assets"
@@ -58,8 +57,13 @@
         {
           "assets": [
             {
-              "path": "dist/*.dmg",
-              "name": "BudgetBudget.dmg"
+              "path": "dist/*.dmg"
+            },
+            {
+              "path": "dist/*.zip"
+            },
+            {
+              "path": "dist/latest-mac.yml"
             }
           ]
         }
