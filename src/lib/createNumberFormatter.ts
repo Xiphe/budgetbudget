@@ -13,11 +13,21 @@ export default function createNumberFormatter(
     maximumFractionDigits: fractionDigits,
   });
   const fractionDelimiter = formatter.format(1.1).charAt(1);
+  const delimiters = Array.from(
+    new Set(
+      formatter
+        .format(99999999)
+        .replace(/9/g, '')
+        .split('')
+        .join(fractionDelimiter),
+    ),
+  );
   const cleanPattern = new RegExp(`[^-+0-9${fractionDelimiter}]`, 'g');
 
   return {
     fractionStep,
     fractionDelimiter,
+    delimiters,
     format(
       value: number,
       { thousandDelimiter = true, withFractions = true }: FormatOptions = {},

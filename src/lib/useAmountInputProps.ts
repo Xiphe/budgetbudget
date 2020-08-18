@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { NumberFormatter } from './createNumberFormatter';
 import useInputProps from './useInputProps';
+import { Parser } from 'expr-eval';
 
 function isHTMLInputElement(elm: any): elm is HTMLInputElement {
   return elm instanceof HTMLInputElement;
@@ -15,12 +16,44 @@ export default function useCurrencyInput({
   value,
   onChange,
   onKeyDown,
-  numberFormatter: { fractionDelimiter, format, parse, fractionStep },
+  numberFormatter: {
+    fractionDelimiter,
+    format,
+    parse,
+    fractionStep,
+    delimiters,
+  },
 }: CurrencyInputConfig) {
   const { error: _, ...inputProps } = useInputProps<number>({
     value,
     onChange: onChange,
-    validate: useCallback((ev) => parse(ev.target.value), [parse]),
+    validate: useCallback(
+      (ev) => {
+        if (typeof ev.target.value !== 'string') {
+          throw new Error('Unexpected non-string input value');
+        }
+
+        try {
+          const evaled = Parser.evaluate(
+            ev.target.value.replace(
+              new RegExp(`[0-9${delimiters.join('')}]+`, 'g'),
+              (v) => String(parse(v)),
+            ),
+          );
+
+          if (typeof evaled !== 'number') {
+            throw new Error(
+              `Input value evaluated to ${evaled}, expected a number`,
+            );
+          }
+
+          return evaled;
+        } catch (err) {
+          return parse(ev.target.value);
+        }
+      },
+      [parse, delimiters],
+    ),
     toInputFormat: useCallback(
       (value) => format(value, { thousandDelimiter: false }),
       [format],
