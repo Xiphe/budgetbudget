@@ -139,6 +139,6 @@
   },
   "private": true,
   "author": "Hannes Diercks <budgetbudget@xiphe.net> (https://xiphe.net/)",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "homepage": "./"
 }
