@@ -40,6 +40,7 @@
     "directories": {
       "buildResources": "assets"
     },
+    "generateUpdatesFilesForAllChannels": true,
     "afterSign": "electron-builder-notarize"
   },
   "release": {
@@ -75,6 +76,7 @@
     "classnames": "2.2.6",
     "date-fns": "2.15.0",
     "electron-settings": "3.2.0",
+    "electron-updater": "4.3.4",
     "focus-visible": "5.1.0",
     "fp-ts": "2.8.1",
     "io-ts": "2.2.9",
@@ -84,8 +86,7 @@
     "plist": "3.0.1",
     "react": "0.0.0-experimental-94c0244ba",
     "react-dom": "0.0.0-experimental-94c0244ba",
-    "recoil": "0.0.10",
-    "update-electron-app": "1.5.0"
+    "recoil": "0.0.10"
   },
   "devDependencies": {
     "@craco/craco": "5.6.4",
