@@ -12,12 +12,14 @@ import { createDefaultMenu } from './defaultMenu';
 import registerSave from './registerSave';
 import moneymoneyHandlers from './moneymoney/handlers';
 import getSettings from '../src/shared/settings';
+import startUpdater from 'update-electron-app';
 
 export default function main() {
   /* ref https://github.com/Xiphe/budgetbudget/issues/12 */
   app.allowRendererProcessReuse = true;
 
   disableUnused(app);
+  (startUpdater as any)();
 
   const settings = getSettings();
   const windowManager = createWindowManager(app, ipcMain, settings);
