@@ -10,16 +10,16 @@ import classNames from 'classnames';
 import addMonths from 'date-fns/addMonths';
 import format from 'date-fns/format';
 import { Header } from '../../components';
-import { useVisibleMonths, formatDateKey } from '../../lib';
+import { useVisibleMonths, formatDateKey, useMonths } from '../../lib';
 import styles from './Budget.module.scss';
 
 type Props = {
   onClick: (key: string) => void;
-  months: { date: Date; key: string }[];
   scrollRef: MutableRefObject<((target: HTMLDivElement) => void) | null>;
 };
 
-export default function BudgetHeader({ months, scrollRef, onClick }: Props) {
+export default function BudgetHeader({ scrollRef, onClick }: Props) {
+  const months: { date: Date; key: string }[] = useMonths();
   const handleClick = useCallback(
     ({ target }: { target: HTMLButtonElement }) => {
       onClick(target.name);

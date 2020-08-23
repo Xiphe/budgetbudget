@@ -1,5 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useIsVisible, useSetVisibleMonth } from '../../lib';
+import {
+  useIsVisible,
+  useSetVisibleMonth,
+  MonthContextProvider,
+} from '../../lib';
 import Header from './Header';
 import Overview from './Overview';
 import Categories from './Categories';
@@ -24,27 +28,29 @@ export default function MonthContainer(props: Props) {
   const data = visible ? month.get() : undefined;
 
   return (
-    <div className={styles.month}>
-      <section
-        ref={ref}
-        className={styles.monthInner}
-        aria-label={format(date, 'MMMM yyyy')}
-      >
-        <Header>
-          <Overview
-            month={month}
-            data={data}
-            numberFormatter={numberFormatter}
-          />
-        </Header>
-        {data ? (
-          <Categories
-            {...props}
-            budgetCategories={data.categories}
-            actions={actions}
-          />
-        ) : null}
-      </section>
-    </div>
+    <MonthContextProvider value={month}>
+      <div className={styles.month}>
+        <section
+          ref={ref}
+          className={styles.monthInner}
+          aria-label={format(date, 'MMMM yyyy')}
+        >
+          <Header>
+            <Overview
+              month={month}
+              data={data}
+              numberFormatter={numberFormatter}
+            />
+          </Header>
+          {data ? (
+            <Categories
+              {...props}
+              budgetCategories={data.categories}
+              actions={actions}
+            />
+          ) : null}
+        </section>
+      </div>
+    </MonthContextProvider>
   );
 }

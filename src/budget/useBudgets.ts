@@ -33,6 +33,7 @@ export default function useBudgets(
       categories: [],
       overspendPrevMonth: 0,
       toBudget: 0,
+      income: { amount: 0, transactions: [] },
       overspendRolloverState: {},
       rollover: { total: 0 },
       availableThisMonth: {

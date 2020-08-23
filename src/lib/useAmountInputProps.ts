@@ -1,58 +1,41 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { NumberFormatter } from './createNumberFormatter';
+import { createNumberStepper } from './numberStepper';
 import useInputProps from './useInputProps';
-import { Parser } from 'expr-eval';
 
-function isHTMLInputElement(elm: any): elm is HTMLInputElement {
-  return elm instanceof HTMLInputElement;
-}
 type CurrencyInputConfig = {
   value: number;
   onKeyDown?: (ev: React.KeyboardEvent<HTMLInputElement>) => void;
   onChange: (value: number) => void;
+  parse?: (value: string) => number;
   numberFormatter: NumberFormatter;
 };
 export default function useCurrencyInput({
   value,
   onChange,
   onKeyDown,
-  numberFormatter: {
-    fractionDelimiter,
-    format,
-    parse,
-    fractionStep,
-    delimiters,
-  },
+  numberFormatter,
+  parse = numberFormatter.parse,
 }: CurrencyInputConfig) {
+  const { format } = numberFormatter;
   const { error: _, ...inputProps } = useInputProps<number>({
     value,
     onChange: onChange,
+    applyLive: useCallback((ev): boolean => {
+      return (
+        typeof ev.target.value === 'string' &&
+        ev.target.value.match(/[a-z=]/i) === null
+      );
+    }, []),
     validate: useCallback(
       (ev) => {
         if (typeof ev.target.value !== 'string') {
           throw new Error('Unexpected non-string input value');
         }
 
-        try {
-          const evaled = Parser.evaluate(
-            ev.target.value.replace(
-              new RegExp(`[0-9${delimiters.join('')}]+`, 'g'),
-              (v) => String(parse(v)),
-            ),
-          );
-
-          if (typeof evaled !== 'number') {
-            throw new Error(
-              `Input value evaluated to ${evaled}, expected a number`,
-            );
-          }
-
-          return evaled;
-        } catch (err) {
-          return parse(ev.target.value);
-        }
+        return parse(ev.target.value);
       },
-      [parse, delimiters],
+      [parse],
     ),
     toInputFormat: useCallback(
       (value) => format(value, { thousandDelimiter: false }),
@@ -61,47 +44,18 @@ export default function useCurrencyInput({
     format,
   });
   const onInternalChange = inputProps.onChange;
+  const numberStepper = useMemo(
+    () => createNumberStepper(numberFormatter, onInternalChange),
+    [numberFormatter, onInternalChange],
+  );
   const handleKeyDown = useCallback(
     (ev: React.KeyboardEvent<HTMLInputElement>) => {
       if (onKeyDown) {
         onKeyDown(ev);
       }
-      if (
-        ev.isPropagationStopped() ||
-        (ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp')
-      ) {
-        return;
-      }
-      const target = ev.target;
-      if (!isHTMLInputElement(target)) {
-        throw new Error('Unexpected keyup target');
-      }
-      ev.preventDefault();
-      ev.stopPropagation();
-      const fractionI = target.value.indexOf(fractionDelimiter);
-      const { selectionEnd, selectionStart } = target;
-      const step =
-        fractionI === -1 || (selectionStart || 0) <= fractionI
-          ? 1
-          : fractionStep;
-      const valueLength = target.value.length;
-      const newValue = ev.key === 'ArrowDown' ? value - step : value + step;
-      target.value = format(newValue, { thousandDelimiter: false });
-      const valueDiff = target.value.length - valueLength;
-      target.setSelectionRange(
-        (selectionStart || 0) + valueDiff,
-        (selectionEnd || 0) + valueDiff,
-      );
-      onInternalChange(ev as any);
+      numberStepper(ev);
     },
-    [
-      fractionDelimiter,
-      format,
-      fractionStep,
-      onInternalChange,
-      value,
-      onKeyDown,
-    ],
+    [numberStepper, onKeyDown],
   );
 
   return { onKeyDown: handleKeyDown, ...inputProps };

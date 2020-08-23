@@ -48,10 +48,7 @@ function assignAvailable(
 }
 function addBudgeted(
   toBudget: number,
-  available: AmountWithPartialTransactions = {
-    amount: 0,
-    transactions: [],
-  },
+  available: AmountWithPartialTransactions,
 ): AmountWithPartialTransactions {
   if (toBudget === 0) {
     return available;
@@ -97,7 +94,7 @@ function getCategoryRows({
   const newOverspendRolloverState: OverspendRollover = {};
   const rollover: Rollover = { total: 0 };
 
-  const cats = categories.map(({ group, uuid, indentation }):
+  const cats = categories.map(({ group, uuid, indentation, name }):
     | BudgetCategoryGroup
     | BudgetCategoryRow => {
     parentRows.splice(indentation + 1);
@@ -105,6 +102,7 @@ function getCategoryRows({
       const row = {
         ...emptyBudgetRow(),
         uuid,
+        name,
         group: true as const,
         indentation,
       };
@@ -143,6 +141,7 @@ function getCategoryRows({
       }
 
       return {
+        name,
         indentation,
         overspendRollover,
         group: false as const,
@@ -178,7 +177,11 @@ const calcMonth: MonthDataGetter<InterMonthData> = function calcMonth(
     rollover: { total: overspendPrevMonth, ...rolloverCategories },
   } = getPrev();
   const available = assignAvailable(incomeCategories, prevAvailable, balance);
-  const availableThisMonth = addBudgeted(prevToBudget, available.shift());
+  const income = available.shift() || {
+    amount: 0,
+    transactions: [],
+  };
+  const availableThisMonth = addBudgeted(prevToBudget, income);
   const {
     rollover,
     categories: budgetCategories,
@@ -208,6 +211,7 @@ const calcMonth: MonthDataGetter<InterMonthData> = function calcMonth(
     toBudget,
     total,
     available,
+    income,
     availableThisMonth,
     rollover,
     overspendPrevMonth,

@@ -1,5 +1,11 @@
 import React, { useCallback } from 'react';
-import { NumberFormatter, useAmountInputProps } from '../../lib';
+import {
+  NumberFormatter,
+  useAmountInputProps,
+  useMonth,
+  useMonths,
+  parseBudgetInput,
+} from '../../lib';
 import styles from './Month.module.scss';
 
 type Props = {
@@ -47,12 +53,25 @@ export default function BudgetInput({
   numberFormatter,
   categoryId,
 }: Props) {
+  const currentMonth = useMonth();
+  const months = useMonths();
+
   return (
     <input
       {...useAmountInputProps({
         numberFormatter,
         value,
         onKeyDown: handleEnterReturn,
+        parse: useCallback(
+          (val: string) =>
+            parseBudgetInput(val, {
+              numberFormatter,
+              currentMonth,
+              months,
+              categoryId,
+            }),
+          [numberFormatter, currentMonth, months, categoryId],
+        ),
         onChange: useCallback(
           (amount: number) => onChange({ amount, id: categoryId }),
           [categoryId, onChange],

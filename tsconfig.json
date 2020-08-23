@@ -15,7 +15,7 @@
     "downlevelIteration": true,
     "noEmit": true,
     "jsx": "react",
-    "types": ["react/experimental"],
+    "types": ["react/experimental", "@types/jest"],
     "plugins": [
       {
         "name": "typescript-plugin-css-modules",

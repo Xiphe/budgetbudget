@@ -102,6 +102,7 @@ export type BudgetListEntry = {
 export type BudgetCategoryGroup = BudgetRow & {
   uuid: string;
   group: true;
+  name: string;
   indentation: number;
 };
 export type BudgetCategoryRow = Omit<BudgetCategoryGroup, 'group'> & {
@@ -117,6 +118,7 @@ export type InterMonthData = {
   categories: (BudgetCategoryRow | BudgetCategoryGroup)[];
   toBudget: number;
   total: BudgetRow;
+  income: AmountWithPartialTransactions;
   overspendPrevMonth: number;
   overspendRolloverState: OverspendRollover;
   available: AmountWithPartialTransactions[];

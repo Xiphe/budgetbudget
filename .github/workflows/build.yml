@@ -3,6 +3,25 @@ name: build & release
 on: push
 
 jobs:
+  jest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - uses: actions/cache@v1
+        id: dependencies-v1
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-dependencies-v1-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dependencies-v1-
+      - run: npm install
+        if: steps.dependencies-v1.outputs.cache-hit != 'true'
+        env:
+          ADBLOCK: true
+      - run: npm test
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -39,7 +58,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.cypress_record_key }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   release:
-    needs: [test]
+    needs: [jest, test]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v1

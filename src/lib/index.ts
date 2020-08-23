@@ -1,5 +1,8 @@
 import { NumberFormatter as NumberFormatterT } from './createNumberFormatter';
 import { Resource as ResourceT } from './createResource';
+export type NumberFormatter = NumberFormatterT;
+export type Resource<T> = ResourceT<T>;
+
 export { default as formatDateKey } from './formatDateKey';
 export { default as roundWithFractions } from './roundWithFractions';
 export { default as createNumberFormatter } from './createNumberFormatter';
@@ -17,6 +20,7 @@ export {
 export { default as useMenu } from './useMenu';
 export { default as useSave, unsaved } from './useSave';
 export { default as mapCategories } from './mapCategories';
+export { default as parseBudgetInput } from './parseBudgetInput';
 export {
   withShowSettingsProvider,
   useSetShowSettings,
@@ -28,10 +32,14 @@ export {
   useVisibleMonths,
 } from './VisibleMonthsContext';
 export {
+  MonthsContextProvider,
+  useMonths,
+  MonthContextProvider,
+  useMonth,
+} from './MonthProvider';
+export {
   HeaderHeightProvider,
   useRegisterHeaderHeight,
 } from './HeaderHeightContext';
 export * from './guards';
 export * from './useIsVisible';
-export type NumberFormatter = NumberFormatterT;
-export type Resource<T> = ResourceT<T>;

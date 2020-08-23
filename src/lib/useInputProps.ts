@@ -3,6 +3,9 @@ import { useState, useCallback } from 'react';
 function noop(v: any) {
   return v;
 }
+function yes() {
+  return true;
+}
 const EMPTY = Symbol('EMPTY');
 
 type Event = { target: { value: any } };
@@ -13,6 +16,7 @@ type UseInputConfig<V> = {
   internal?: boolean;
   format?: (value: V) => any;
   onChange: (value: V) => void;
+  applyLive?: (ev: Event) => boolean;
   validate: (ev: Event, setError: (error: string | null) => void) => V;
 };
 
@@ -22,6 +26,7 @@ export default function useInputProps<V extends any>({
   validate,
   toInputFormat = noop,
   format = noop,
+  applyLive = yes,
   internal = true,
 }: UseInputConfig<V>) {
   const [internalValue, setValue] = useState<any>(EMPTY);
@@ -35,6 +40,17 @@ export default function useInputProps<V extends any>({
     }
   });
 
+  const apply = useCallback(
+    (ev: Event) => {
+      try {
+        setError(null);
+        onChange(validate(ev, setError));
+      } catch (err) {
+        setError(err.message || err);
+      }
+    },
+    [validate, setError, onChange],
+  );
   return {
     value: internalValue !== EMPTY ? internalValue : format(value),
     error,
@@ -43,25 +59,26 @@ export default function useInputProps<V extends any>({
         setValue(toInputFormat(value));
       }
     }, [internal, value, toInputFormat]),
-    onBlur: useCallback(() => {
-      if (internal) {
-        setValue(EMPTY);
-        setError(null);
-      }
-    }, [internal]),
+    onBlur: useCallback(
+      (ev: Event) => {
+        if (internal) {
+          setValue(EMPTY);
+          setError(null);
+          apply(ev);
+        }
+      },
+      [internal, apply],
+    ),
     onChange: useCallback(
       (ev: Event) => {
         if (internal) {
           setValue(ev.target.value);
         }
-        try {
-          setError(null);
-          onChange(validate(ev, setError));
-        } catch (err) {
-          setError(err.message || err);
+        if (!internal || applyLive(ev)) {
+          apply(ev);
         }
       },
-      [onChange, validate, internal],
+      [apply, internal, applyLive],
     ),
   };
 }

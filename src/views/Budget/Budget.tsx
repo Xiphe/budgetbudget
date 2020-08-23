@@ -13,6 +13,7 @@ import {
   HeaderHeightProvider,
   VisibleMothContextProvider,
   getToday,
+  MonthsContextProvider,
 } from '../../lib';
 import Month from '../Month';
 import BudgetHeader from './Header';
@@ -69,49 +70,50 @@ export default function Budget({ state, dispatch }: Props) {
   }, [extendFuture]);
 
   return (
-    <VisibleMothContextProvider>
-      <HeaderHeightProvider>
-        <Content
-          flex
-          header={
-            <BudgetHeader
-              onClick={handleHeaderMonthClick}
-              scrollRef={onSliderScrollRef}
-              months={months}
-            />
-          }
-        >
-          <CategorySidebar
-            syncScrollY={sliderRef}
-            innerRef={sidebarRef}
-            budgetName={state.name}
-            dispatch={dispatch}
-            collapsedCategories={state.settings.collapsedCategories}
-            categories={categories || []}
-          />
-          <InfiniteSlider
-            innerRef={sliderRef}
-            onScrollRef={onSliderScrollRef}
-            className={styles.budgetSlider}
-            loadMore={loadMore}
-            syncScrollY={sidebarRef}
-            getScrollTo={setScrollTo}
-          >
-            {months.map((month) => (
-              <Month
-                key={month.key}
-                monthKey={month.key}
-                date={month.date}
-                dispatch={dispatch}
-                collapsedCategories={state.settings.collapsedCategories}
-                month={month}
-                categories={categories || []}
-                numberFormatter={numberFormatter}
+    <MonthsContextProvider value={months}>
+      <VisibleMothContextProvider>
+        <HeaderHeightProvider>
+          <Content
+            flex
+            header={
+              <BudgetHeader
+                onClick={handleHeaderMonthClick}
+                scrollRef={onSliderScrollRef}
               />
-            ))}
-          </InfiniteSlider>
-        </Content>
-      </HeaderHeightProvider>
-    </VisibleMothContextProvider>
+            }
+          >
+            <CategorySidebar
+              syncScrollY={sliderRef}
+              innerRef={sidebarRef}
+              budgetName={state.name}
+              dispatch={dispatch}
+              collapsedCategories={state.settings.collapsedCategories}
+              categories={categories || []}
+            />
+            <InfiniteSlider
+              innerRef={sliderRef}
+              onScrollRef={onSliderScrollRef}
+              className={styles.budgetSlider}
+              loadMore={loadMore}
+              syncScrollY={sidebarRef}
+              getScrollTo={setScrollTo}
+            >
+              {months.map((month) => (
+                <Month
+                  key={month.key}
+                  monthKey={month.key}
+                  date={month.date}
+                  dispatch={dispatch}
+                  collapsedCategories={state.settings.collapsedCategories}
+                  month={month}
+                  categories={categories || []}
+                  numberFormatter={numberFormatter}
+                />
+              ))}
+            </InfiniteSlider>
+          </Content>
+        </HeaderHeightProvider>
+      </VisibleMothContextProvider>
+    </MonthsContextProvider>
   );
 }
