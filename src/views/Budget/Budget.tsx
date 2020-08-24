@@ -91,6 +91,13 @@ export default function Budget({ state, dispatch }: Props) {
               categories={categories || []}
             />
             <InfiniteSlider
+              style={
+                sidebarRef.current
+                  ? ({
+                      '--sidebar-height': `${sidebarRef.current.scrollHeight}px`,
+                    } as any)
+                  : undefined
+              }
               innerRef={sliderRef}
               onScrollRef={onSliderScrollRef}
               className={styles.budgetSlider}

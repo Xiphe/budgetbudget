@@ -12,6 +12,7 @@ import { useVisibilityObserver, IsVisibleProvider } from '../../lib';
 export type ScrollTo = (scrollTo: number, behaviour?: ScrollBehavior) => void;
 
 type Props = {
+  style?: React.HTMLAttributes<HTMLDivElement>['style'];
   innerRef: MutableRefObject<HTMLDivElement | null>;
   syncScrollY: MutableRefObject<HTMLDivElement | null>;
   getScrollTo?: (scrollTo: ScrollTo) => void;
@@ -26,6 +27,7 @@ const LOAD_MORE_THRESHOLD = 500;
 
 export default function InfiniteSlider({
   children,
+  style,
   innerRef: containerRef,
   getScrollTo,
   loadMore,
@@ -91,6 +93,7 @@ export default function InfiniteSlider({
   return (
     <div
       ref={containerRef}
+      style={style}
       className={classNames(className, styles.slider)}
       onScroll={onScroll}
     >

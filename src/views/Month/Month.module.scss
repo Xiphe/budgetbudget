@@ -4,6 +4,7 @@
   min-height: calc(100vh - var(--header-height));
   min-width: calc(100vw - var(--sidebar-width));
   max-width: calc(100vw - var(--sidebar-width));
+  height: var(--sidebar-height, 'auto');
   @media (min-width: 800px) {
     min-width: calc(calc(100vw - var(--sidebar-width)) / 2);
     max-width: calc(calc(100vw - var(--sidebar-width)) / 2);
