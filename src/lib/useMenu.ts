@@ -53,11 +53,11 @@ function buildMenu(callbacks: CreateMenuCallbacks) {
       remote.app.name,
       [
         createFileMenu({
-          fileOpen: ipcRenderer.invoke.bind(null, 'MENU_FILE_OPEN'),
-          fileNew: ipcRenderer.invoke.bind(null, 'MENU_FILE_NEW'),
+          fileOpen: () => ipcRenderer.invoke('MENU_FILE_OPEN'),
+          fileNew: () => ipcRenderer.invoke('MENU_FILE_NEW'),
           openRecent: createOpenRecent(
             getSharedSettings().getRecentFiles(),
-            ipcRenderer.invoke.bind(null, 'MENU_FILE_OPEN_EXISTING'),
+            (file) => ipcRenderer.invoke('MENU_FILE_OPEN_EXISTING', file),
           ),
           entries: fileMenuEntries.concat(refresh),
         }),
