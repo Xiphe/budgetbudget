@@ -15,7 +15,9 @@ function App({ initRes }: { initRes: InitRes }) {
   const [initialState, setInitialState] = useState<
     typeof INIT_EMPTY | BudgetState
   >(initRes.read());
-  const [welcome, setWelcome] = useState<boolean>(true);
+  const [welcome, setWelcome] = useState<boolean>(
+    window.location.hash !== '#new',
+  );
 
   return initialState === INIT_EMPTY ? (
     welcome ? (

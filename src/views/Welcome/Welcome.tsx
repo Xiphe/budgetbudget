@@ -1,6 +1,6 @@
-import React from 'react';
-import { remote } from 'electron';
-import { useMenu } from '../../lib';
+import React, { useEffect } from 'react';
+import { ipcRenderer } from 'electron';
+import { useMenu, useRecentFiles } from '../../lib';
 import { Content, Button, Header } from '../../components';
 import styles from './Welcome.module.scss';
 
@@ -15,49 +15,70 @@ export default function Welcome({ onCreate }: Props) {
     timeoutMs: 3000,
   });
   useMenu();
+  useEffect(() => {
+    const handler = () => {
+      ipcRenderer.send('QUIT');
+    };
+    ipcRenderer.on('WINDOW_CREATED', handler);
+    return () => {
+      ipcRenderer.off('WINDOW_CREATED', handler);
+    };
+  }, []);
+  const recentFiles = useRecentFiles();
 
   return (
-    <Content padding header={<Header>Welcome</Header>}>
-      <h1 className={styles.center}>Welcome!</h1>
-      <div className={styles.warning}>
-        <h3>This is Alpha Software</h3>
-        <p>
-          Some quite essential features are still in development and there will
-          be bugs!
-        </p>
-        <ol>
-          <li>
-            <h4>There is no auto-updater</h4>
-            You need to check{' '}
-            <button
-              className={styles.linkButton}
-              onClick={() =>
-                remote.shell.openExternal(
-                  'https://github.com/Xiphe/budgetbudget/releases',
-                )
-              }
-            >
-              the releases page
-            </button>{' '}
-            yourself from time to time to get updates.
-          </li>
-          <li>
-            <h4>There is no QA</h4>
-            Things will break! I do not plan to invalidate the budget file
-            format and hope that everything we budget from now on will stay
-            valid until the app is stable. But no guarantees!
-          </li>
-        </ol>
+    <Content
+      padding
+      header={<Header>Welcome</Header>}
+      className={styles.wrapper}
+    >
+      <div>
+        <img
+          className={styles.logo}
+          src="/logo.png"
+          alt="BudgetBudget Logo - treasure chest"
+        />
+        <h1 className={styles.title}>Welcome to BudgetBudget (Beta)</h1>
+        <h3 className={styles.subtitle}>
+          envelope-style budgeting for your MoneyMoney transactions
+        </h3>
       </div>
-      <div className={styles.center}>
-        <Button
-          primary
-          disabled={transitioning}
-          onClick={() => startTransition(() => onCreate())}
-        >
-          Ok, I understand. Create a new Budget
-        </Button>
-        <p>Or use the File menu to open an existing one</p>
+
+      <div className={styles.actionContainer}>
+        {recentFiles.length ? (
+          <div className={styles.recentContainer}>
+            <h3>Open recently used budget:</h3>
+            {recentFiles.slice(0, 5).map(({ file, name }) => (
+              <button
+                className={styles.recentButton}
+                key={file}
+                onClick={() =>
+                  ipcRenderer.invoke('MENU_FILE_OPEN_EXISTING', file)
+                }
+              >
+                <span className={styles.recentTitle}>{name}</span>
+                <span className={styles.recentFile}>{file}</span>
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <div>
+          <h3>Already created a Budget in the past?</h3>
+          <Button onClick={() => ipcRenderer.invoke('MENU_FILE_OPEN')}>
+            Open existing .budget File
+          </Button>
+          <br />
+          <br />
+
+          <h3>New to this?</h3>
+          <Button
+            primary
+            disabled={transitioning}
+            onClick={() => startTransition(() => onCreate())}
+          >
+            Create a new Budget
+          </Button>
+        </div>
       </div>
     </Content>
   );

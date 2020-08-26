@@ -65,7 +65,13 @@ export default function createWindowManager(
     }
   }
 
-  function createWindow(file?: string) {
+  function broadcast(data: any) {
+    newWindows.concat(Object.values(windows)).forEach((win: any) => {
+      win.send(data);
+    });
+  }
+
+  function createWindow(file?: string, hash?: string) {
     if (file && windows[file]) {
       windows[file].show();
       return;
@@ -95,12 +101,13 @@ export default function createWindowManager(
       if (!SERVER_URL) {
         throw new Error('Can not open dev window without SERVER_URL');
       }
-      win.loadURL(SERVER_URL);
+      win.loadURL(`${SERVER_URL}#${hash}`);
       win.webContents.openDevTools();
     } else {
-      win.loadFile(join(__dirname, '../build/index.html'));
+      win.loadFile(join(__dirname, `../build/index.html#${hash}`));
     }
 
+    broadcast('WINDOW_CREATED');
     registerWindow(win, file);
 
     win.once('closed', (ev: any) => {
@@ -128,7 +135,10 @@ export default function createWindowManager(
     win.setDocumentEdited(edited);
   });
   ipcMain.handle('MENU_FILE_NEW', () => {
-    createWindow();
+    createWindow(undefined, 'new');
+  });
+  ipcMain.handle('MENU_FILE_WELCOME', () => {
+    createWindow(undefined);
   });
   ipcMain.handle('MENU_FILE_OPEN_EXISTING', (_, file: string) => {
     createWindow(file);
@@ -138,7 +148,7 @@ export default function createWindowManager(
     init() {
       const previouslyOpen = settings.getOpenBudgets();
       if (previouslyOpen.length) {
-        previouslyOpen.forEach(createWindow);
+        previouslyOpen.forEach((r) => createWindow(r));
       } else {
         createWindow();
       }
@@ -149,10 +159,6 @@ export default function createWindowManager(
     updateFile(sender: WebContents, file: string) {
       registerWindow(unregisterWindow(getWindow(sender)), file);
     },
-    broadcast(data: any) {
-      newWindows.concat(Object.values(windows)).forEach((win: any) => {
-        win.send(data);
-      });
-    },
+    broadcast,
   };
 }

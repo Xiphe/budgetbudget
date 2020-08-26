@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ipcRenderer, remote, MenuItemConstructorOptions } from 'electron';
-import getSharedSettings from './getSharedSettings';
 import { useSetShowSettings } from './ShowSettingsContext';
-
 import {
   createMenu,
   createFileMenu,
@@ -11,11 +9,13 @@ import {
   CreateMenuCallbacks,
 } from '../shared/createMenu';
 import { useRefresh } from '../moneymoney';
+import { useRecentFiles } from './useRecentFiles';
+import { RecentFile } from '../shared/settings';
 
 export const MENU_ID_SAVE = 'MENU_SAVE';
 export const MENU_ID_SAVE_AS = 'MENU_SAVE_AS';
 
-function buildMenu(callbacks: CreateMenuCallbacks) {
+function buildMenu(callbacks: CreateMenuCallbacks, recentFiles: RecentFile[]) {
   const refresh: MenuItemConstructorOptions[] = callbacks.refresh
     ? [
         { type: 'separator' },
@@ -55,9 +55,8 @@ function buildMenu(callbacks: CreateMenuCallbacks) {
         createFileMenu({
           fileOpen: () => ipcRenderer.invoke('MENU_FILE_OPEN'),
           fileNew: () => ipcRenderer.invoke('MENU_FILE_NEW'),
-          openRecent: createOpenRecent(
-            getSharedSettings().getRecentFiles(),
-            (file) => ipcRenderer.invoke('MENU_FILE_OPEN_EXISTING', file),
+          openRecent: createOpenRecent(recentFiles, (file) =>
+            ipcRenderer.invoke('MENU_FILE_OPEN_EXISTING', file),
           ),
           entries: fileMenuEntries.concat(refresh),
         }),
@@ -71,17 +70,22 @@ function buildMenu(callbacks: CreateMenuCallbacks) {
 export default function useMenu() {
   const setShowSettings = useSetShowSettings();
   const refresh = useRefresh();
-  const [recentSignal, setRecentSignal] = useState<symbol>(Symbol());
+  const recentFiles = useRecentFiles();
   const [focus, updateFocus] = useState<boolean>(true);
   const menu = useMemo(
-    () => buildMenu({ setShowSettings, refresh }),
+    () =>
+      buildMenu(
+        {
+          setShowSettings,
+          refresh,
+          welcome: () => ipcRenderer.invoke('MENU_FILE_WELCOME'),
+        },
+        recentFiles,
+      ),
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [setShowSettings, recentSignal, refresh],
+    [setShowSettings, refresh, recentFiles],
   );
   useEffect(() => {
-    const unwatch = getSharedSettings().watchRecentFiles(() => {
-      setRecentSignal(Symbol());
-    });
     const setFocus = () => updateFocus(true);
     const setBlur = () => updateFocus(false);
 
@@ -89,7 +93,6 @@ export default function useMenu() {
     ipcRenderer.on('BLUR', setBlur);
 
     return () => {
-      unwatch();
       ipcRenderer.off('FOCUS', setFocus);
       ipcRenderer.off('BLUR', setBlur);
     };

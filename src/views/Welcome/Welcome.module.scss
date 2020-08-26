@@ -1,25 +1,69 @@
-.warning {
-  background-color: #ff7614;
-  padding: 0.5em 1.5em;
+@import '../../lib/mixins.scss';
+
+.wrapper {
+  display: flex;
+  flex-flow: column;
+}
+.title {
+  text-align: center;
+  margin: 0;
+}
+.subtitle {
+  text-align: center;
+  margin-top: 0;
+  font-weight: normal;
+  font-style: italic;
+}
+.logo {
+  width: 20vw;
+  max-width: 175px;
+  margin: auto;
+  display: block;
+}
+.actionContainer {
+  flex-grow: 1;
+  background-color: var(--background-color);
+  border: 1px solid var(--element-border-color);
   border-radius: 3px;
-  font-size: 1.2rem;
-  margin-bottom: 2em;
-  h4 {
-    margin-bottom: 0;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  display: flex;
+  div {
+    width: calc(50% - 1rem);
+    padding: 0 1rem;
   }
 }
-.center {
-  text-align: center;
+.recentContainer {
+  border-right: 1px solid var(--border-color);
+  h4 {
+    margin: 0;
+  }
 }
-.linkButton {
-  font-size: 1em;
-  text-decoration: underline;
-  cursor: pointer;
-  color: var(--main-color);
-  appearance: none;
-  background: none;
-  border: none;
-  display: inline;
-  margin: 0;
-  padding: 0;
+.recentButton {
+  display: block;
+  text-align: left;
+  border: 2px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--color);
+  padding: 0.25rem 0.5rem;
+  margin-left: calc(-0.5rem - 2px);
+  &:focus {
+    outline: none;
+  }
+  &:global.focus-visible {
+    @include focusOutline();
+  }
+  &:active {
+    background-color: var(--button-background-active);
+  }
+}
+.recentTitle {
+  display: block;
+  font-size: 1rem;
+}
+.recentFile {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--secondary-color);
 }

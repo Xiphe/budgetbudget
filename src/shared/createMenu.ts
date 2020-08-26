@@ -5,6 +5,7 @@ import { RecentFile } from './settings';
 type MenuConfig = MenuItemConstructorOptions;
 export type CreateMenuCallbacks = {
   refresh?: () => void;
+  welcome: () => void;
   setShowSettings?: (show: boolean) => void;
 };
 
@@ -17,10 +18,11 @@ function isMenuConfig(
 export function createMenu(
   appName: string,
   entries: MenuConfig[] = [],
-  { setShowSettings }: CreateMenuCallbacks = {},
+  { setShowSettings, welcome }: CreateMenuCallbacks,
 ): MenuConfig[] {
   const submenu: (MenuConfig | false | undefined)[] = [
     { role: 'about' },
+    { label: 'Open Welcome', click: welcome },
     { type: 'separator' },
     setShowSettings && {
       label: 'Settings',
