@@ -1,9 +1,11 @@
 <div align="center">
-  <img 
-    width="150"
-    src="https://user-images.githubusercontent.com/911218/79590208-f6313c80-80d6-11ea-9ecc-67c94f32f4f7.png"
-    alt="BudgetBudget App Icon"
-  />
+  <a href="https://budgetbudget.app">
+    <img 
+      width="150"
+      src="https://user-images.githubusercontent.com/911218/91666679-fcacd780-eafe-11ea-99ed-149b13371e3e.png"
+      alt="BudgetBudget App Icon"
+    />
+  </a>
 </div>
 <h1 align="center">BudgetBudget</h1>
 <div align="center">
@@ -27,18 +29,20 @@
 
 &nbsp;
 
-<div align="center">
-Envelope budgeting using your
-<a href="https://moneymoney-app.com/">MoneyMoney</a> transactions.
-</div>
+<h3 align="center">gain confidence in financial decisions</h3>
+<h4 align="center">by planning monthly budgets for <a href="https://moneymoney-app.com/">MoneyMoney</a> transactions</h4>
 
 &nbsp;
 
 ## How to use
 
-This app is currently still in development and only pre-released as an
-alpha version.
-If you want to check it out grab the latest release from the [Releases Page](https://github.com/Xiphe/budgetbudget/releases/).
+1. Go to the [BudgetBudget download page](https://budgetbudget.app/download)
+2. Download the latest version
+3. Open the `.dmg` file in your downloads folder
+4. Drag the Application into your Applications folder
+5. Start the App
+6. Follow the instructions
+7. Value 🤑
 
 ## Contributing
 
