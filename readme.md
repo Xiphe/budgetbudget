@@ -29,8 +29,8 @@
 
 &nbsp;
 
-<h3 align="center">gain confidence in financial decisions</h3>
-<h4 align="center">by planning monthly budgets for <a href="https://moneymoney-app.com/">MoneyMoney</a> transactions</h4>
+<div align="center">gain confidence in financial decisions</div>
+<div align="center">by planning monthly budgets for <a href="https://moneymoney-app.com/">MoneyMoney</a> transactions</div>
 
 &nbsp;
 
