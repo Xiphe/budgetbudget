@@ -28,7 +28,7 @@ describe('Create New Budget', () => {
     });
 
     cy.findByRole('button', {
-      name: /Ok, I understand. Create a new Budget/i,
+      name: /Create a new Budget/i,
     }).click();
     cy.findByLabelText(/Name/i).type('My New Budget');
     cy.findByText(accounts[0].name).click();
