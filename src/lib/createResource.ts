@@ -45,12 +45,12 @@ export function withRetry<R>(res: Resource<R>, retry: () => void): Resource<R> {
       try {
         return res.read(...args);
       } catch (e) {
-        if (e instanceof Promise) {
-          throw e;
+        if (e instanceof Error) {
+          throw Object.assign(e, {
+            retry,
+          });
         }
-        throw Object.assign(e, {
-          retry,
-        });
+        throw e;
       }
     },
   };
