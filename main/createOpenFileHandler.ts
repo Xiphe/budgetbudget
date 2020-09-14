@@ -1,7 +1,6 @@
-import { dialog, IpcMain } from 'electron';
+import { dialog } from 'electron';
 
-export default function createOpenFile(
-  ipcMain: IpcMain,
+export default function createOpenFileHandler(
   createWindow: (file?: string) => void,
 ) {
   const openFile = async () => {
@@ -15,6 +14,5 @@ export default function createOpenFile(
     filePaths.forEach(createWindow);
   };
 
-  ipcMain.handle('MENU_FILE_OPEN', openFile);
   return openFile;
 }

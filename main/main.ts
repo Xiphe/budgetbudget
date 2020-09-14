@@ -6,7 +6,7 @@ import {
   systemPreferences,
 } from 'electron';
 import createWindowManager from './windowManager';
-import createOpenFile from './openFile';
+import createOpenFile from './createOpenFileHandler';
 import disableUnused from './disableUnused';
 import { createDefaultMenu } from './defaultMenu';
 import registerSave from './registerSave';
@@ -26,7 +26,8 @@ export default function main() {
   const settings = getSettings();
   const windowManager = createWindowManager(app, ipcMain, settings);
   windowManager.init();
-  const openFile = createOpenFile(ipcMain, windowManager.createWindow);
+
+  const openFile = createOpenFile(windowManager.createWindow);
   const defaultMenu = createDefaultMenu(
     windowManager.createWindow,
     openFile,
@@ -35,6 +36,7 @@ export default function main() {
   registerSave(ipcMain, windowManager);
   moneymoneyHandlers(ipcMain);
 
+  ipcMain.handle('MENU_FILE_OPEN', openFile);
   nativeTheme.on('updated', () => {
     windowManager.broadcast('UPDATE_SCHEME');
   });

@@ -104,7 +104,7 @@ export default function createWindowManager(
       win.loadURL(`${SERVER_URL}#${hash}`);
       win.webContents.openDevTools();
     } else {
-      win.loadFile(join(__dirname, `../build/index.html#${hash}`));
+      win.loadFile(join(__dirname, '../build/index.html'), { hash });
     }
 
     broadcast('WINDOW_CREATED');
