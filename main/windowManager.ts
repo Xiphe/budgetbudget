@@ -85,6 +85,8 @@ export default function createWindowManager(
       titleBarStyle: 'hiddenInset',
       vibrancy: 'sidebar',
       webPreferences: {
+        worldSafeExecuteJavaScript: true,
+        enableRemoteModule: true,
         nodeIntegration: true,
       },
     });
