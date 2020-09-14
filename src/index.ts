@@ -9,8 +9,8 @@ async function getInitialInitResource() {
 const appEntry = document.getElementById('root')!;
 (async () => {
   if (process.env.REACT_APP_ENV === 'test') {
-    const { default: expose } = await import('./__mocks__');
     appEntry.innerHTML = '<h1>Waiting for initiation.</h1>';
+    const { default: expose } = await import('./__mocks__');
     await new Promise((res) => expose('_startApp', res));
     appEntry.innerHTML = '';
   }
