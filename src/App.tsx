@@ -1,7 +1,6 @@
 import './theme.scss';
 import React, { Suspense, useState, useCallback } from 'react';
 import classNames from 'classnames';
-import { RecoilRoot } from 'recoil';
 import { INIT_EMPTY, BudgetState, InitRes, getInitData } from './budget';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
@@ -47,13 +46,11 @@ export default function AppWrapper({
         process.env.REACT_APP_ENV === 'test' && styles.appTest,
       )}
     >
-      <RecoilRoot>
-        <Suspense fallback={<Startup />}>
-          <ErrorBoundary>
-            <App initRes={retryInitRes} />
-          </ErrorBoundary>
-        </Suspense>
-      </RecoilRoot>
+      <Suspense fallback={<Startup />}>
+        <ErrorBoundary>
+          <App initRes={retryInitRes} />
+        </ErrorBoundary>
+      </Suspense>
     </div>
   );
 }

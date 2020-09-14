@@ -1,13 +1,5 @@
 import { BudgetState, Category, IncomeCategory } from './Types';
-
-import { atom, useSetRecoilState } from 'recoil';
-import { useReducer, useMemo, useEffect } from 'react';
-import { initialSettings } from '../lib';
-
-export const settingsState = atom({
-  key: 'settings',
-  default: initialSettings,
-});
+import { useReducer } from 'react';
 
 export const ACTION_INIT = Symbol('INIT');
 export const ACTION_SET_NAME = Symbol('SET_NAME');
@@ -326,18 +318,5 @@ function budgetReducer(state: BudgetState, action: Action): BudgetState {
 }
 
 export function useBudgetReducer(initialState: BudgetState) {
-  const setSettings = useSetRecoilState(settingsState);
-  const initialSettings = initialState.settings;
-  const extractSettingsReducer = useMemo(
-    () => (state: BudgetState, action: Action) => {
-      const newState = budgetReducer(state, action);
-      setSettings(newState.settings);
-      return newState;
-    },
-    [setSettings],
-  );
-  useEffect(() => {
-    setSettings(initialSettings);
-  }, [setSettings, initialSettings]);
-  return useReducer(extractSettingsReducer, initialState);
+  return useReducer(budgetReducer, initialState);
 }

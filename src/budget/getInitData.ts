@@ -23,5 +23,5 @@ async function getInitData(): Promise<BudgetState | typeof INIT_EMPTY> {
 }
 
 export default function getInitDataRes() {
-  return createResource(getInitData());
+  return createResource(() => getInitData());
 }

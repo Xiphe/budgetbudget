@@ -5,13 +5,14 @@ import {
   Button,
   Header,
   HeaderSpacer,
-  ErrorBoundary,
+  Startup,
 } from '../../components';
 import General from '../Settings/General';
 import Categories from '../Settings/Categories';
 import { useBudgetReducer } from '../../budget';
 import useMenu from '../../lib/useMenu';
 import { initialSettings, unsaved } from '../../lib';
+import { MoneyMoneyResProvider } from '../../moneymoney';
 
 type Props = {
   onCreate: (budget: BudgetState) => void;
@@ -32,7 +33,7 @@ export default function NewBudget({ onCreate }: Props) {
   }
 
   return (
-    <ErrorBoundary>
+    <MoneyMoneyResProvider settings={state.settings} fallback={<Startup />}>
       <Content
         padding
         header={
@@ -66,6 +67,6 @@ export default function NewBudget({ onCreate }: Props) {
           <Categories state={state} dispatch={dispatch} />
         )}
       </Content>
-    </ErrorBoundary>
+    </MoneyMoneyResProvider>
   );
 }

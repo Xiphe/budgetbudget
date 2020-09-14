@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy } from 'react';
 import { BudgetState, useBudgetReducer } from '../../budget';
 import {
   withShowSettingsProvider,
@@ -7,6 +7,7 @@ import {
   useSave,
 } from '../../lib';
 import { Startup } from '../../components';
+import { MoneyMoneyResProvider } from '../../moneymoney';
 
 type Props = {
   initialState: BudgetState;
@@ -26,12 +27,12 @@ export default withShowSettingsProvider(({ initialState }: Props) => {
   }
 
   return (
-    <Suspense fallback={<Startup />}>
+    <MoneyMoneyResProvider settings={state.settings} fallback={<Startup />}>
       {showSettings ? (
         <Settings state={state} dispatch={dispatch} />
       ) : (
         <Budget state={state} dispatch={dispatch} />
       )}
-    </Suspense>
+    </MoneyMoneyResProvider>
   );
 });

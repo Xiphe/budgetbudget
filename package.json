@@ -86,8 +86,7 @@
     "memoize-one": "5.1.1",
     "plist": "3.0.1",
     "react": "0.0.0-experimental-94c0244ba",
-    "react-dom": "0.0.0-experimental-94c0244ba",
-    "recoil": "0.0.10"
+    "react-dom": "0.0.0-experimental-94c0244ba"
   },
   "devDependencies": {
     "@craco/craco": "5.6.4",

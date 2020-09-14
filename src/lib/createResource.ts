@@ -3,22 +3,29 @@ export type Resource<T> = {
   read: () => T;
 };
 
-export default function createResource<R>(promise: Promise<R>): Resource<R> {
+export default function createLazyResource<R>(
+  init: () => Promise<R>,
+): Resource<R> {
   let status: 'pending' | 'success' | 'error' = 'pending';
   let error: Error;
   let result: R;
-  let suspender = promise.then(
-    (r) => {
-      status = 'success';
-      result = r;
-    },
-    (e) => {
-      status = 'error';
-      error = e;
-    },
-  );
+  let suspender: null | Promise<void> = null;
+
   return {
     read(): R {
+      if (status === 'pending' && suspender === null) {
+        suspender = init().then(
+          (r) => {
+            status = 'success';
+            result = r;
+          },
+          (e) => {
+            status = 'error';
+            error = e;
+          },
+        );
+      }
+
       switch (status) {
         case 'pending':
           throw suspender;

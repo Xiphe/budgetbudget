@@ -36,7 +36,7 @@ export async function getCategories(): Promise<Category[]> {
 const getCategoriesMemo = memoizeOne((cacheToken: symbol) => getCategories());
 
 function getCategoryResource(currency: string, cacheToken: symbol) {
-  return createResource(
+  return createResource(() =>
     getCategoriesMemo(cacheToken).then(
       splitCurrencyCategories.bind(null, currency),
     ),

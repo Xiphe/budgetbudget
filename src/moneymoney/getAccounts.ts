@@ -56,7 +56,7 @@ function getAccountsResource(
   currency: string,
   cacheToken: symbol,
 ): AccountsResource {
-  return createResource(
+  return createResource(() =>
     getAccountsMemo(cacheToken).then(filterAccounts.bind(null, currency)),
   );
 }

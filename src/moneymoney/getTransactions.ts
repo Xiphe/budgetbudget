@@ -1,11 +1,10 @@
 import { Transaction, validateTransactionByAccount } from './Types';
 import format from 'date-fns/format';
 import { ipcRenderer } from 'electron';
-import { createResource } from '../lib';
+import { createResource, Resource } from '../lib';
 import memoizeOne from 'memoize-one';
-import { Resource } from '../lib/createResource';
 
-export type TransacionsResource = Resource<Transaction[]>;
+export type TransactionsResource = Resource<Transaction[]>;
 
 const filterCurrency = memoizeOne(
   (currency: string, transactions: Transaction[]) =>
@@ -43,8 +42,8 @@ function getTransactionsResource(
   currency: string,
   startDateTimestamp: number,
   cacheToken: symbol,
-): TransacionsResource {
-  return createResource(
+): TransactionsResource {
+  return createResource(() =>
     getTransactionsMemo(accountNumbers, startDateTimestamp, cacheToken).then(
       filterCurrency.bind(null, currency),
     ),
