@@ -1,3 +1,4 @@
+import './shared/log';
 import 'focus-visible';
 import initTheme from './initTheme';
 import { InitRes } from './budget/getInitData';

@@ -75,6 +75,7 @@
     "@types/lodash.isequal": "4.5.5",
     "classnames": "2.2.6",
     "date-fns": "2.15.0",
+    "electron-log": "4.2.4",
     "electron-settings": "3.2.0",
     "electron-updater": "4.3.4",
     "expr-eval": "2.0.2",
