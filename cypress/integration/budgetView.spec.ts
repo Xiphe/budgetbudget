@@ -14,7 +14,6 @@ describe('Budget View', () => {
   it('displays correct overview values', () => {
     const incomeCategory = category({ name: 'Income this month' });
     const spendingCategory = category();
-    delete spendingCategory.icon;
     const myBudget = budget({
       settings: settings({
         startBalance: 100,

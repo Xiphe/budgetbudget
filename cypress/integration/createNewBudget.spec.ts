@@ -6,7 +6,7 @@ describe('Create New Budget', () => {
   });
 
   it('creates a new budget files with options', () => {
-    const accounts = [account({ icon: undefined }), account()];
+    const accounts = [account(), account()];
     const categories = [category(), category(), category()];
 
     cy.open({

@@ -6,7 +6,7 @@ import memoizeOne from 'memoize-one';
 const filterAccounts = memoizeOne(
   (currency: string, interopAccounts: InteropAccount[]): Account[] => {
     return interopAccounts
-      .map<Account | false>(
+      .map(
         ({
           accountNumber,
           balance,
@@ -35,7 +35,7 @@ const filterAccounts = memoizeOne(
           };
         },
       )
-      .filter((data): data is Account => Boolean(data));
+      .filter((data: Account | false): data is Account => Boolean(data));
   },
 );
 

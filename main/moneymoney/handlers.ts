@@ -13,35 +13,20 @@ function delay(t: number) {
   return new Promise((r) => setTimeout(r, t));
 }
 
-function identify(thing: any) {
-  switch (true) {
-    case thing.budget !== undefined:
-      return `Category "${thing.name}"`;
-    case thing.accountNumber !== undefined:
-      return `Account "${thing.name}"`;
-    default:
-      return thing.name || thing;
-  }
-}
-
 function base64Icons(data: unknown) {
   if (!Array.isArray(data)) {
     throw new Error('Unexpectedly got non-array as data');
   }
 
   return data.map((entry: unknown) => {
-    if (typeof entry !== 'object' || entry === null) {
+    if (entry === null || typeof entry !== 'object') {
       throw new Error('Unexpectedly got non-object in data array');
     }
 
     const icon: unknown = (entry as any).icon;
 
     if (!(icon instanceof Buffer)) {
-      console.warn(
-        `Unexpectedly got ${typeof icon} as icon in `,
-        identify(entry),
-      );
-      return entry;
+      throw new Error(`Unexpectedly got ${typeof icon} as icon`);
     }
 
     return {
