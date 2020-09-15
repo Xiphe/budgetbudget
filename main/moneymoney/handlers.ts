@@ -13,6 +13,31 @@ function delay(t: number) {
   return new Promise((r) => setTimeout(r, t));
 }
 
+function removeEmptyAccountGroups(data: unknown) {
+  if (!Array.isArray(data)) {
+    throw new Error('Unexpectedly got non-array as accounts data');
+  }
+
+  return data.filter((rawAccount: unknown) => {
+    if (typeof rawAccount !== 'object' || rawAccount === null) {
+      throw new Error(`Unexpectedly got ${typeof rawAccount} in accounts data`);
+    }
+
+    const { group, icon, name, uuid } = rawAccount as any;
+
+    if (group === undefined && icon === undefined) {
+      console.warn(
+        'Ignoring account/account-group',
+        name || uuid,
+        'it is probably empty',
+      );
+      return false;
+    }
+
+    return true;
+  });
+}
+
 function identify(thing: any) {
   switch (true) {
     case thing.budget !== undefined:
@@ -85,7 +110,11 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
     'MM_EXPORT_ACCOUNTS',
     withRetry(async () => {
       return base64Icons(
-        parse(await osascript(join(scriptsDir, 'exportAccounts.applescript'))),
+        removeEmptyAccountGroups(
+          parse(
+            await osascript(join(scriptsDir, 'exportAccounts.applescript')),
+          ),
+        ),
       );
     }),
   );
