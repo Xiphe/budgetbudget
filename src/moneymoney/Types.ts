@@ -66,42 +66,54 @@ const transactionsByAccountShape = t.array(
   ),
   'transactions',
 );
-const interopAccountShape = t.type(
-  {
-    accountNumber: t.string,
+const interopAccountShape = t.intersection([
+  t.type(
+    {
+      accountNumber: t.string,
+      name: t.string,
+      balance: t.array(t.tuple([t.number, t.string])),
+      currency: t.string,
+      group: t.boolean,
+      indentation: t.number,
+      portfolio: t.boolean,
+      uuid: t.string,
+    },
+    'account',
+  ),
+  t.partial(
+    {
+      icon: t.string,
+    },
+    'accountOptional',
+  ),
+]);
+const categoryShape = t.intersection([
+  t.type({
+    budget: t.union([
+      t.type({}),
+      t.type({
+        amount: t.number,
+        available: t.number,
+        period: t.union([
+          t.literal('monthly'),
+          t.literal('quarterly'),
+          t.literal('yearly'),
+          t.literal('total'),
+        ]),
+      }),
+    ]),
     name: t.string,
-    balance: t.array(t.tuple([t.number, t.string])),
     currency: t.string,
+    default: t.boolean,
     group: t.boolean,
+
     indentation: t.number,
-    icon: t.string,
-    portfolio: t.boolean,
     uuid: t.string,
-  },
-  'account',
-);
-const categoryShape = t.type({
-  budget: t.union([
-    t.type({}),
-    t.type({
-      amount: t.number,
-      available: t.number,
-      period: t.union([
-        t.literal('monthly'),
-        t.literal('quarterly'),
-        t.literal('yearly'),
-        t.literal('total'),
-      ]),
-    }),
-  ]),
-  name: t.string,
-  currency: t.string,
-  default: t.boolean,
-  group: t.boolean,
-  icon: t.string,
-  indentation: t.number,
-  uuid: t.string,
-});
+  }),
+  t.partial({
+    icon: t.string,
+  }),
+]);
 
 export type Category = t.TypeOf<typeof categoryShape>;
 export type Transaction = t.TypeOf<typeof transactionShape>;
@@ -113,7 +125,7 @@ export type Account = {
   group: boolean;
   indentation: number;
   portfolio: boolean;
-  icon: string;
+  icon?: string;
   uuid: string;
   number: string;
 };

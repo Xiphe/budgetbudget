@@ -79,7 +79,7 @@ export default function CategorySidebar({
               >
                 {!group && (
                   <span
-                    style={{ backgroundImage: `url(${icon})` }}
+                    style={icon ? { backgroundImage: `url(${icon})` } : {}}
                     className={styles.icon}
                   />
                 )}
