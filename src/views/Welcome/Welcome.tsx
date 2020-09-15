@@ -3,6 +3,7 @@ import { ipcRenderer } from 'electron';
 import { useMenu, useRecentFiles } from '../../lib';
 import { Content, Button, Header } from '../../components';
 import styles from './Welcome.module.scss';
+import logo from '../../img/logo.png';
 
 type Props = {
   onCreate: () => void;
@@ -35,7 +36,7 @@ export default function Welcome({ onCreate }: Props) {
       <div>
         <img
           className={styles.logo}
-          src="/logo.png"
+          src={logo}
           alt="BudgetBudget Logo - treasure chest"
         />
         <h1 className={styles.title}>Welcome to BudgetBudget (Beta)</h1>
