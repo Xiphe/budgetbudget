@@ -1,6 +1,5 @@
 import React, {
   useMemo,
-  useRef,
   useCallback,
   createContext,
   ReactNode,
@@ -8,6 +7,7 @@ import React, {
   Suspense,
   useContext,
   SuspenseProps,
+  MutableRefObject,
 } from 'react';
 import getTransactions, { TransactionsResource } from './getTransactions';
 import getCategories, { CategoryResource } from './getCategories';
@@ -17,7 +17,6 @@ import { BudgetState } from '../budget';
 import { withRetry } from '../lib';
 
 type MoneyMoneyContext = {
-  refresh: () => void;
   categoriesRes: CategoryResource;
   transactionRes: TransactionsResource;
   accountsRes: AccountsResource;
@@ -25,25 +24,24 @@ type MoneyMoneyContext = {
 const MoneyMoneyResContext = createContext<Partial<MoneyMoneyContext>>({});
 
 type ProviderProps = {
+  refreshRef: MutableRefObject<(() => void) | undefined>;
   settings: BudgetState['settings'];
   fallback: SuspenseProps['fallback'];
   children: ReactNode;
 };
 export default function MoneyMoneyResProvider({
+  refreshRef,
   settings: { accounts, currency, startDate },
   fallback,
   children,
 }: ProviderProps) {
-  // const cacheToken = useRef<symbol>(Symbol());
-  const refreshRef = useRef<() => void>();
-
   const refresh = useCallback(() => {
     setCategoriesRes(withRetry(getCategories(currency), refreshRef));
     setTransactionRes(
       withRetry(getTransactions(accounts, currency, startDate), refreshRef),
     );
     setAccountsRes(withRetry(getAccounts(currency), refreshRef));
-  }, [accounts, currency, startDate]);
+  }, [refreshRef, accounts, currency, startDate]);
   refreshRef.current = refresh;
 
   const [categoriesRes, setCategoriesRes] = useState<CategoryResource>(() =>
@@ -60,12 +58,11 @@ export default function MoneyMoneyResProvider({
     <MoneyMoneyResContext.Provider
       value={useMemo<MoneyMoneyContext>(
         () => ({
-          refresh,
           accountsRes,
           transactionRes,
           categoriesRes,
         }),
-        [refresh, accountsRes, transactionRes, categoriesRes],
+        [accountsRes, transactionRes, categoriesRes],
       )}
     >
       <Suspense fallback={fallback}>
@@ -75,10 +72,6 @@ export default function MoneyMoneyResProvider({
   );
 }
 
-export function useRefresh() {
-  const { refresh } = useContext(MoneyMoneyResContext);
-  return refresh;
-}
 export function useAccounts() {
   const { accountsRes } = useContext(MoneyMoneyResContext);
   if (!accountsRes) {

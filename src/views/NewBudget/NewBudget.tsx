@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { BudgetState, VERSION } from '../../budget';
 import {
   Content,
@@ -20,7 +20,8 @@ type Props = {
 
 export default function NewBudget({ onCreate }: Props) {
   const [page, setPage] = useState<'general' | 'categories'>('general');
-  useMenu();
+  const refreshRef = useRef<() => void>();
+  useMenu(refreshRef);
   const [state, dispatch] = useBudgetReducer({
     name: '',
     version: VERSION,
@@ -33,7 +34,11 @@ export default function NewBudget({ onCreate }: Props) {
   }
 
   return (
-    <MoneyMoneyResProvider settings={state.settings} fallback={<Startup />}>
+    <MoneyMoneyResProvider
+      refreshRef={refreshRef}
+      settings={state.settings}
+      fallback={<Startup />}
+    >
       <Content
         padding
         header={

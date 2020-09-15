@@ -16,7 +16,6 @@ export {
   useAccounts,
   useCategories,
   useTransactions,
-  useRefresh,
   default as MoneyMoneyResProvider,
 } from './useMoneyMoney';
 export { default as calculateBalances } from './calculateBalances';

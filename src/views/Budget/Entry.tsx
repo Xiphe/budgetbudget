@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React, { lazy, useRef } from 'react';
 import { BudgetState, useBudgetReducer } from '../../budget';
 import {
   withShowSettingsProvider,
@@ -18,7 +18,8 @@ const Budget = lazy(() => import('./Budget'));
 
 export default withShowSettingsProvider(({ initialState }: Props) => {
   const [state, dispatch] = useBudgetReducer(initialState);
-  const menu = useMenu();
+  const refreshRef = useRef<() => void>();
+  const menu = useMenu(refreshRef);
   const error = useSave(menu, state);
   const showSettings = useShowSettings();
 
@@ -27,7 +28,11 @@ export default withShowSettingsProvider(({ initialState }: Props) => {
   }
 
   return (
-    <MoneyMoneyResProvider settings={state.settings} fallback={<Startup />}>
+    <MoneyMoneyResProvider
+      refreshRef={refreshRef}
+      settings={state.settings}
+      fallback={<Startup />}
+    >
       {showSettings ? (
         <Settings state={state} dispatch={dispatch} />
       ) : (

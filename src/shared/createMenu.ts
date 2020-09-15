@@ -1,10 +1,11 @@
 import { MenuItemConstructorOptions } from 'electron';
 import { basename } from 'path';
 import { RecentFile } from './settings';
+import { MutableRefObject } from 'react';
 
 type MenuConfig = MenuItemConstructorOptions;
 export type CreateMenuCallbacks = {
-  refresh?: () => void;
+  refreshRef?: MutableRefObject<(() => void) | undefined>;
   welcome: () => void;
   setShowSettings?: (show: boolean) => void;
 };

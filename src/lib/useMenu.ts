@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, MutableRefObject } from 'react';
 import { ipcRenderer, remote, MenuItemConstructorOptions } from 'electron';
 import { useSetShowSettings } from './ShowSettingsContext';
 import {
@@ -8,7 +8,6 @@ import {
   createOpenRecent,
   CreateMenuCallbacks,
 } from '../shared/createMenu';
-import { useRefresh } from '../moneymoney';
 import { useRecentFiles } from './useRecentFiles';
 import { RecentFile } from '../shared/settings';
 
@@ -16,14 +15,15 @@ export const MENU_ID_SAVE = 'MENU_SAVE';
 export const MENU_ID_SAVE_AS = 'MENU_SAVE_AS';
 
 function buildMenu(callbacks: CreateMenuCallbacks, recentFiles: RecentFile[]) {
-  const refresh: MenuItemConstructorOptions[] = callbacks.refresh
+  const { refreshRef } = callbacks;
+  const refresh: MenuItemConstructorOptions[] = refreshRef
     ? [
         { type: 'separator' },
         {
           label: 'Refresh MoneyMoney Data',
           enabled: true,
           accelerator: 'CommandOrControl+R',
-          click: callbacks.refresh,
+          click: () => refreshRef?.current?.call(null),
         },
       ]
     : [];
@@ -67,9 +67,10 @@ function buildMenu(callbacks: CreateMenuCallbacks, recentFiles: RecentFile[]) {
   );
 }
 
-export default function useMenu() {
+export default function useMenu(
+  refreshRef?: MutableRefObject<(() => void) | undefined>,
+) {
   const setShowSettings = useSetShowSettings();
-  const refresh = useRefresh();
   const recentFiles = useRecentFiles();
   const [focus, updateFocus] = useState<boolean>(true);
   const menu = useMemo(
@@ -77,13 +78,13 @@ export default function useMenu() {
       buildMenu(
         {
           setShowSettings,
-          refresh,
+          refreshRef,
           welcome: () => ipcRenderer.invoke('MENU_FILE_WELCOME'),
         },
         recentFiles,
       ),
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [setShowSettings, refresh, recentFiles],
+    [setShowSettings, refreshRef, recentFiles],
   );
   useEffect(() => {
     const setFocus = () => updateFocus(true);
