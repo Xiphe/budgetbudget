@@ -38,7 +38,10 @@ export default function createLazyResource<R>(
   };
 }
 
-export function withRetry<R>(res: Resource<R>, retry: () => void): Resource<R> {
+export function withRetry<R>(
+  res: Resource<R>,
+  { current: retry }: { current?: () => void },
+): Resource<R> {
   return {
     ...res,
     read(...args): R {
@@ -60,5 +63,5 @@ export function useRetryResource<R>(
   res: Resource<R>,
   retry: () => void,
 ): Resource<R> {
-  return useMemo(() => withRetry(res, retry), [res, retry]);
+  return useMemo(() => withRetry(res, { current: retry }), [res, retry]);
 }

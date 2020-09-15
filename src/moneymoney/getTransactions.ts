@@ -32,22 +32,15 @@ export async function getTransactions(
     [] as Transaction[],
   );
 }
-const getTransactionsMemo = memoizeOne(
-  (accountNumbers: string[], startDateTimestamp: number, cacheToken: symbol) =>
-    getTransactions(accountNumbers, startDateTimestamp),
-);
 
-function getTransactionsResource(
+export default function getTransactionsResource(
   accountNumbers: string[],
   currency: string,
   startDateTimestamp: number,
-  cacheToken: symbol,
 ): TransactionsResource {
   return createResource(() =>
-    getTransactionsMemo(accountNumbers, startDateTimestamp, cacheToken).then(
+    getTransactions(accountNumbers, startDateTimestamp).then(
       filterCurrency.bind(null, currency),
     ),
   );
 }
-
-export default memoizeOne(getTransactionsResource);

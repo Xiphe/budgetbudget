@@ -33,14 +33,9 @@ export async function getCategories(): Promise<Category[]> {
 
   return probablyCategories.map(validateCategory);
 }
-const getCategoriesMemo = memoizeOne((cacheToken: symbol) => getCategories());
 
-function getCategoryResource(currency: string, cacheToken: symbol) {
+export default function getCategoryResource(currency: string) {
   return createResource(() =>
-    getCategoriesMemo(cacheToken).then(
-      splitCurrencyCategories.bind(null, currency),
-    ),
+    getCategories().then(splitCurrencyCategories.bind(null, currency)),
   );
 }
-
-export default memoizeOne(getCategoryResource);

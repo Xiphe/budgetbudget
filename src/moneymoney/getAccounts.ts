@@ -50,15 +50,10 @@ export async function getAccounts(): Promise<InteropAccount[]> {
   return probablyAccounts.map(validateAccount);
 }
 
-const getAccountsMemo = memoizeOne((cacheToken: symbol) => getAccounts());
-
-function getAccountsResource(
+export default function getAccountsResource(
   currency: string,
-  cacheToken: symbol,
 ): AccountsResource {
   return createResource(() =>
-    getAccountsMemo(cacheToken).then(filterAccounts.bind(null, currency)),
+    getAccounts().then(filterAccounts.bind(null, currency)),
   );
 }
-
-export default memoizeOne(getAccountsResource);
