@@ -5,7 +5,7 @@ import {
   Exposed as ExposedElectron,
   ExposedInternal,
 } from '../../src/__mocks__/electron';
-import { validateBudgetState } from '../../src/budget/Types';
+import { BudgetState, validateBudgetState } from '../../src/budget/Types';
 
 type BB = {
   electron: ExposedElectron;
