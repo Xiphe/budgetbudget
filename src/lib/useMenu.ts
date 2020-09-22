@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState, MutableRefObject } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ipcRenderer, remote, MenuItemConstructorOptions } from 'electron';
-import { useSetShowSettings } from './ShowSettingsContext';
 import {
   createMenu,
   createFileMenu,
@@ -15,15 +14,15 @@ export const MENU_ID_SAVE = 'MENU_SAVE';
 export const MENU_ID_SAVE_AS = 'MENU_SAVE_AS';
 
 function buildMenu(callbacks: CreateMenuCallbacks, recentFiles: RecentFile[]) {
-  const { refreshRef } = callbacks;
-  const refresh: MenuItemConstructorOptions[] = refreshRef
+  const { refresh } = callbacks;
+  const refreshEntry: MenuItemConstructorOptions[] = refresh
     ? [
         { type: 'separator' },
         {
           label: 'Refresh MoneyMoney Data',
           enabled: true,
           accelerator: 'CommandOrControl+R',
-          click: () => refreshRef?.current?.call(null),
+          click: refresh,
         },
       ]
     : [];
@@ -58,7 +57,7 @@ function buildMenu(callbacks: CreateMenuCallbacks, recentFiles: RecentFile[]) {
           openRecent: createOpenRecent(recentFiles, (file) =>
             ipcRenderer.invoke('MENU_FILE_OPEN_EXISTING', file),
           ),
-          entries: fileMenuEntries.concat(refresh),
+          entries: fileMenuEntries.concat(refreshEntry),
         }),
         createEditMenu(),
       ],
@@ -68,23 +67,23 @@ function buildMenu(callbacks: CreateMenuCallbacks, recentFiles: RecentFile[]) {
 }
 
 export default function useMenu(
-  refreshRef?: MutableRefObject<(() => void) | undefined>,
+  refresh?: () => void,
+  openSettings?: () => void,
 ) {
-  const setShowSettings = useSetShowSettings();
   const recentFiles = useRecentFiles();
   const [focus, updateFocus] = useState<boolean>(true);
   const menu = useMemo(
     () =>
       buildMenu(
         {
-          setShowSettings,
-          refreshRef,
+          openSettings,
+          refresh,
           welcome: () => ipcRenderer.invoke('MENU_FILE_WELCOME'),
         },
         recentFiles,
       ),
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-    [setShowSettings, refreshRef, recentFiles],
+    [openSettings, refresh, recentFiles],
   );
   useEffect(() => {
     const setFocus = () => updateFocus(true);

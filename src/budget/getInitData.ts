@@ -2,26 +2,32 @@ import { ipcRenderer } from 'electron';
 import { readFile as rf } from 'fs';
 import { promisify } from 'util';
 import { createResource, Resource } from '../lib';
+import { View } from '../shared/types';
+import { INITIAL_STATE } from './budgetReducer';
 import { validateBudgetState, BudgetState } from './Types';
 
 const readFile = promisify(rf);
-export const INIT_EMPTY = Symbol('INIT_EMPTY');
-export type InitRes = Resource<BudgetState | typeof INIT_EMPTY>;
+type InitData = [View['type'], BudgetState];
+export type InitRes = Resource<InitData>;
 
-async function getInitData(): Promise<BudgetState | typeof INIT_EMPTY> {
-  const response = await ipcRenderer.invoke('INIT');
+async function getInitData(): Promise<InitData> {
+  const init: View = await ipcRenderer.invoke('INIT');
 
-  if (typeof response === 'undefined') {
-    return Promise.resolve(INIT_EMPTY);
+  switch (init.type) {
+    case 'welcome':
+    case 'new':
+      return [init.type, INITIAL_STATE];
+    case 'budget':
+    case 'settings':
+      return [
+        init.type,
+        validateBudgetState(JSON.parse((await readFile(init.file)).toString())),
+      ];
   }
-  if (typeof response === 'string') {
-    return validateBudgetState(
-      JSON.parse((await readFile(response)).toString()),
-    );
-  }
-  throw new Error(`Unexpected init response ${response}`);
 }
 
-export default function getInitDataRes() {
-  return createResource(() => getInitData());
+export const initialInitData = getInitData();
+export const initialInitDataRes = createResource(initialInitData);
+export default function createInitDataRes() {
+  return createResource(getInitData());
 }

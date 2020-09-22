@@ -1,5 +1,13 @@
-import { BudgetState, Category, IncomeCategory } from './Types';
-import { useReducer } from 'react';
+import { BudgetState, Category, IncomeCategory, VERSION } from './Types';
+import { useCallback, useReducer } from 'react';
+import { initialSettings, unsaved } from '../lib';
+
+export const INITIAL_STATE = unsaved({
+  name: '',
+  version: VERSION,
+  budgets: {},
+  settings: initialSettings,
+});
 
 export const ACTION_INIT = Symbol('INIT');
 export const ACTION_SET_NAME = Symbol('SET_NAME');
@@ -317,6 +325,22 @@ function budgetReducer(state: BudgetState, action: Action): BudgetState {
   }
 }
 
-export function useBudgetReducer(initialState: BudgetState) {
-  return useReducer(budgetReducer, initialState);
+export function useBudgetReducer(
+  initialState: BudgetState,
+  settingsHook: (settings: BudgetState['settings']) => void,
+) {
+  const hookedReducer = useCallback(
+    (state: BudgetState, action: Action) => {
+      const newState = budgetReducer(state, action);
+
+      if (newState.settings !== state.settings) {
+        settingsHook(newState.settings);
+      }
+
+      return newState;
+    },
+    [settingsHook],
+  );
+
+  return useReducer(hookedReducer, initialState);
 }

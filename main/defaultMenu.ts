@@ -5,9 +5,10 @@ import {
   createOpenRecent,
 } from '../src/shared/createMenu';
 import { Settings } from '../src/shared/settings';
+import { View } from '../src/shared/types';
 
 export function createDefaultMenu(
-  createWindow: (file?: string, hash?: string) => void,
+  createWindow: (initialView: View) => void,
   openFile: () => void,
   settings: Settings,
 ) {
@@ -21,14 +22,14 @@ export function createDefaultMenu(
               createFileMenu({
                 openRecent: createOpenRecent(
                   settings.getRecentFiles(),
-                  createWindow,
+                  (file) => createWindow({ type: 'budget', file }),
                 ),
-                fileNew: () => createWindow(undefined, 'new'),
+                fileNew: () => createWindow({ type: 'new' }),
                 fileOpen: openFile,
               }),
             ],
             {
-              welcome: () => createWindow(undefined),
+              welcome: () => createWindow({ type: 'welcome' }),
             },
           ),
         ),

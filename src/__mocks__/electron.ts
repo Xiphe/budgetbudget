@@ -74,7 +74,7 @@ function createHandler(name: string) {
   }
 
   return {
-    cleanup() {
+    checkTrailingHandlers() {
       const errors = Object.entries(handlers)
         .map(([channel, hs]) => {
           if (hs.length) {
@@ -84,7 +84,6 @@ function createHandler(name: string) {
         })
         .filter((v: null | string): v is string => v !== null);
 
-      handlers = {};
       if (errors.length) {
         throw new Error(errors.join('\n'));
       }
@@ -140,11 +139,10 @@ function ignoreChannels(channels: string[]) {
   });
 }
 
-function cleanup() {
-  ignoredChannels.length = 0;
-  invokeHandlers.cleanup();
-  rendererEvents.cleanup();
-  mainEvents.cleanup();
+function checkTrailingHandlers() {
+  invokeHandlers.checkTrailingHandlers();
+  rendererEvents.checkTrailingHandlers();
+  mainEvents.checkTrailingHandlers();
 }
 
 export type Exposed = {
@@ -152,10 +150,13 @@ export type Exposed = {
   remote: PartialRemote;
 };
 export type ExposedInternal = {
+  checkTrailingHandlers: typeof checkTrailingHandlers;
   ignoreChannels: typeof ignoreChannels;
-  cleanup: typeof cleanup;
 };
 expose<Exposed>('electron', { ipcMain, remote });
-expose<ExposedInternal>('_electron', { cleanup, ignoreChannels });
+expose<ExposedInternal>('_electron', {
+  ignoreChannels,
+  checkTrailingHandlers,
+});
 
 export { ipcRenderer, remote };

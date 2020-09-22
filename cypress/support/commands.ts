@@ -5,7 +5,7 @@ import {
   Exposed as ExposedElectron,
   ExposedInternal,
 } from '../../src/__mocks__/electron';
-import { BudgetState, validateBudgetState } from '../../src/budget/Types';
+import { validateBudgetState } from '../../src/budget/Types';
 
 type BB = {
   electron: ExposedElectron;
@@ -26,7 +26,7 @@ declare global {
   namespace Cypress {
     interface Chainable<Subject = any> {
       open: (config: OpenConfig) => Cypress.Chainable<void>;
-      cleanup: () => Cypress.Chainable<void>;
+      checkTrailingHandlers: () => Cypress.Chainable<void>;
       bb: () => Cypress.Chainable<BB>;
       _bb: () => Cypress.Chainable<BBexposed>;
       readBudget: (file: string) => Cypress.Chainable<BudgetState>;
@@ -70,8 +70,8 @@ Cypress.Commands.add('readBudget', (file: string) => {
     )
     .then((data) => validateBudgetState(data));
 });
-Cypress.Commands.add('cleanup', () => {
-  cy._bb().then(({ _electron }) => _electron.cleanup());
+Cypress.Commands.add('checkTrailingHandlers', () => {
+  cy._bb().then(({ _electron }) => _electron.checkTrailingHandlers());
 });
 Cypress.Commands.add(
   'open',

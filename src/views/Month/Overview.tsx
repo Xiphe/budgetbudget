@@ -41,7 +41,9 @@ export default function Overview({
       requestAnimationFrame(() => {
         cleanup();
         cleanup = registerHeaderHeight(
-          Math.ceil(ref.current!.getBoundingClientRect().height),
+          Math.ceil(
+            ref.current ? ref.current.getBoundingClientRect().height : 0,
+          ),
         );
       });
     };

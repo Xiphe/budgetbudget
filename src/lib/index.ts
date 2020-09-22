@@ -23,11 +23,6 @@ export { default as mapCategories } from './mapCategories';
 export { default as parseBudgetInput } from './parseBudgetInput';
 export { useRecentFiles } from './useRecentFiles';
 export {
-  withShowSettingsProvider,
-  useSetShowSettings,
-  useShowSettings,
-} from './ShowSettingsContext';
-export {
   VisibleMothContextProvider,
   useSetVisibleMonth,
   useVisibleMonths,

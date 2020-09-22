@@ -2,7 +2,7 @@ import { account, category } from '../factories';
 
 describe('Create New Budget', () => {
   afterEach(() => {
-    cy.cleanup();
+    cy.checkTrailingHandlers();
   });
 
   it('creates a new budget files with options', () => {
@@ -20,7 +20,7 @@ describe('Create New Budget', () => {
         'BLUR',
       ],
       setup({ electron: { ipcMain } }) {
-        ipcMain.handleOnce('INIT', () => undefined);
+        ipcMain.handleOnce('INIT', () => ({ type: 'welcome' }));
         ipcMain.handleOnce('MM_EXPORT_ACCOUNTS', () => accounts);
         ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => categories);
         ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () => []);

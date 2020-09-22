@@ -1,44 +1,73 @@
 import './theme.scss';
-import React, { Suspense, useState, useCallback } from 'react';
+import React, { Suspense, useState, useCallback, ReactNode } from 'react';
 import classNames from 'classnames';
-import { INIT_EMPTY, BudgetState, InitRes, getInitData } from './budget';
+import {
+  InitRes,
+  getInitData,
+  useBudgetReducer,
+  initialInitDataRes,
+} from './budget';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
 import { useRetryResource } from './lib';
+import { useMoneyMoney } from './moneymoney';
 
-const Budget = React.lazy(() => import('./views/Budget'));
 const Welcome = React.lazy(() => import('./views/Welcome'));
 const NewBudget = React.lazy(() => import('./views/NewBudget'));
+const Main = React.lazy(() => import('./views/Main'));
 
-function App({ initRes }: { initRes: InitRes }) {
-  const [initialState, setInitialState] = useState<
-    typeof INIT_EMPTY | BudgetState
-  >(initRes.read());
-  const [welcome, setWelcome] = useState<boolean>(
-    window.location.hash !== '#new',
-  );
+function App({ readInitialView }: { readInitialView: InitRes }) {
+  const [initialView, initialState] = readInitialView();
+  const [view, setView] = useState(initialView);
+  const [moneyMoney, updateSettings] = useMoneyMoney();
+  const [state, dispatch] = useBudgetReducer(initialState, updateSettings);
+  const openBudget = useCallback(() => {
+    setView('budget');
+  }, []);
+  const openNew = useCallback(() => {
+    setView('new');
+  }, []);
 
-  return initialState === INIT_EMPTY ? (
-    welcome ? (
-      <Welcome onCreate={() => setWelcome(false)} />
-    ) : (
-      <NewBudget onCreate={setInitialState} />
-    )
-  ) : (
-    <Budget initialState={initialState} />
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<Startup />}>
+        {((): ReactNode => {
+          switch (view) {
+            case 'welcome':
+              return <Welcome onCreate={openNew} />;
+            case 'new':
+              return (
+                <NewBudget
+                  state={state}
+                  dispatch={dispatch}
+                  onCreate={openBudget}
+                  moneyMoney={moneyMoney}
+                />
+              );
+            default:
+              return (
+                <Main
+                  view={view}
+                  moneyMoney={moneyMoney}
+                  state={state}
+                  dispatch={dispatch}
+                  setView={setView}
+                />
+              );
+          }
+        })()}
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
-export default function AppWrapper({
-  initialInitRes,
-}: {
-  initialInitRes: InitRes;
-}) {
-  const [initRes, setInitRes] = useState(initialInitRes);
-  const retryInitRes = useRetryResource(
-    initRes,
+export default function AppWrapper() {
+  const [readInit, setInitRes] = useState(() => initialInitDataRes);
+  const retryReadInit = useRetryResource(
+    readInit,
     useCallback(() => setInitRes(getInitData()), []),
   );
+
   return (
     <div
       className={classNames(
@@ -48,7 +77,7 @@ export default function AppWrapper({
     >
       <Suspense fallback={<Startup />}>
         <ErrorBoundary>
-          <App initRes={retryInitRes} />
+          <App readInitialView={retryReadInit} />
         </ErrorBoundary>
       </Suspense>
     </div>

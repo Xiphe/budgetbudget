@@ -120,5 +120,7 @@ export default function useSave(menu: Menu, state: BudgetState | null) {
     }
     enable(true);
   }, [enable, state, saved]);
-  return isError(saved) ? saved : null;
+  if (isError(saved)) {
+    throw saved;
+  }
 }

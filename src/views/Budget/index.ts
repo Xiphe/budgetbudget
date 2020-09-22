@@ -1,1 +1,1 @@
-export { default } from './Entry';
+export { default } from './Budget';

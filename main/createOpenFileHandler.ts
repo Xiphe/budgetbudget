@@ -1,7 +1,8 @@
 import { dialog } from 'electron';
+import { View } from '../src/shared/types';
 
 export default function createOpenFileHandler(
-  createWindow: (file?: string) => void,
+  createWindow: (initialView: View) => void,
 ) {
   const openFile = async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -11,7 +12,7 @@ export default function createOpenFileHandler(
     if (canceled) {
       return;
     }
-    filePaths.forEach(createWindow);
+    filePaths.forEach((file) => createWindow({ type: 'budget', file }));
   };
 
   return openFile;

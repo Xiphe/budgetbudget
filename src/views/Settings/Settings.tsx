@@ -1,18 +1,20 @@
 import React, { Dispatch, useState } from 'react';
 import { BudgetState, Action } from '../../budget';
 import { Content, Tab, TabBar, Header, Button } from '../../components';
-import { useSetShowSettings } from '../../lib';
 import General from './General';
 import Categories from './Categories';
+import { MoneyMoneyRes } from '../../moneymoney';
 
 type Props = {
   state: BudgetState;
   dispatch: Dispatch<Action>;
+  moneyMoney: MoneyMoneyRes;
+  onClose: () => void;
 };
 
 export default function Settings(props: Props) {
-  const showSettings = useSetShowSettings();
   const [tab, setTab] = useState<'general' | 'categories'>('general');
+
   const { accounts } = props.state.settings;
   const valid = accounts.length > 0;
 
@@ -22,11 +24,7 @@ export default function Settings(props: Props) {
       background
       header={
         <Header>
-          <Button
-            title="close"
-            disabled={!valid}
-            onClick={() => showSettings && showSettings(false)}
-          >
+          <Button title="close" disabled={!valid} onClick={props.onClose}>
             X
           </Button>
           Settings

@@ -1,77 +1,61 @@
-import React, { useState, useRef } from 'react';
-import { BudgetState, VERSION } from '../../budget';
-import {
-  Content,
-  Button,
-  Header,
-  HeaderSpacer,
-  Startup,
-} from '../../components';
+import React, { useState, Dispatch } from 'react';
+import { Action, BudgetState } from '../../budget';
+import { Content, Button, Header, HeaderSpacer } from '../../components';
 import General from '../Settings/General';
 import Categories from '../Settings/Categories';
-import { useBudgetReducer } from '../../budget';
 import useMenu from '../../lib/useMenu';
-import { initialSettings, unsaved } from '../../lib';
-import { MoneyMoneyResProvider } from '../../moneymoney';
+import { MoneyMoneyRes } from '../../moneymoney';
 
 type Props = {
-  onCreate: (budget: BudgetState) => void;
+  state: BudgetState;
+  dispatch: Dispatch<Action>;
+  moneyMoney: MoneyMoneyRes;
+  onCreate: () => void;
 };
 
-export default function NewBudget({ onCreate }: Props) {
+export default function NewBudget({
+  onCreate,
+  state,
+  dispatch,
+  moneyMoney,
+}: Props) {
   const [page, setPage] = useState<'general' | 'categories'>('general');
-  const refreshRef = useRef<() => void>();
-  useMenu(refreshRef);
-  const [state, dispatch] = useBudgetReducer({
-    name: '',
-    version: VERSION,
-    budgets: {},
-    settings: initialSettings,
-  });
+  useMenu(moneyMoney.refresh);
 
   if (state === null) {
     throw new Error('Unexpected non-initialized state');
   }
 
   return (
-    <MoneyMoneyResProvider
-      refreshRef={refreshRef}
-      settings={state.settings}
-      fallback={<Startup />}
+    <Content
+      padding
+      header={
+        <Header>
+          <span>Create a new Budget</span>
+          <HeaderSpacer />
+          {page === 'general' && (
+            <Button
+              primary
+              disabled={!state.name.length || !state.settings.accounts.length}
+              onClick={() => setPage('categories')}
+            >
+              Choose Income Categories
+            </Button>
+          )}
+          {page === 'categories' && (
+            <Button primary onClick={onCreate}>
+              Create "{state.name}"
+            </Button>
+          )}
+        </Header>
+      }
     >
-      <Content
-        padding
-        header={
-          <Header>
-            <span>Create a new Budget</span>
-            <HeaderSpacer />
-            {page === 'general' && (
-              <Button
-                primary
-                disabled={!state.name.length || !state.settings.accounts.length}
-                onClick={() => setPage('categories')}
-              >
-                Choose Income Categories
-              </Button>
-            )}
-            {page === 'categories' && (
-              <Button
-                primary
-                onClick={() => {
-                  onCreate(unsaved(state));
-                }}
-              >
-                Create "{state.name}"
-              </Button>
-            )}
-          </Header>
-        }
-      >
-        {page === 'general' && <General state={state} dispatch={dispatch} />}
-        {page === 'categories' && (
-          <Categories state={state} dispatch={dispatch} />
-        )}
-      </Content>
-    </MoneyMoneyResProvider>
+      {page === 'general' && (
+        <General moneyMoney={moneyMoney} state={state} dispatch={dispatch} />
+      )}
+      {page === 'categories' && (
+        <Categories moneyMoney={moneyMoney} state={state} dispatch={dispatch} />
+      )}
+    </Content>
   );
 }

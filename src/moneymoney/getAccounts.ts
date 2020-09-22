@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron';
 import { createResource, Resource } from '../lib';
 import memoizeOne from 'memoize-one';
 
-const filterAccounts = memoizeOne(
+export const filterAccounts = memoizeOne(
   (currency: string, interopAccounts: InteropAccount[]): Account[] => {
     return interopAccounts
       .map<Account | false>(
@@ -50,10 +50,8 @@ export async function getAccounts(): Promise<InteropAccount[]> {
   return probablyAccounts.map(validateAccount);
 }
 
-export default function getAccountsResource(
-  currency: string,
-): AccountsResource {
-  return createResource(() =>
-    getAccounts().then(filterAccounts.bind(null, currency)),
-  );
+export default function getInteropAccountsResource(): Resource<
+  InteropAccount[]
+> {
+  return createResource(async () => getAccounts());
 }

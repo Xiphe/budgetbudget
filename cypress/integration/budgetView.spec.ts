@@ -8,7 +8,7 @@ import {
 
 describe('Budget View', () => {
   afterEach(() => {
-    cy.cleanup();
+    cy.checkTrailingHandlers();
   });
 
   it('displays correct overview values', () => {
@@ -42,7 +42,10 @@ describe('Budget View', () => {
       ],
       setup({ fs, electron: { ipcMain } }) {
         fs.writeFileSync(budgetFile, JSON.stringify(myBudget));
-        ipcMain.handleOnce('INIT', () => budgetFile);
+        ipcMain.handleOnce('INIT', () => ({
+          type: 'budget',
+          file: budgetFile,
+        }));
         ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => [
           incomeCategory,
           spendingCategory,
@@ -99,7 +102,10 @@ describe('Budget View', () => {
       ],
       setup({ fs, electron: { ipcMain } }) {
         fs.writeFileSync(budgetFile, JSON.stringify(myBudget));
-        ipcMain.handleOnce('INIT', () => budgetFile);
+        ipcMain.handleOnce('INIT', () => ({
+          type: 'budget',
+          file: budgetFile,
+        }));
         ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => [someCategory]);
         ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () =>
           transactions([transaction({ categoryUuid: someCategory.uuid })]),

@@ -19,13 +19,15 @@ import Month from '../Month';
 import BudgetHeader from './Header';
 import CategorySidebar from '../CategorySidebar/CategorySidebar';
 import styles from './Budget.module.scss';
+import { MoneyMoneyRes } from '../../moneymoney';
 
 type Props = {
   state: BudgetState;
   dispatch: Dispatch<Action>;
+  moneyMoney: MoneyMoneyRes;
 };
 
-export default function Budget({ state, dispatch }: Props) {
+export default function Budget({ state, dispatch, moneyMoney }: Props) {
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const onSliderScrollRef = useRef<((target: HTMLDivElement) => void) | null>(
@@ -34,6 +36,7 @@ export default function Budget({ state, dispatch }: Props) {
   const [scrollTo, setScrollTo] = useState<ScrollTo | null>(null);
   const { months, numberFormatter, extendFuture, categories } = useBudgetData(
     state,
+    moneyMoney,
   );
   const handleHeaderMonthClick = useCallback(
     (key: string) => {

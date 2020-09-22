@@ -6,11 +6,12 @@ import memoizeOne from 'memoize-one';
 
 export type TransactionsResource = Resource<Transaction[]>;
 
-const filterCurrency = memoizeOne(
+export const filterCurrency = memoizeOne(
   (currency: string, transactions: Transaction[]) =>
     transactions.filter(({ currency: c }) => c === currency),
 );
-export async function getTransactions(
+
+async function getTransactions(
   accountNumbers: string[],
   startDateTimestamp: number,
 ): Promise<Transaction[]> {
@@ -34,13 +35,13 @@ export async function getTransactions(
 }
 
 export default function getTransactionsResource(
-  accountNumbers: string[],
-  currency: string,
-  startDateTimestamp: number,
+  p: Promise<{
+    accounts: string[];
+    startDate: number;
+  }>,
 ): TransactionsResource {
-  return createResource(() =>
-    getTransactions(accountNumbers, startDateTimestamp).then(
-      filterCurrency.bind(null, currency),
-    ),
-  );
+  return createResource(async () => {
+    const { accounts, startDate } = await p;
+    return getTransactions(accounts, startDate);
+  });
 }

@@ -1,61 +1,57 @@
 import { useMemo } from 'react';
-export type Resource<T> = {
-  read: () => T;
-};
+export type Resource<T> = () => T;
 
-export default function createLazyResource<R>(
-  init: () => Promise<R>,
-): Resource<R> {
+export default function createResource<R>(
+  p: Promise<R> | (() => Promise<R>),
+): () => R {
   let status: 'pending' | 'success' | 'error' = 'pending';
   let error: Error;
   let result: R;
   let suspender: null | Promise<void> = null;
 
-  return {
-    read(): R {
-      if (status === 'pending' && suspender === null) {
-        suspender = init().then(
-          (r) => {
-            status = 'success';
-            result = r;
-          },
-          (e) => {
-            status = 'error';
-            error = e;
-          },
-        );
-      }
+  const onSuccess = (r: R) => {
+    status = 'success';
+    result = r;
+  };
+  const onError = (e: Error) => {
+    status = 'error';
+    error = e;
+  };
 
-      switch (status) {
-        case 'pending':
-          throw suspender;
-        case 'error':
-          throw error;
-        case 'success':
-          return result;
-      }
-    },
+  if (typeof p === 'object') {
+    suspender = p.then(onSuccess, onError);
+  }
+
+  return () => {
+    switch (status) {
+      case 'pending':
+        if (suspender === null && typeof p === 'function') {
+          suspender = p().then(onSuccess, onError);
+        }
+        throw suspender;
+      case 'error':
+        throw error;
+      case 'success':
+        return result;
+    }
   };
 }
 
 export function withRetry<R>(
-  res: Resource<R>,
-  { current: retry }: { current?: () => void },
+  read: Resource<R>,
+  retry: () => void,
 ): Resource<R> {
-  return {
-    ...res,
-    read(...args): R {
-      try {
-        return res.read(...args);
-      } catch (e) {
-        if (e instanceof Error) {
-          throw Object.assign(e, {
-            retry,
-          });
-        }
-        throw e;
+  return () => {
+    try {
+      return read();
+    } catch (e) {
+      if (e instanceof Error) {
+        throw Object.assign(e, {
+          retry,
+        });
       }
-    },
+      throw e;
+    }
   };
 }
 
@@ -63,5 +59,5 @@ export function useRetryResource<R>(
   res: Resource<R>,
   retry: () => void,
 ): Resource<R> {
-  return useMemo(() => withRetry(res, { current: retry }), [res, retry]);
+  return useMemo(() => withRetry(res, retry), [res, retry]);
 }

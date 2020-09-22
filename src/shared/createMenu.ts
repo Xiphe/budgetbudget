@@ -1,13 +1,12 @@
 import { MenuItemConstructorOptions } from 'electron';
 import { basename } from 'path';
 import { RecentFile } from './settings';
-import { MutableRefObject } from 'react';
 
 type MenuConfig = MenuItemConstructorOptions;
 export type CreateMenuCallbacks = {
-  refreshRef?: MutableRefObject<(() => void) | undefined>;
+  refresh?: () => void;
   welcome: () => void;
-  setShowSettings?: (show: boolean) => void;
+  openSettings?: () => void;
 };
 
 function isMenuConfig(
@@ -19,16 +18,16 @@ function isMenuConfig(
 export function createMenu(
   appName: string,
   entries: MenuConfig[] = [],
-  { setShowSettings, welcome }: CreateMenuCallbacks,
+  { openSettings, welcome }: CreateMenuCallbacks,
 ): MenuConfig[] {
   const submenu: (MenuConfig | false | undefined)[] = [
     { role: 'about' },
     { label: 'Open Welcome', click: welcome },
     { type: 'separator' },
-    setShowSettings && {
+    openSettings && {
       label: 'Settings',
       accelerator: 'CommandOrControl+,',
-      click: () => setShowSettings(true),
+      click: () => openSettings(),
     },
     { type: 'separator' },
     { role: 'services' },

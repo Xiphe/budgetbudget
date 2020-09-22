@@ -1,11 +1,6 @@
 import { useMemo } from 'react';
 import { createNumberFormatter } from '../lib';
-import {
-  useTransactions,
-  Transaction,
-  Category,
-  useCategories,
-} from '../moneymoney';
+import type { Transaction, Category, MoneyMoneyRes } from '../moneymoney';
 import { BudgetState } from './Types';
 import useBudgets from './useBudgets';
 
@@ -21,15 +16,18 @@ function categoriesLoaded(
   return Array.isArray(categories);
 }
 
-export default function useBudgetData(state: BudgetState) {
+export default function useBudgetData(
+  state: BudgetState,
+  { readCategories, readTransactions }: MoneyMoneyRes,
+) {
   const { fractionDigits, numberLocale, incomeCategories } = state.settings;
 
   const numberFormatter = useMemo(
     () => createNumberFormatter(fractionDigits, numberLocale),
     [fractionDigits, numberLocale],
   );
-  const transactions = useTransactions().read();
-  const [categories, defaultCategories] = useCategories().read();
+  const transactions = readTransactions();
+  const [categories, defaultCategories] = readCategories();
   const usableCategories = useMemo(() => {
     if (!categoriesLoaded(categories)) {
       return [];

@@ -1,6 +1,14 @@
 import { BrowserWindow, IpcMain, WebContents, App } from 'electron';
 import { join } from 'path';
 import { Settings } from '../src/shared/settings';
+import { View } from '../src/shared/types';
+
+// type WebContents = WCT & {
+//   initialView?: View;
+// };
+// type WebContents = Omit<BrowserWindow, 'webContents'> & {
+//   webContents: WebContents;
+// };
 
 export type WindowManager = ReturnType<typeof createWindowManager>;
 export default function createWindowManager(
@@ -71,9 +79,12 @@ export default function createWindowManager(
     });
   }
 
-  function createWindow(file?: string, hash?: string) {
-    if (file && windows[file]) {
-      windows[file].show();
+  function createWindow(initialView: View) {
+    if (
+      (initialView.type === 'budget' || initialView.type === 'settings') &&
+      windows[initialView.file]
+    ) {
+      windows[initialView.file].show();
       return;
     }
 
@@ -103,14 +114,15 @@ export default function createWindowManager(
       if (!SERVER_URL) {
         throw new Error('Can not open dev window without SERVER_URL');
       }
-      win.loadURL(`${SERVER_URL}#${hash}`);
+      win.loadURL(`${SERVER_URL}`);
       win.webContents.openDevTools();
     } else {
-      win.loadFile(join(__dirname, '../build/index.html'), { hash });
+      win.loadFile(join(__dirname, '../build/index.html'));
     }
 
+    win.webContents.initialView = initialView;
     broadcast('WINDOW_CREATED');
-    registerWindow(win, file);
+    registerWindow(win, initialView.file);
 
     win.once('closed', (ev: any) => {
       if (!appIsQuitting) {
@@ -119,9 +131,12 @@ export default function createWindowManager(
     });
   }
 
-  ipcMain.handle('INIT', (ev) => {
-    return findFile(ev.sender);
-  });
+  ipcMain.handle(
+    'INIT',
+    (ev): View => {
+      return ev.sender.initialView;
+    },
+  );
   ipcMain.on('QUIT', (ev) => {
     const win = getWindow(ev.sender);
     if (!win) {
@@ -137,22 +152,24 @@ export default function createWindowManager(
     win.setDocumentEdited(edited);
   });
   ipcMain.handle('MENU_FILE_NEW', () => {
-    createWindow(undefined, 'new');
+    createWindow({ type: 'new' });
   });
   ipcMain.handle('MENU_FILE_WELCOME', () => {
-    createWindow(undefined);
+    createWindow({ type: 'welcome' });
   });
   ipcMain.handle('MENU_FILE_OPEN_EXISTING', (_, file: string) => {
-    createWindow(file);
+    createWindow({ type: 'budget', file });
   });
 
   return {
     init() {
       const previouslyOpen = settings.getOpenBudgets();
       if (previouslyOpen.length) {
-        previouslyOpen.forEach((r) => createWindow(r));
+        previouslyOpen.forEach((r) =>
+          createWindow({ type: 'budget', file: r }),
+        );
       } else {
-        createWindow();
+        createWindow({ type: 'welcome' });
       }
     },
     createWindow,

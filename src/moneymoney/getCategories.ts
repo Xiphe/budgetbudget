@@ -6,7 +6,7 @@ import { createResource, Resource } from '../lib';
 type SplitCategories = [Category[], Category[]];
 export type CategoryResource = Resource<SplitCategories>;
 
-const splitCurrencyCategories = memoizeOne(
+export const splitCurrencyCategories = memoizeOne(
   (currency: string, categories: Category[]) =>
     categories.reduce(
       (memo, category): SplitCategories => {
@@ -34,8 +34,6 @@ export async function getCategories(): Promise<Category[]> {
   return probablyCategories.map(validateCategory);
 }
 
-export default function getCategoryResource(currency: string) {
-  return createResource(() =>
-    getCategories().then(splitCurrencyCategories.bind(null, currency)),
-  );
+export default function getCategoryResource(): Resource<Category[]> {
+  return createResource(() => getCategories());
 }

@@ -49,7 +49,7 @@ export default function main() {
   });
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      windowManager.createWindow();
+      windowManager.createWindow({ type: 'welcome' });
     }
   });
 }

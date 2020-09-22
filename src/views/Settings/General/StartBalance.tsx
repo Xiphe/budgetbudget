@@ -6,17 +6,19 @@ import Input from '../Input';
 import Setting from '../Setting';
 import styles from '../Settings.module.scss';
 import { Props } from './Types';
-import { useTransactions, useAccounts } from '../../../moneymoney';
+import { MoneyMoneyRes } from '../../../moneymoney';
 
 function RecalculateButton({
   settings: { accounts },
   update,
-}: {
+  readAccounts,
+  readTransactions,
+}: Pick<MoneyMoneyRes, 'readAccounts' | 'readTransactions'> & {
   settings: Props['state']['settings'];
   update: (payload: number) => void;
 }) {
-  const allAccounts = useAccounts().read();
-  const transactions = useTransactions().read();
+  const allAccounts = readAccounts();
+  const transactions = readTransactions();
   const recalculate = useCallback(() => {
     const transactionsSum = transactions.reduce(
       (memo, { amount }) => memo + amount,
@@ -41,7 +43,9 @@ export default function StartBalanceSetting({
   state: { settings },
   dispatch,
   numberFormatter,
+  moneyMoney,
 }: Props & {
+  moneyMoney: MoneyMoneyRes;
   numberFormatter: NumberFormatter;
 }) {
   const update = useCallback(
@@ -73,7 +77,11 @@ export default function StartBalanceSetting({
           </Button>
         }
       >
-        <RecalculateButton settings={settings} update={update} />
+        <RecalculateButton
+          {...moneyMoney}
+          settings={settings}
+          update={update}
+        />
       </Suspense>
     </Setting>
   );
