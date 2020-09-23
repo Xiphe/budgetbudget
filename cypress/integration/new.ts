@@ -20,16 +20,13 @@ describe('Create New Budget', () => {
         'BLUR',
       ],
       setup({ electron: { ipcMain } }) {
-        ipcMain.handleOnce('INIT', () => ({ type: 'welcome' }));
+        ipcMain.handleOnce('INIT', () => ({ type: 'new' }));
         ipcMain.handleOnce('MM_EXPORT_ACCOUNTS', () => accounts);
         ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => categories);
         ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () => []);
       },
     });
 
-    cy.findByRole('button', {
-      name: /Create a new Budget/i,
-    }).click();
     cy.findByLabelText(/Name/i).type('My New Budget');
     cy.findByText(accounts[0].name).click();
     cy.findByLabelText(/Number format/i)
