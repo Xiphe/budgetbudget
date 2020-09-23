@@ -1,6 +1,12 @@
-import { Remote } from 'electron';
+import { MenuItem, MenuItemConstructorOptions, Remote } from 'electron';
 import expose from './_expose.win';
 
+const TEMPLATE = Symbol('TEMPLATE');
+export type MenuTemplate = (MenuItemConstructorOptions | MenuItem)[];
+type Menu<T> = {
+  [TEMPLATE]: T;
+  getMenuItemById: (id: string) => { enabled: boolean };
+};
 type PartialRemote = {
   app: Pick<Remote['app'], 'name' | 'getPath' | 'getLocale'>;
   systemPreferences: Pick<
@@ -11,12 +17,12 @@ type PartialRemote = {
     Remote['nativeTheme'],
     'shouldUseDarkColors' | 'shouldUseHighContrastColors'
   >;
-  Menu: Pick<Remote['Menu'], 'setApplicationMenu'> & {
-    buildFromTemplate: () => {
-      getMenuItemById: (id: string) => { enabled: boolean };
-    };
+  Menu: {
+    setApplicationMenu: (menu: Menu<MenuTemplate>) => void;
+    buildFromTemplate: <T extends MenuTemplate>(template: T) => Menu<T>;
   };
 };
+let currentMenuTemplate: MenuTemplate | null = null;
 const remote: PartialRemote = {
   app: {
     name: 'Mocked BB',
@@ -42,8 +48,11 @@ const remote: PartialRemote = {
     shouldUseHighContrastColors: false,
   },
   Menu: {
-    setApplicationMenu() {},
-    buildFromTemplate: () => ({
+    setApplicationMenu({ [TEMPLATE]: template }) {
+      currentMenuTemplate = template;
+    },
+    buildFromTemplate: (template) => ({
+      [TEMPLATE]: template,
       getMenuItemById: (id: string) => ({ enabled: false }),
     }),
   },
@@ -145,6 +154,10 @@ function checkTrailingHandlers() {
   mainEvents.checkTrailingHandlers();
 }
 
+function getCurrentMenuTemplate() {
+  return currentMenuTemplate;
+}
+
 export type Exposed = {
   ipcMain: typeof ipcMain;
   remote: PartialRemote;
@@ -152,10 +165,12 @@ export type Exposed = {
 export type ExposedInternal = {
   checkTrailingHandlers: typeof checkTrailingHandlers;
   ignoreChannels: typeof ignoreChannels;
+  getCurrentMenuTemplate: typeof getCurrentMenuTemplate;
 };
 expose<Exposed>('electron', { ipcMain, remote });
 expose<ExposedInternal>('_electron', {
   ignoreChannels,
+  getCurrentMenuTemplate,
   checkTrailingHandlers,
 });
 

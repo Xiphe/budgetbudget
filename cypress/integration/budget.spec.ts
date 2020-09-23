@@ -6,6 +6,16 @@ import {
   settings,
 } from '../factories';
 
+const COMMON_IGNORED_CHANNELS = [
+  'FILE_EDITED',
+  'SAVE_CANCELED',
+  'UPDATE_COLOR_PREFERENCES',
+  'UPDATE_SCHEME',
+  'FOCUS',
+  'SAVE',
+  'BLUR',
+];
+
 describe('Budget View', () => {
   afterEach(() => {
     cy.checkTrailingHandlers();
@@ -31,15 +41,7 @@ describe('Budget View', () => {
 
     const budgetFile = '/empty.budget';
     cy.open({
-      ignoreChannels: [
-        'FILE_EDITED',
-        'SAVE_CANCELED',
-        'UPDATE_COLOR_PREFERENCES',
-        'UPDATE_SCHEME',
-        'FOCUS',
-        'SAVE',
-        'BLUR',
-      ],
+      ignoreChannels: COMMON_IGNORED_CHANNELS,
       setup({ fs, electron: { ipcMain } }) {
         fs.writeFileSync(budgetFile, JSON.stringify(myBudget));
         ipcMain.handleOnce('INIT', () => ({
@@ -83,5 +85,63 @@ describe('Budget View', () => {
           name: /1.600,00 to Budget/i,
         }).should('be.visible');
       });
+  });
+
+  it.only('supports refreshing MM data', () => {
+    const spendingCategory = category();
+    const myBudget = budget({
+      settings: settings({
+        startDate: new Date('2019-07-31').getTime(),
+      }),
+    });
+    const transaction1 = transaction({
+      bookingDate: new Date(myBudget.settings.startDate + 1000),
+      categoryUuid: spendingCategory.uuid,
+      amount: 10,
+    });
+    const transaction2 = transaction({
+      bookingDate: new Date(myBudget.settings.startDate + 1000),
+      categoryUuid: spendingCategory.uuid,
+      amount: 20,
+    });
+
+    const budgetFile = '/empty.budget';
+    cy.open({
+      ignoreChannels: COMMON_IGNORED_CHANNELS,
+      setup({ fs, electron: { ipcMain } }) {
+        fs.writeFileSync(budgetFile, JSON.stringify(myBudget));
+        ipcMain.handleOnce('INIT', () => ({
+          type: 'budget',
+          file: budgetFile,
+        }));
+        ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => [spendingCategory]);
+        ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () =>
+          transactions([transaction1]),
+        );
+      },
+    });
+
+    cy.findByRole('region', { name: /July 2019/ })
+      .should('be.visible')
+      .within(() => {
+        cy.categoryValue(spendingCategory.name, 'spend').should(
+          'have.text',
+          '10,00',
+        );
+      });
+    cy.bb().then(({ electron: { ipcMain } }) => {
+      ipcMain.handleOnce('MM_EXPORT_CATEGORIES', () => [spendingCategory]);
+      ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () =>
+        transactions([transaction1, transaction2]),
+      );
+    });
+    cy.clickMenu('File', 'Refresh MoneyMoney Data');
+
+    cy.findByRole('region', { name: /July 2019/ }).within(() => {
+      cy.categoryValue(spendingCategory.name, 'spend').should(
+        'have.text',
+        '30,00',
+      );
+    });
   });
 });

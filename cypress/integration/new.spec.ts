@@ -62,4 +62,35 @@ describe('Create New Budget', () => {
         ],
       });
   });
+
+  it('supports refreshing MM data', () => {
+    const accounts = [account(), account()];
+
+    cy.open({
+      waitUntilLoaded: false,
+      ignoreChannels: [
+        'FILE_EDITED',
+        'SAVE_CANCELED',
+        'UPDATE_COLOR_PREFERENCES',
+        'UPDATE_SCHEME',
+        'FOCUS',
+        'BLUR',
+      ],
+      setup({ electron: { ipcMain } }) {
+        ipcMain.handleOnce('INIT', () => ({ type: 'new' }));
+        ipcMain.handleOnce('MM_EXPORT_ACCOUNTS', () => accounts);
+      },
+    });
+
+    cy.findByText(accounts[0].name).should('be.visible');
+    cy.findByText(accounts[1].name).should('be.visible');
+    const newAccounts = [account()];
+    cy.bb().then(({ electron: { ipcMain } }) => {
+      ipcMain.handleOnce('MM_EXPORT_ACCOUNTS', () => newAccounts);
+    });
+    cy.clickMenu('File', 'Refresh MoneyMoney Data');
+    cy.findByText(accounts[0].name).should('not.exist');
+    cy.findByText(accounts[1].name).should('not.exist');
+    cy.findByText(newAccounts[0].name).should('be.visible');
+  });
 });
