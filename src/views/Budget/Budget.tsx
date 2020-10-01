@@ -21,6 +21,7 @@ import BudgetHeader from './Header';
 import CategorySidebar from '../CategorySidebar/CategorySidebar';
 import styles from './Budget.module.scss';
 import { MoneyMoneyRes } from '../../moneymoney';
+import { SidebarHeader, SidebarWrap } from '../CategorySidebar';
 
 type Props = {
   state: BudgetState;
@@ -89,14 +90,16 @@ export default function Budget({
               />
             }
           >
-            <CategorySidebar
-              syncScrollY={sliderRef}
-              innerRef={sidebarRef}
-              budgetName={state.name}
-              dispatch={dispatch}
-              collapsedCategories={state.settings.collapsedCategories}
-              categories={categories || []}
-            />
+            <SidebarWrap>
+              <SidebarHeader title={state.name} />
+              <CategorySidebar
+                syncScrollY={sliderRef}
+                innerRef={sidebarRef}
+                dispatch={dispatch}
+                collapsedCategories={state.settings.collapsedCategories}
+                categories={categories || []}
+              />
+            </SidebarWrap>
             <InfiniteSlider
               style={
                 sidebarRef.current

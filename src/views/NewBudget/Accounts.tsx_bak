@@ -1,0 +1,57 @@
+import React, { Suspense } from 'react';
+import { Container, Loading } from '../../components';
+import { CurrencySetting, AccountSetting, Setting } from '../Settings';
+import styles from './NewBudget.module.scss';
+import { Step } from './Types';
+
+const AccountsStep: Step = {
+  ok(state) {
+    console.log(state);
+    return Boolean(
+      state.settings.currency.length && state.settings.accounts.length,
+    );
+  },
+  Comp({ state, dispatch }) {
+    return (
+      <>
+        <h1 className={styles.headline}>
+          BudgetBudget provides confidence in financial decisions
+        </h1>
+        <h3 className={styles.subheadline}>
+          By answering the question: "Can I afford this?"
+        </h3>
+
+        <Container>
+          <div>
+            <p>Please choose the relevant accounts for this budget.</p>
+            <CurrencySetting state={state} dispatch={dispatch} />
+
+            <div className={styles.info}>
+              <p>
+                You can have multiple Budgets for different selections of
+                accounts.
+              </p>
+              <p>
+                (For example when you are managing money for you personally and
+                your Rockband{' '}
+                <span role="img" aria-label="guitar">
+                  🎸
+                </span>
+                )
+              </p>
+            </div>
+          </div>
+          <div>
+            <Suspense fallback={<Loading />}>
+              <Setting>
+                <AccountSetting state={state} dispatch={dispatch} />
+              </Setting>
+            </Suspense>
+          </div>
+        </Container>
+      </>
+    );
+  },
+};
+
+export default AccountsStep;

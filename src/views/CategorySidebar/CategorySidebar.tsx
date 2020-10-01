@@ -7,23 +7,21 @@ import { mapCategories } from '../../lib';
 
 type Props = {
   categories: Category[];
-  innerRef: MutableRefObject<HTMLDivElement | null>;
-  syncScrollY: MutableRefObject<HTMLDivElement | null>;
-  budgetName: string;
+  innerRef?: MutableRefObject<HTMLDivElement | null>;
+  syncScrollY?: MutableRefObject<HTMLDivElement | null>;
   collapsedCategories?: string[];
   dispatch: Dispatch<Action>;
 };
 export default function CategorySidebar({
   categories,
   innerRef,
-  budgetName,
   collapsedCategories = [],
   dispatch,
   syncScrollY,
 }: Props) {
   const syncScroll = useCallback(
     ({ target: { scrollTop } }) => {
-      if (syncScrollY.current) {
+      if (syncScrollY && syncScrollY.current) {
         syncScrollY.current.scrollTop = scrollTop;
       }
     },
@@ -55,62 +53,57 @@ export default function CategorySidebar({
   );
 
   return (
-    <div className={styles.sidebarWrap}>
-      <div className={styles.sidebarHeader}>
-        <h3>{budgetName}</h3>
-      </div>
-      <Sidebar
-        onScroll={syncScroll}
-        innerRef={innerRef}
-        className={styles.categorySidebar}
-      >
-        {mapCategories(
-          categories,
-          collapsedCategories,
-          ({ uuid, name, group, indentation, icon }, i, groupClosed) => {
-            return (
-              <Row
-                key={uuid}
-                indent={indentation}
-                leaf={!group}
-                odd={!(i % 2)}
-                groupClosed={groupClosed}
-                className={styles.row}
-              >
-                {!group && (
-                  <span
-                    style={{ backgroundImage: `url(${icon})` }}
-                    className={styles.icon}
-                  />
-                )}
-                <span className={styles.title}>{name}</span>
-                {group && (
-                  <>
-                    <span className={styles.spacer} />
-                    {collapsedCategories.includes(uuid) ? (
-                      <button
-                        className={styles.showHide}
-                        name={uuid}
-                        onClick={showCategory}
-                      >
-                        Show
-                      </button>
-                    ) : (
-                      <button
-                        className={styles.showHide}
-                        name={uuid}
-                        onClick={hideCategory}
-                      >
-                        Hide
-                      </button>
-                    )}
-                  </>
-                )}
-              </Row>
-            );
-          },
-        )}
-      </Sidebar>
-    </div>
+    <Sidebar
+      onScroll={syncScroll}
+      innerRef={innerRef}
+      className={styles.categorySidebar}
+    >
+      {mapCategories(
+        categories,
+        collapsedCategories,
+        ({ uuid, name, group, indentation, icon }, i, groupClosed) => {
+          return (
+            <Row
+              key={uuid}
+              indent={indentation}
+              leaf={!group}
+              odd={!(i % 2)}
+              groupClosed={groupClosed}
+              className={styles.row}
+            >
+              {!group && (
+                <span
+                  style={{ backgroundImage: `url(${icon})` }}
+                  className={styles.icon}
+                />
+              )}
+              <span className={styles.title}>{name}</span>
+              {group && (
+                <>
+                  <span className={styles.spacer} />
+                  {collapsedCategories.includes(uuid) ? (
+                    <button
+                      className={styles.showHide}
+                      name={uuid}
+                      onClick={showCategory}
+                    >
+                      Show
+                    </button>
+                  ) : (
+                    <button
+                      className={styles.showHide}
+                      name={uuid}
+                      onClick={hideCategory}
+                    >
+                      Hide
+                    </button>
+                  )}
+                </>
+              )}
+            </Row>
+          );
+        },
+      )}
+    </Sidebar>
   );
 }

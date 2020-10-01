@@ -15,7 +15,9 @@ export default function Settings(
 ) {
   return (
     <>
-      <NameSetting {...props} />
+      <Setting label="Name">
+        <NameSetting {...props} id="setting-name" />
+      </Setting>
       <CurrencySetting {...props} />
       <hr />
       <Setting label="Accounts">

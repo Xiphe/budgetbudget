@@ -1,0 +1,168 @@
+import React, { useMemo, useState, Suspense, useEffect } from 'react';
+import { Step } from './Types';
+import { useTransactions, Transaction, useCategories } from '../../moneymoney';
+import styles from './NewBudget.module.scss';
+import format from 'date-fns/format';
+import isSameMonth from 'date-fns/isSameMonth';
+import isSameYear from 'date-fns/isSameYear';
+import { StartDateSetting } from '../Settings';
+import { Loading } from '../../components';
+import { ACTION_SETTINGS_UPDATE_INCOME_CATEGORY } from '../../budget';
+
+type DemoTransaction = Pick<Transaction, 'amount' | 'name' | 'categoryUuid'> & {
+  category: string;
+  icon: string;
+};
+
+// const icon1 =
+//   'data:image/png;base64,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';
+
+// function picIconName({ name, icon }: { name: string; icon: string }) {
+//   return {
+//     category: name,
+//     icon,
+//   };
+// }
+
+// const sampleTransactions = useMemo(() => {
+//   const defaultCategoryIds = defaultCategories.map(({ uuid }) => uuid);
+//   const negativeTransactions = transactions.filter(
+//     ({ amount, name, categoryUuid }) =>
+//       amount < -10 &&
+//       name?.length &&
+//       !defaultCategoryIds.includes(categoryUuid),
+//   );
+
+//   const spending1 = negativeTransactions[0] || {
+//     amount: -99.99,
+//     categoryUuid: 'nope',
+//     name: 'Donation to some great NGO',
+//   };
+//   const transaction1: DemoTransaction = {
+//     ...spending1,
+//     ...picIconName(
+//       categories.find(({ uuid }) => spending1.categoryUuid === uuid) ||
+//         categories[0] || {
+//           name: 'Donations',
+//           icon: icon1,
+//         },
+//     ),
+//   };
+
+//   const spending2 = negativeTransactions.find(
+//     ({ categoryUuid }) => categoryUuid !== spending1.categoryUuid,
+//   ) || {
+//     amount: -1.99,
+//     categoryUuid: 'nope',
+//     name: 'Yerba Mate',
+//   };
+//   const transaction2: DemoTransaction = {
+//     ...spending2,
+//     ...picIconName(
+//       categories.find(({ uuid }) => spending2.categoryUuid === uuid) ||
+//         categories[1] || {
+//           name: 'Refreshing Drinks',
+//           icon: icon1,
+//         },
+//     ),
+//   };
+
+//   return [transaction1, transaction2];
+// }, [transactions, categories, defaultCategories]);
+
+const Income: Step['Comp'] = ({ state, dispatch }) => {
+  const transactions = useTransactions().read();
+  const [initialIncomeCategoriesSet, setIICS] = useState(false);
+  const [categories, defaultCategories] = useCategories().read();
+  const {
+    settings: { startDate, incomeCategories },
+  } = state;
+
+  const positiveTransactions = useMemo(
+    () =>
+      transactions.filter(
+        ({ amount, bookingDate }) =>
+          amount > 0 &&
+          isSameYear(bookingDate, startDate) &&
+          isSameMonth(bookingDate, startDate),
+      ),
+    [transactions, startDate],
+  );
+  useEffect(() => {
+    if (
+      !initialIncomeCategoriesSet &&
+      positiveTransactions &&
+      !incomeCategories.length
+    ) {
+      Array.from(
+        new Set(positiveTransactions.map(({ categoryUuid }) => categoryUuid)),
+      ).forEach((categoryId) => {
+        dispatch({
+          type: ACTION_SETTINGS_UPDATE_INCOME_CATEGORY,
+          payload: {
+            oldCategoryId: null,
+            categoryId,
+          },
+        });
+      });
+    }
+  }, [
+    positiveTransactions,
+    incomeCategories,
+    initialIncomeCategoriesSet,
+    dispatch,
+  ]);
+
+  console.log(positiveTransactions, incomeCategories);
+
+  return (
+    <>
+      <h3>Income</h3>
+      <p>
+        The first thing we need to know is how much money theres is available in
+        a month.
+      </p>
+    </>
+  );
+};
+
+const TransactionsStep: Step = {
+  ok({ settings: { currency, accounts } }) {
+    return false;
+  },
+  Comp({ state, dispatch }) {
+    // const transactions = useTransactions().read();
+    // const [categories, defaultCategories] = useCategories().read();
+    const [showDateChange, setShowDateChange] = useState<boolean>(false);
+
+    // console.log(sampleTransactions);
+    return (
+      <>
+        <h1 className={styles.headline}>How does this work?</h1>
+        <h3 className={styles.subheadline}>
+          In BudgetBudget we work in monthly intervals
+        </h3>
+
+        <p>
+          Lets look at the first month of this budget:{' '}
+          <strong>{format(state.settings.startDate, 'LLLL yyyy')}</strong>{' '}
+          <button
+            className={styles.inlineButton}
+            onClick={() => setShowDateChange((s) => !s)}
+          >
+            <em>{showDateChange ? '▲ ok' : '▼ Change start date'}</em>
+          </button>
+        </p>
+        {showDateChange ? (
+          <StartDateSetting state={state} dispatch={dispatch} />
+        ) : null}
+
+        <Suspense fallback={<Loading />}>
+          <Income state={state} dispatch={dispatch} />
+        </Suspense>
+      </>
+    );
+  },
+};
+
+export default TransactionsStep;

@@ -1,0 +1,107 @@
+import React, { Suspense, useMemo, useEffect } from 'react';
+import { Container, Loading, Select } from '../../components';
+import { CurrencySetting, AccountSetting, Setting } from '../Settings';
+import styles from './NewBudget.module.scss';
+import { Step } from './Types';
+
+import {
+  ACTION_SETTINGS_SET_CURRENCY,
+  ACTION_SETTINGS_ADD_INCOME_CATEGORY,
+  ACTION_SETTINGS_SET_INCOME_CATEGORIES,
+} from '../../budget';
+
+// function Diesdas() {}
+type CategoryTotalsByCurrency = { [key: string]: { [key: string]: number } };
+type CurrenciesByUsage = { [key: string]: number };
+const IncomeCategories: Step = {
+  ok(state) {
+    console.log(state);
+    return Boolean(
+      state.settings.currency.length && state.settings.accounts.length,
+    );
+  },
+  Comp({ state, dispatch }) {
+    // const [categories] = useCategories().read();
+    // const transactions = useAllTransactions().read();
+    // const currencies = useMemo(() => )
+    const [currencies, sums] = useMemo(() => {
+      const currencies: CurrenciesByUsage = {};
+      const sums: CategoryTotalsByCurrency = {};
+      transactions.forEach(({ categoryUuid, amount, currency }) => {
+        if (!currencies[currency]) {
+          currencies[currency] = 0;
+        }
+        if (!sums[categoryUuid]) {
+          sums[categoryUuid] = {};
+        }
+        if (!sums[categoryUuid][currency]) {
+          sums[categoryUuid][currency] = 0;
+        }
+
+        currencies[currency] += 1;
+        sums[categoryUuid][currency] += amount;
+      });
+      return [
+        Object.entries(currencies)
+          .sort((a, b) => b[1] - a[1])
+          .map(([k]) => k),
+        sums,
+      ];
+    }, [transactions]);
+    useEffect(() => {
+      dispatch({
+        type: ACTION_SETTINGS_SET_CURRENCY,
+        payload: currencies[0],
+      });
+    }, [currencies, dispatch]);
+    const { currency } = state.settings;
+    const catsWithSums = useMemo(
+      () =>
+        categories.map((category) => ({
+          ...category,
+          sum: (sums[category.uuid] && sums[category.uuid][currency]) || 0,
+        })),
+      [categories, currency, sums],
+    );
+    useEffect(() => {
+      dispatch({
+        type: ACTION_SETTINGS_SET_INCOME_CATEGORIES,
+        payload: catsWithSums
+          .filter(({ sum }) => sum > 0)
+          .map(({ uuid }) => ({ id: uuid, availableIn: 0 })),
+      });
+    }, [catsWithSums, dispatch]);
+
+    console.log(state.settings);
+    // const categories
+    return (
+      <>
+        <h1 className={styles.headline}>Let's get started!</h1>
+        <p>
+          We'll use{' '}
+          <Select
+            margin={false}
+            value={state.settings.currency}
+            onChange={(ev) =>
+              dispatch({
+                type: ACTION_SETTINGS_SET_CURRENCY,
+                payload: ev.target.value,
+              })
+            }
+          >
+            {currencies.map((cur) => (
+              <option key={cur} value={cur}>
+                {cur}
+              </option>
+            ))}
+          </Select>{' '}
+          as this budgets currency.{' '}
+        </p>
+
+        <Suspense fallback={<Loading />}></Suspense>
+      </>
+    );
+  },
+};
+
+export default IncomeCategories;

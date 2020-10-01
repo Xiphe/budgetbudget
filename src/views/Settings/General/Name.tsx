@@ -5,7 +5,10 @@ import Input from '../Input';
 import Setting from '../Setting';
 import { Props } from './Types';
 
-export default function NameSetting({ state: { name }, dispatch }: Props) {
+export default function NameSetting({
+  state: { name },
+  dispatch,
+}: Props & { id?: string }) {
   const inputProps = useInputProps({
     value: name || '',
     onChange: useCallback(
@@ -28,7 +31,7 @@ export default function NameSetting({ state: { name }, dispatch }: Props) {
         {...inputProps}
         type="text"
         id="setting-name"
-        placeholder="Private, Band, ..."
+        placeholder="Private, Family, Band, ..."
       />
     </Setting>
   );

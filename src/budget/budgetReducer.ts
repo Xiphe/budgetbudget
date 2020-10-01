@@ -32,6 +32,9 @@ export const ACTION_SETTINGS_UPDATE_INCOME_CATEGORY = Symbol(
 export const ACTION_SETTINGS_REMOVE_INCOME_CATEGORY = Symbol(
   'ACTION_SETTINGS_REMOVE_INCOME_CATEGORY',
 );
+export const ACTION_SETTINGS_SET_INCOME_CATEGORIES = Symbol(
+  'ACTION_SETTINGS_SET_INCOME_CATEGORIES',
+);
 export const ACTION_SETTINGS_ADD_INCOME_CATEGORY = Symbol(
   'ACTION_SETTINGS_ADD_INCOME_CATEGORY',
 );
@@ -83,6 +86,13 @@ type SetSettingsStartBalance = {
   type: typeof ACTION_SETTINGS_SET_START_BALANCE;
   payload: number;
 };
+type SetSettingsIncomeCategories = {
+  type: typeof ACTION_SETTINGS_SET_INCOME_CATEGORIES;
+  payload: {
+    id: string;
+    availableIn: number;
+  }[];
+};
 type UpdateSettingsIncomeCategory = {
   type: typeof ACTION_SETTINGS_UPDATE_INCOME_CATEGORY;
   payload: {
@@ -129,6 +139,7 @@ export type Action =
   | SetSettingsStartDate
   | SetSettingsStartBalance
   | SetSettingsCurrency
+  | SetSettingsIncomeCategories
   | UpdateSettingsIncomeCategory
   | SetSettingsIncomeAvailableIn
   | SetSettingsCategoryCollapsedAction
@@ -263,6 +274,14 @@ function budgetReducer(state: BudgetState, action: Action): BudgetState {
         settings: {
           ...state.settings,
           currency: action.payload,
+        },
+      };
+    case ACTION_SETTINGS_SET_INCOME_CATEGORIES:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          incomeCategories: action.payload,
         },
       };
     case ACTION_SETTINGS_UPDATE_INCOME_CATEGORY:

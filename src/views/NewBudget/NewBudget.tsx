@@ -1,11 +1,18 @@
-import React, { useState, Dispatch } from 'react';
+import React, {
+  Dispatch,
+  unstable_useTransition,
+  useCallback,
+  useState,
+} from 'react';
 import { Action, BudgetState } from '../../budget';
 import { Content, Button, Header, HeaderSpacer } from '../../components';
-import General from '../Settings/General';
-import Categories from '../Settings/Categories';
 import useMenu from '../../lib/useMenu';
+import { OK, Step } from './Types';
+import Welcome from './01_welcome';
+import Categories from './02_categories';
 import { MoneyMoneyRes } from '../../moneymoney';
-import { useNumberFormatter } from '../../lib';
+
+const STEPS: Step[] = [Welcome, Categories];
 
 type Props = {
   state: BudgetState;
@@ -14,56 +21,88 @@ type Props = {
   onCreate: () => void;
 };
 
-export default function NewBudget({
-  onCreate,
-  state,
-  dispatch,
-  moneyMoney,
-}: Props) {
-  const [page, setPage] = useState<'general' | 'categories'>('general');
+const INITIAL_STEP = 0;
+
+function getProgress(i: number) {
+  return (100 / (STEPS.length - 1)) * i;
+}
+
+export default function NewBudget({ state, dispatch, moneyMoney }: Props) {
+  const [
+    {
+      step: { Comp },
+      ok,
+      nextTitle,
+      progress,
+    },
+    setStep,
+  ] = useState<{
+    step: Step;
+    nextTitle: string | undefined;
+    progress: number;
+    ok: OK;
+  }>(() => ({
+    step: STEPS[INITIAL_STEP],
+    progress: getProgress(INITIAL_STEP),
+    nextTitle: STEPS[INITIAL_STEP + 1]?.title,
+    ok: STEPS[INITIAL_STEP].initialOk(state),
+  }));
   useMenu(moneyMoney.refresh);
+
+  const [startTransition] = unstable_useTransition({
+    timeoutMs: 5000,
+  });
+  const nextPage = useCallback(() => {
+    startTransition(() => {
+      setStep(({ step }) => {
+        const nextIndex = STEPS.indexOf(step) + 1;
+        const nextStep = STEPS[nextIndex];
+        const nextTitle = STEPS[STEPS.indexOf(nextStep) + 1]?.title;
+
+        return {
+          step: nextStep,
+          nextTitle,
+          progress: getProgress(nextIndex),
+          ok: nextStep.initialOk(state),
+        };
+      });
+    });
+  }, [startTransition, state]);
+  const setOk = useCallback((ok: OK) => {
+    setStep((step) => ({ ...step, ok }));
+  }, []);
 
   if (state === null) {
     throw new Error('Unexpected non-initialized state');
   }
 
-  const numberFormatter = useNumberFormatter(state.settings.fractionDigits);
-
   return (
     <Content
-      padding
+      flex
       header={
         <Header>
-          <span>Create a new Budget</span>
+          <span>Create a new Budget ({progress}%)</span>
           <HeaderSpacer />
-          {page === 'general' && (
+          <Button>Jump to Settings</Button>
+          {nextTitle ? (
             <Button
-              primary
-              disabled={!state.name.length || !state.settings.accounts.length}
-              onClick={() => setPage('categories')}
+              primary={ok === 'primary'}
+              disabled={ok === false}
+              onClick={nextPage}
             >
-              Choose Income Categories
+              {nextTitle}
             </Button>
-          )}
-          {page === 'categories' && (
-            <Button primary onClick={onCreate}>
-              Create "{state.name}"
-            </Button>
-          )}
+          ) : null}
         </Header>
       }
     >
-      {page === 'general' && (
-        <General
-          moneyMoney={moneyMoney}
-          state={state}
-          dispatch={dispatch}
-          numberFormatter={numberFormatter}
-        />
-      )}
-      {page === 'categories' && (
-        <Categories moneyMoney={moneyMoney} state={state} dispatch={dispatch} />
-      )}
+      <Comp
+        setOk={setOk}
+        state={state}
+        dispatch={dispatch}
+        moneyMoney={moneyMoney}
+        nextPage={nextPage}
+      />
     </Content>
   );
 }

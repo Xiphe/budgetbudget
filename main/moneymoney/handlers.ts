@@ -137,6 +137,15 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
   );
 
   ipcMain.handle(
+    'MM_EXPORT_ALL_TRANSACTIONS',
+    withRetry(async () => {
+      return parse(
+        await osascript(join(scriptsDir, 'exportAllTransactions.applescript')),
+      );
+    }),
+  );
+
+  ipcMain.handle(
     'MM_EXPORT_CATEGORIES',
     withRetry(async () => {
       return base64Icons(

@@ -18,7 +18,7 @@ const Main = React.lazy(() => import('./views/Main'));
 
 function App({ readInitialView }: { readInitialView: InitRes }) {
   const [initialView, initialState] = readInitialView();
-  const [view, setView] = useState(initialView);
+  const [view, setView] = useState('new' as typeof initialView);
   const [moneyMoney, updateSettings] = useMoneyMoney();
   const [state, dispatch] = useBudgetReducer(initialState, updateSettings);
   const numberFormatter = useNumberFormatter(state.settings.fractionDigits);

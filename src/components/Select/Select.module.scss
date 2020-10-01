@@ -3,7 +3,6 @@
 .select {
   display: inline-block;
   @include button();
-  margin-right: 1em;
   padding: 0;
   &:before {
     z-index: 2;
@@ -16,6 +15,7 @@
     right: 0;
     top: 0;
     bottom: 0;
+    pointer-events: none;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
     background: rgba(var(--accent-colors), 1);
@@ -42,4 +42,8 @@
       @include focusOutline();
     }
   }
+}
+
+.margin {
+  margin-right: 1em;
 }

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 import { useMenu, useRecentFiles } from '../../lib';
-import { Content, Button, Header } from '../../components';
+import { Content, Button, Header, Container } from '../../components';
 import styles from './Welcome.module.scss';
 import logo from '../../img/logo.png';
 
@@ -45,7 +45,7 @@ export default function Welcome({ onCreate }: Props) {
         </h3>
       </div>
 
-      <div className={styles.actionContainer}>
+      <Container>
         {recentFiles.length ? (
           <div className={styles.recentContainer}>
             <h3>Open recently used budget:</h3>
@@ -80,7 +80,7 @@ export default function Welcome({ onCreate }: Props) {
             Create a new Budget
           </Button>
         </div>
-      </div>
+      </Container>
     </Content>
   );
 }

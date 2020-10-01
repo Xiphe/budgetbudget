@@ -57,14 +57,15 @@ const transactionShape = t.intersection(
   ],
   'transaction',
 );
+const transactionsShape = t.type(
+  {
+    transactions: t.array(transactionShape),
+  },
+  'accounts',
+);
 const transactionsByAccountShape = t.array(
-  t.type(
-    {
-      transactions: t.array(transactionShape),
-    },
-    'byAccount',
-  ),
-  'transactions',
+  transactionsShape,
+  'transactionsByAccount',
 );
 const interopAccountShape = t.type(
   {
@@ -105,6 +106,7 @@ const categoryShape = t.type({
 
 export type Category = t.TypeOf<typeof categoryShape>;
 export type Transaction = t.TypeOf<typeof transactionShape>;
+export type Transactions = t.TypeOf<typeof transactionsShape>;
 export type InteropAccount = t.TypeOf<typeof interopAccountShape>;
 export type TransactionsByAccount = t.TypeOf<typeof transactionsByAccountShape>;
 export type Account = {
@@ -118,6 +120,13 @@ export type Account = {
   number: string;
 };
 
+export function validateTransactions(data: unknown): Transactions {
+  const c = transactionsShape.decode(data);
+  if (isLeft(c)) {
+    throw ThrowReporter.report(c);
+  }
+  return c.right;
+}
 export function validateTransactionByAccount(
   data: unknown,
 ): TransactionsByAccount {
@@ -125,21 +134,21 @@ export function validateTransactionByAccount(
   if (isLeft(c)) {
     throw ThrowReporter.report(c);
   }
-  return data as TransactionsByAccount;
+  return c.right;
 }
 export function validateAccount(data: unknown): InteropAccount {
   const c = interopAccountShape.decode(data);
   if (isLeft(c)) {
     throw ThrowReporter.report(c);
   }
-  return data as InteropAccount;
+  return c.right;
 }
 export function validateCategory(data: unknown): Category {
   const c = categoryShape.decode(data);
   if (isLeft(c)) {
     throw ThrowReporter.report(c);
   }
-  return data as Category;
+  return c.right;
 }
 
 export type AmountWithTransactions = {

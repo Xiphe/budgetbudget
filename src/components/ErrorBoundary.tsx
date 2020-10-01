@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ComponentType, ReactNode } from 'react';
 import Content from './Content';
 import Header, { HeaderSpacer } from './Header';
 import LoadingError from './LoadingError';
@@ -7,13 +7,21 @@ type ErrorWithRetry = Error & {
   retry?: () => void;
 };
 
-export function FullScreenError({
-  error,
-  retry,
-}: {
+export type ErrorProps = {
   error: ErrorWithRetry;
   retry?: () => void;
-}) {
+};
+
+export function RenderError({ error, retry }: ErrorProps) {
+  return (
+    <>
+      <h3>An Error Ocurred</h3>
+      <LoadingError message={error.message} retry={retry} />
+    </>
+  );
+}
+
+export function FullScreenError(props: ErrorProps) {
   return (
     <Content
       background
@@ -26,14 +34,13 @@ export function FullScreenError({
         </Header>
       }
     >
-      <h3>An Error Ocurred</h3>
-      <LoadingError message={error.message} retry={retry} />
+      <RenderError {...props} />
     </Content>
   );
 }
 
 export default class ErrorBoundary extends React.Component<
-  { children: ReactNode },
+  { children: ReactNode; fallback?: ComponentType<ErrorProps> },
   { error: ErrorWithRetry | undefined }
 > {
   constructor(props: any) {
@@ -56,8 +63,9 @@ export default class ErrorBoundary extends React.Component<
   render() {
     const error = this.state.error;
     const retry = error && error.retry;
+    const Comp = this.props.fallback || FullScreenError;
     if (error) {
-      return <FullScreenError error={error} retry={retry && this.resetError} />;
+      return <Comp error={error} retry={retry && this.resetError} />;
     }
 
     return this.props.children;

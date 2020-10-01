@@ -20,21 +20,7 @@
   margin: auto;
   display: block;
 }
-.actionContainer {
-  flex-grow: 1;
-  background-color: var(--background-color);
-  border: 1px solid var(--element-border-color);
-  border-radius: 3px;
-  margin-bottom: 2rem;
-  padding: 1rem;
-  display: flex;
-  div {
-    width: calc(50% - 1rem);
-    padding: 0 1rem;
-  }
-}
 .recentContainer {
-  border-right: 1px solid var(--border-color);
   h4 {
     margin: 0;
   }
