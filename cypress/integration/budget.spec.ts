@@ -87,7 +87,7 @@ describe('Budget View', () => {
       });
   });
 
-  it.only('supports refreshing MM data', () => {
+  it('supports refreshing MM data', () => {
     const spendingCategory = category();
     const myBudget = budget({
       settings: settings({
