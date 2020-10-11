@@ -48,10 +48,15 @@
   text-align: center;
 }
 
+.explainFlex {
+  display: flex;
+}
 .explainBody {
+  padding: 0.1rem 0;
+}
+.explainWrap {
   height: 100%;
   width: 100%;
-  padding: 0.1rem 0;
   background: var(--background-color);
   strong {
     text-decoration: underline;
@@ -59,6 +64,9 @@
 }
 .explainSpace {
   padding: 0 4rem;
+}
+.explainSpaceS {
+  padding: 0 2rem;
 }
 
 .personal {
@@ -101,4 +109,15 @@
 .loadingMM {
   height: 20rem;
   flex-direction: column;
+}
+
+.singleBudgetDimensions {
+  min-width: 50%;
+  max-width: calc(var(--sidebar-width) * 2);
+  height: 100%;
+}
+.singleBudgetWrap {
+  @extend .singleBudgetDimensions;
+  overflow: scroll;
+  display: flex;
 }

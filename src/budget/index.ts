@@ -14,6 +14,7 @@ import { InitRes as InitResT } from './getInitData';
 export * from './budgetReducer';
 export { VERSION } from './Types';
 export { default as useBudgetData } from './useBudgetData';
+export { default as useFilteredCategories } from './useFilteredCategories';
 export {
   default as getInitData,
   initialInitDataRes,

@@ -8,7 +8,7 @@ import {
 } from './Types';
 import { AccountsResource as AccountsResourceT } from './getAccounts';
 import { MoneyMoneyRes as MoneyMoneyResT } from './useMoneyMoney';
-export { default as getAccounts } from './getAccounts';
+export { getAccounts } from './getAccounts';
 export { default as getTransactionsRes } from './getTransactions';
 export { useMoneyMoney } from './useMoneyMoney';
 export { default as calculateBalances } from './calculateBalances';

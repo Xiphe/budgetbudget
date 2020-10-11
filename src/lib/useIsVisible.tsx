@@ -56,9 +56,5 @@ export function useVisibilityObserver(
 }
 
 export function useIsVisible() {
-  const isVisible = useContext(IsVisibleContext);
-  if (!isVisible) {
-    throw new Error('Can not useIsVisible outside of IsVisibleProvider');
-  }
-  return isVisible;
+  return useContext(IsVisibleContext);
 }

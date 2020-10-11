@@ -3,7 +3,7 @@ import { Sidebar, Row } from '../../components';
 import { Category } from '../../moneymoney';
 import styles from './CategorySidebar.module.scss';
 import { Action, ACTION_SETTINGS_SET_CATEGORY_COLLAPSED } from '../../budget';
-import { mapCategories } from '../../lib';
+import { mapCategories, useSyncScrollY } from '../../lib';
 
 type Props = {
   categories: Category[];
@@ -19,14 +19,7 @@ export default function CategorySidebar({
   dispatch,
   syncScrollY,
 }: Props) {
-  const syncScroll = useCallback(
-    ({ target: { scrollTop } }) => {
-      if (syncScrollY && syncScrollY.current) {
-        syncScrollY.current.scrollTop = scrollTop;
-      }
-    },
-    [syncScrollY],
-  );
+  const syncScroll = useSyncScrollY(syncScrollY);
   const showCategory = useCallback(
     (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       dispatch({

@@ -14,47 +14,12 @@ import {
   Sidebar,
   RenderError,
 } from '../../components';
-import { Category } from '../../moneymoney';
 
 import { Step } from './Types';
 import styles from './NewBudget.module.scss';
-import CategorySidebar, { SidebarWrap } from '../CategorySidebar';
+import { SidebarWrap } from '../CategorySidebar';
+import CategorySidebar from './components/CategorySidebar';
 import { ipcRenderer } from 'electron';
-
-const CatSidebar: Step['Comp'] = ({
-  moneyMoney,
-  dispatch,
-  setOk,
-  state: {
-    settings: { collapsedCategories },
-  },
-}) => {
-  const [categories] = (() => {
-    /* Categories are also read by Further component.
-       Errors are displayed there. */
-    try {
-      return moneyMoney.readCategories();
-    } catch (err) {
-      if (!(err instanceof Error)) {
-        throw err;
-      }
-      return [[] as Category[]];
-    }
-  })();
-  const hasCats = categories.length;
-
-  useEffect(() => {
-    setOk(hasCats > 0);
-  }, [setOk, hasCats]);
-
-  return (
-    <CategorySidebar
-      dispatch={dispatch}
-      categories={categories}
-      collapsedCategories={collapsedCategories}
-    />
-  );
-};
 
 const HasCategories: FC<{
   yes?: ReactNode;
@@ -80,6 +45,15 @@ const Welcome: Step = {
     return false;
   },
   Comp(props) {
+    const { moneyMoney } = props;
+    useEffect(() => {
+      try {
+        /* prefetch for next page */
+        moneyMoney.readTransactions();
+      } catch (err) {
+        /* ¯\_(ツ)_/¯ */
+      }
+    }, [moneyMoney]);
     const [startTransition, transitioning] = unstable_useTransition({
       timeoutMs: 2000,
     });
@@ -103,10 +77,16 @@ const Welcome: Step = {
               </Sidebar>
             }
           >
-            <CatSidebar {...props} />
+            <CategorySidebar {...props} ignoreLoadingError={true} />
           </Suspense>
         </SidebarWrap>
-        <div className={cx(styles.explainBody, styles.explainSpace)}>
+        <div
+          className={cx(
+            styles.explainWrap,
+            styles.explainBody,
+            styles.explainSpace,
+          )}
+        >
           <h1 className={styles.center}>Let's setup your categories</h1>
 
           <ErrorBoundary fallback={RenderError}>
@@ -147,7 +127,10 @@ const Welcome: Step = {
               </ul>
               <p>
                 There is no golden rule on how detailed or or general this
-                categories should be, but you can always adjust them as you go.
+                categories should be, so just go with what feels fitting right
+                now.
+                <br />
+                You can also adjust them later on.
               </p>
               <HasCategories
                 moneyMoney={props.moneyMoney}

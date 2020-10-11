@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import cx from 'classnames';
 import {
   useIsVisible,
   useSetVisibleMonth,
@@ -7,29 +8,40 @@ import {
 import Header from './Header';
 import Overview from './Overview';
 import Categories from './Categories';
-import { Props } from './Types';
+import { Props as BaseProps } from './Types';
 import styles from './Month.module.scss';
-import useActions from './useActions';
 import format from 'date-fns/format';
+import useActions from './useActions';
 
-export default function MonthContainer(props: Props) {
+type Props = BaseProps & {
+  initialVisible?: boolean;
+  width?: 'auto' | 'full';
+};
+
+export default function MonthContainer({
+  initialVisible = false,
+  width = 'auto',
+  ...props
+}: Props) {
   const { date, month, numberFormatter } = props;
   const isVisible = useIsVisible();
   const setVisibleMonth = useSetVisibleMonth();
   const ref = useRef<HTMLDivElement | null>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => isVisible(ref.current!, setVisible), [isVisible]);
-  useEffect(() => (visible ? setVisibleMonth(date) : undefined), [
+  const [visible, setVisible] = useState(initialVisible);
+  useEffect(() => isVisible?.(ref.current!, setVisible), [isVisible]);
+  useEffect(() => (visible ? setVisibleMonth?.(date) : undefined), [
     date,
     visible,
     setVisibleMonth,
   ]);
-  const actions = useActions(props);
+  const actions = useActions({ dispatch: props.dispatch, monthKey: month.key });
   const data = visible ? month.get() : undefined;
 
   return (
     <MonthContextProvider value={month}>
-      <div className={styles.month}>
+      <div
+        className={cx(styles.month, width === 'full' && styles.monthWidthFull)}
+      >
         <section
           ref={ref}
           className={styles.monthInner}
@@ -46,7 +58,8 @@ export default function MonthContainer(props: Props) {
             <Categories
               {...props}
               budgetCategories={data.categories}
-              actions={actions}
+              setBudgeted={actions?.setBudgeted}
+              toggleRollover={actions?.toggleRollover}
             />
           ) : null}
         </section>

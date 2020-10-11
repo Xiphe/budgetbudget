@@ -34,13 +34,7 @@ export const VisibleMothContextProvider: FC = ({ children }) => {
 };
 
 export function useSetVisibleMonth() {
-  const setter = useContext(SetVisibleMonthsContext);
-  if (!setter) {
-    throw new Error(
-      'Unexpected use of useSetVisibleMonth outside of VisibleMothContextProvider',
-    );
-  }
-  return setter;
+  return useContext(SetVisibleMonthsContext);
 }
 
 export function useVisibleMonths() {

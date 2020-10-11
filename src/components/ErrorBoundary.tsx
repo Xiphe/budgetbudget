@@ -9,21 +9,23 @@ type ErrorWithRetry = Error & {
 
 export type ErrorProps = {
   error: ErrorWithRetry;
+  className?: string;
   retry?: () => void;
 };
 
-export function RenderError({ error, retry }: ErrorProps) {
+export function RenderError({ error, retry, className }: ErrorProps) {
   return (
-    <>
+    <div className={className}>
       <h3>An Error Ocurred</h3>
       <LoadingError message={error.message} retry={retry} />
-    </>
+    </div>
   );
 }
 
-export function FullScreenError(props: ErrorProps) {
+export function FullScreenError({ className, ...props }: ErrorProps) {
   return (
     <Content
+      className={className}
       background
       padding
       header={
@@ -40,7 +42,11 @@ export function FullScreenError(props: ErrorProps) {
 }
 
 export default class ErrorBoundary extends React.Component<
-  { children: ReactNode; fallback?: ComponentType<ErrorProps> },
+  {
+    children: ReactNode;
+    fallback?: ComponentType<ErrorProps>;
+    fallbackClassName?: string;
+  },
   { error: ErrorWithRetry | undefined }
 > {
   constructor(props: any) {
@@ -65,7 +71,13 @@ export default class ErrorBoundary extends React.Component<
     const retry = error && error.retry;
     const Comp = this.props.fallback || FullScreenError;
     if (error) {
-      return <Comp error={error} retry={retry && this.resetError} />;
+      return (
+        <Comp
+          error={error}
+          retry={retry && this.resetError}
+          className={this.props.fallbackClassName}
+        />
+      );
     }
 
     return this.props.children;

@@ -21,7 +21,7 @@ const Welcome: Step = {
       }
     }, [moneyMoney]);
     return (
-      <div className={styles.explainBody}>
+      <div className={cx(styles.explainWrap, styles.explainBody)}>
         <h1 className={styles.center}>Hi and Welcome to BudgetBudget</h1>
         <div className={cx(styles.explainSpace, styles.personal)}>
           <img src={me} alt="Portrait of Hannes Diercks" />

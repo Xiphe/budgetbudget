@@ -4,7 +4,7 @@ import { Dispatch } from 'react';
 import { Category } from '../../moneymoney';
 
 export type Props = {
-  dispatch: Dispatch<Action>;
+  dispatch?: Dispatch<Action>;
   monthKey: string;
   collapsedCategories?: string[];
   date: Date;

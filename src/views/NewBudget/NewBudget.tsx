@@ -8,11 +8,14 @@ import { Action, BudgetState } from '../../budget';
 import { Content, Button, Header, HeaderSpacer } from '../../components';
 import useMenu from '../../lib/useMenu';
 import { OK, Step } from './Types';
+import { MoneyMoneyRes } from '../../moneymoney';
+import { HeaderHeightProvider } from '../../lib';
+import useSelectAllAccounts from './useSelectAllAccounts';
 import Welcome from './01_welcome';
 import Categories from './02_categories';
-import { MoneyMoneyRes } from '../../moneymoney';
+import FillCategories from './03_fillCategories';
 
-const STEPS: Step[] = [Welcome, Categories];
+const STEPS: Step[] = [Welcome, Categories, FillCategories];
 
 type Props = {
   state: BudgetState;
@@ -21,7 +24,7 @@ type Props = {
   onCreate: () => void;
 };
 
-const INITIAL_STEP = 0;
+const INITIAL_STEP = 2;
 
 function getProgress(i: number) {
   return (100 / (STEPS.length - 1)) * i;
@@ -71,38 +74,45 @@ export default function NewBudget({ state, dispatch, moneyMoney }: Props) {
   const setOk = useCallback((ok: OK) => {
     setStep((step) => ({ ...step, ok }));
   }, []);
+  useSelectAllAccounts({
+    dispatch,
+    currency: state.settings.currency,
+    accounts: state.settings.accounts,
+  });
 
   if (state === null) {
     throw new Error('Unexpected non-initialized state');
   }
 
   return (
-    <Content
-      flex
-      header={
-        <Header>
-          <span>Create a new Budget ({progress}%)</span>
-          <HeaderSpacer />
-          <Button>Jump to Settings</Button>
-          {nextTitle ? (
-            <Button
-              primary={ok === 'primary'}
-              disabled={ok === false}
-              onClick={nextPage}
-            >
-              {nextTitle}
-            </Button>
-          ) : null}
-        </Header>
-      }
-    >
-      <Comp
-        setOk={setOk}
-        state={state}
-        dispatch={dispatch}
-        moneyMoney={moneyMoney}
-        nextPage={nextPage}
-      />
-    </Content>
+    <HeaderHeightProvider>
+      <Content
+        flex
+        header={
+          <Header>
+            <span>Create a new Budget ({progress}%)</span>
+            <HeaderSpacer />
+            <Button>Jump to Settings</Button>
+            {nextTitle ? (
+              <Button
+                primary={ok === 'primary'}
+                disabled={ok === false}
+                onClick={nextPage}
+              >
+                {nextTitle}
+              </Button>
+            ) : null}
+          </Header>
+        }
+      >
+        <Comp
+          setOk={setOk}
+          state={state}
+          dispatch={dispatch}
+          moneyMoney={moneyMoney}
+          nextPage={nextPage}
+        />
+      </Content>
+    </HeaderHeightProvider>
   );
 }

@@ -15,6 +15,11 @@
   }
 }
 
+.monthWidthFull {
+  min-width: 100%;
+  max-width: 100%;
+}
+
 .monthInner {
   min-height: 100%;
   border-right: 1px solid var(--element-border-color);

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import { remote } from 'electron';
 import { BudgetCategoryRow, BudgetCategoryGroup } from '../../budget';
@@ -9,17 +9,17 @@ import { NumberFormatter, mapCategories } from '../../lib';
 import { ActionCreators } from './useActions';
 import BudgetInput from './BudgetInput';
 
-type CategoriesProps = Omit<Props, 'budget'> & {
-  budgetCategories?: (BudgetCategoryRow | BudgetCategoryGroup)[];
-  actions: ActionCreators;
-};
+type CategoriesProps = Omit<Props, 'budget'> &
+  Partial<ActionCreators> & {
+    budgetCategories?: (BudgetCategoryRow | BudgetCategoryGroup)[];
+  };
 
-type BudgetRowProps = BudgetCategoryRow & {
-  actions: CategoriesProps['actions'];
-  numberFormatter: NumberFormatter;
-  groupClosed: boolean;
-  odd: boolean;
-};
+type BudgetRowProps = BudgetCategoryRow &
+  Partial<ActionCreators> & {
+    numberFormatter: NumberFormatter;
+    groupClosed: boolean;
+    odd: boolean;
+  };
 function BudgetRow({
   numberFormatter,
   groupClosed,
@@ -30,13 +30,18 @@ function BudgetRow({
   budgeted,
   spend,
   balance,
-  actions: { setBudgeted, toggleRollover },
+  setBudgeted,
+  toggleRollover,
   indentation,
 }: BudgetRowProps) {
   const { format } = numberFormatter;
 
-  const showContextMenu = useCallback(
-    (ev) => {
+  const showContextMenu = useMemo(() => {
+    if (!toggleRollover) {
+      return undefined;
+    }
+
+    return (ev: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
       ev.preventDefault();
       const menu = new remote.Menu();
       menu.append(
@@ -53,9 +58,8 @@ function BudgetRow({
         }),
       );
       menu.popup();
-    },
-    [uuid, overspendRollover, toggleRollover],
-  );
+    };
+  }, [uuid, overspendRollover, toggleRollover]);
 
   return (
     <Row
@@ -71,12 +75,16 @@ function BudgetRow({
         aria-label="budgeted"
         className={classNames(budgeted === 0 && styles.zero)}
       >
-        <BudgetInput
-          onChange={setBudgeted}
-          value={budgeted}
-          categoryId={uuid}
-          numberFormatter={numberFormatter}
-        />
+        {setBudgeted ? (
+          <BudgetInput
+            onChange={setBudgeted}
+            value={budgeted}
+            categoryId={uuid}
+            numberFormatter={numberFormatter}
+          />
+        ) : (
+          format(budgeted)
+        )}
       </span>
       <span
         role="gridcell"
@@ -103,7 +111,8 @@ function BudgetRow({
 export default function Categories({
   budgetCategories = [],
   numberFormatter,
-  actions,
+  setBudgeted,
+  toggleRollover,
   collapsedCategories = [],
 }: CategoriesProps) {
   const { format } = numberFormatter;
@@ -157,7 +166,8 @@ export default function Categories({
             <BudgetRow
               {...entry}
               key={entry.uuid}
-              actions={actions}
+              setBudgeted={setBudgeted}
+              toggleRollover={toggleRollover}
               odd={!(i % 2)}
               groupClosed={groupClosed}
               numberFormatter={numberFormatter}
