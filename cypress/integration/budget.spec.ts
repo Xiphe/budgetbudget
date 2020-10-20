@@ -7,6 +7,7 @@ import {
 } from '../factories';
 
 const COMMON_IGNORED_CHANNELS = [
+  'UPDATE_LOCALE_COUNTRY_CODE',
   'FILE_EDITED',
   'SAVE_CANCELED',
   'UPDATE_COLOR_PREFERENCES',

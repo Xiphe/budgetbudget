@@ -66,9 +66,9 @@ export function useNumberFormatter(fractionDigits: number) {
     const handler = () => {
       setLocaleCC(remote.app.getLocaleCountryCode());
     };
-    ipcRenderer.addListener('UPDATE_LOCALE_COUNTRY_CODE', handler);
+    ipcRenderer.on('UPDATE_LOCALE_COUNTRY_CODE', handler);
     return () => {
-      ipcRenderer.removeListener('UPDATE_LOCALE_COUNTRY_CODE', handler);
+      ipcRenderer.off('UPDATE_LOCALE_COUNTRY_CODE', handler);
     };
   }, []);
 

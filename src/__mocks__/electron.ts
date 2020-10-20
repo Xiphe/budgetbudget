@@ -8,7 +8,7 @@ type Menu<T> = {
   getMenuItemById: (id: string) => { enabled: boolean };
 };
 type PartialRemote = {
-  app: Pick<Remote['app'], 'name' | 'getPath' | 'getLocale'>;
+  app: Pick<Remote['app'], 'name' | 'getPath' | 'getLocaleCountryCode'>;
   systemPreferences: Pick<
     Remote['systemPreferences'],
     'getAccentColor' | 'getUserDefault'
@@ -29,8 +29,8 @@ const remote: PartialRemote = {
     getPath(name: string) {
       return `/_appPath/${name}`;
     },
-    getLocale() {
-      return 'en-GB';
+    getLocaleCountryCode() {
+      return 'DE';
     },
   },
   systemPreferences: {

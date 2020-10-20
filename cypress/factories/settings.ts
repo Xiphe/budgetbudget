@@ -21,7 +21,6 @@ export default function createSettings(
     fractionDigits: 2,
     startDate: 1562450400000,
     startBalance: 0,
-    numberLocale: 'de-DE',
     ...settings,
   };
 }

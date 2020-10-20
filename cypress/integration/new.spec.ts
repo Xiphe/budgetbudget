@@ -12,6 +12,7 @@ describe('Create New Budget', () => {
     cy.open({
       waitUntilLoaded: false,
       ignoreChannels: [
+        'UPDATE_LOCALE_COUNTRY_CODE',
         'FILE_EDITED',
         'SAVE_CANCELED',
         'UPDATE_COLOR_PREFERENCES',
@@ -29,9 +30,6 @@ describe('Create New Budget', () => {
 
     cy.findByLabelText(/Name/i).type('My New Budget');
     cy.findByText(accounts[0].name).click();
-    cy.findByLabelText(/Number format/i)
-      .type('{selectall}')
-      .type('de-DE');
     cy.bb().then(({ electron: { ipcMain } }) => {
       ipcMain.handleOnce('MM_EXPORT_TRANSACTIONS', () => []);
     });
@@ -51,11 +49,10 @@ describe('Create New Budget', () => {
     cy.readBudget('/my_new.budget')
       .should('include', {
         name: 'My New Budget',
-        version: '0.0.2',
+        version: '0.0.3',
       })
       .and('deep.nested.include', {
         'settings.accounts': [accounts[0].uuid],
-        'settings.numberLocale': 'de-DE',
         'settings.startDate': 1562457600000,
         'settings.incomeCategories': [
           { id: categories[1].uuid, availableIn: 0 },
@@ -69,6 +66,7 @@ describe('Create New Budget', () => {
     cy.open({
       waitUntilLoaded: false,
       ignoreChannels: [
+        'UPDATE_LOCALE_COUNTRY_CODE',
         'FILE_EDITED',
         'SAVE_CANCELED',
         'UPDATE_COLOR_PREFERENCES',
