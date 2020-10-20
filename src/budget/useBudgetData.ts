@@ -1,13 +1,7 @@
-import type { Transaction, MoneyMoneyRes } from '../moneymoney';
+import type { MoneyMoneyRes } from '../moneymoney';
 import { BudgetState } from './Types';
 import useBudgets from './useBudgets';
 import useFilteredCategories from './useFilteredCategories';
-
-function transactionsLoaded(
-  transactions: Transaction[] | Error | null,
-): transactions is Transaction[] {
-  return Array.isArray(transactions);
-}
 
 export default function useBudgetData(
   state: BudgetState,
@@ -20,7 +14,7 @@ export default function useBudgetData(
   const usableCategories = useFilteredCategories(incomeCategories, categories);
 
   const [months, extendFuture] = useBudgets(
-    transactionsLoaded(transactions) ? transactions : undefined,
+    transactions,
     usableCategories,
     defaultCategories,
     state,

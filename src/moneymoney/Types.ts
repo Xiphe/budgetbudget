@@ -57,16 +57,8 @@ const transactionShape = t.intersection(
   ],
   'transaction',
 );
-const transactionsShape = t.type(
-  {
-    transactions: t.array(transactionShape),
-  },
-  'accounts',
-);
-const transactionsByAccountShape = t.array(
-  transactionsShape,
-  'transactionsByAccount',
-);
+const transactionsShape = t.array(transactionShape, 'transactions');
+
 const interopAccountShape = t.type(
   {
     accountNumber: t.string,
@@ -108,7 +100,6 @@ export type Category = t.TypeOf<typeof categoryShape>;
 export type Transaction = t.TypeOf<typeof transactionShape>;
 export type Transactions = t.TypeOf<typeof transactionsShape>;
 export type InteropAccount = t.TypeOf<typeof interopAccountShape>;
-export type TransactionsByAccount = t.TypeOf<typeof transactionsByAccountShape>;
 export type Account = {
   name: string;
   balance: number;
@@ -122,15 +113,6 @@ export type Account = {
 
 export function validateTransactions(data: unknown): Transactions {
   const c = transactionsShape.decode(data);
-  if (isLeft(c)) {
-    throw ThrowReporter.report(c);
-  }
-  return c.right;
-}
-export function validateTransactionByAccount(
-  data: unknown,
-): TransactionsByAccount {
-  const c = transactionsByAccountShape.decode(data);
   if (isLeft(c)) {
     throw ThrowReporter.report(c);
   }

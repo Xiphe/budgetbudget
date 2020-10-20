@@ -1,4 +1,4 @@
-import React, { Suspense, useRef, useMemo } from 'react';
+import React, { Suspense, useRef } from 'react';
 import cx from 'classnames';
 import {
   ErrorBoundary,
@@ -12,7 +12,6 @@ import CategorySidebar from './components/CategorySidebar';
 import SingleBudget from './components/SingleBudget';
 import { Step } from './Types';
 import styles from './NewBudget.module.scss';
-import { createNumberFormatter } from '../../lib';
 
 const IntroIncomeCats: Step = {
   title: 'Fill Categories',
@@ -22,11 +21,6 @@ const IntroIncomeCats: Step = {
   Comp(props) {
     const sidebarRef = useRef<HTMLDivElement | null>(null);
     const budgetRef = useRef<HTMLDivElement | null>(null);
-    const { fractionDigits, numberLocale } = props.state.settings;
-    const numberFormatter = useMemo(
-      () => createNumberFormatter(fractionDigits, numberLocale),
-      [fractionDigits, numberLocale],
-    );
 
     return (
       <>
@@ -84,10 +78,12 @@ const IntroIncomeCats: Step = {
             <h3>This Money is taken from "To Budget"</h3>
             <p>
               But currently there are{' '}
-              <strong>{numberFormatter.format(0)}</strong> "Available Funds" and
-              thereby no money available to budget.
+              <strong>{props.numberFormatter.format(0)}</strong> "Available
+              Funds" and thereby no money available to budget.
             </p>
-            <Button primary>Configure Available Funds</Button>
+            <Button primary onClick={props.nextPage}>
+              Configure Available Funds
+            </Button>
           </div>
         </div>
       </>

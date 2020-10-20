@@ -185,9 +185,6 @@ export default function parseBudgetInput(
   parser.functions.balance = createGetter(
     (data, catInput) => getCatByInput(data, catInput).balance * -1,
   );
-  parser.functions.available = createGetter(
-    (data) => data.availableThisMonth.amount,
-  ).bind(null, total);
   parser.functions.income = createGetter((data) => data.income.amount).bind(
     null,
     total,

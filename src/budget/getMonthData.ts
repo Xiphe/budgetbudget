@@ -46,24 +46,6 @@ function assignAvailable(
   });
   return available;
 }
-function addBudgeted(
-  toBudget: number,
-  available: AmountWithPartialTransactions,
-): AmountWithPartialTransactions {
-  if (toBudget === 0) {
-    return available;
-  }
-  return {
-    amount: available.amount + toBudget,
-    transactions: [
-      {
-        amount: toBudget,
-        name: `${toBudget > 0 ? 'Not budgeted' : 'Overbudgeted'} last month`,
-      },
-      ...available.transactions,
-    ],
-  };
-}
 
 function emptyBudgetRow(): BudgetRow {
   return { budgeted: 0, spend: 0, balance: 0 };
@@ -171,6 +153,7 @@ const calcMonth: MonthDataGetter<InterMonthData> = function calcMonth(
   round,
 ): InterMonthData {
   const {
+    startBalance,
     overspendRolloverState: prevOverspendRolloverState,
     toBudget: prevToBudget,
     available: prevAvailable,
@@ -181,7 +164,7 @@ const calcMonth: MonthDataGetter<InterMonthData> = function calcMonth(
     amount: 0,
     transactions: [],
   };
-  const availableThisMonth = addBudgeted(prevToBudget, income);
+
   const {
     rollover,
     categories: budgetCategories,
@@ -200,7 +183,9 @@ const calcMonth: MonthDataGetter<InterMonthData> = function calcMonth(
     transactions: [],
   };
   const toBudget = round(
-    availableThisMonth.amount -
+    (startBalance || 0) +
+      income.amount +
+      prevToBudget -
       total.budgeted +
       overspendPrevMonth +
       uncategorized.amount,
@@ -212,9 +197,12 @@ const calcMonth: MonthDataGetter<InterMonthData> = function calcMonth(
     total,
     available,
     income,
-    availableThisMonth,
     rollover,
-    overspendPrevMonth,
+    prevMonth: {
+      startBalance,
+      toBudget: prevToBudget,
+      overspend: overspendPrevMonth,
+    },
     categories: budgetCategories,
     uncategorized,
   };

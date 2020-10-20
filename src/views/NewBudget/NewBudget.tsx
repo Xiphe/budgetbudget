@@ -9,7 +9,7 @@ import { Content, Button, Header, HeaderSpacer } from '../../components';
 import useMenu from '../../lib/useMenu';
 import { OK, Step } from './Types';
 import { MoneyMoneyRes } from '../../moneymoney';
-import { HeaderHeightProvider } from '../../lib';
+import { HeaderHeightProvider, NumberFormatter } from '../../lib';
 import useSelectAllAccounts from './useSelectAllAccounts';
 import Welcome from './01_welcome';
 import Categories from './02_categories';
@@ -19,6 +19,7 @@ import AvailableFunds from './04_availableFunds';
 const STEPS: Step[] = [Welcome, Categories, FillCategories, AvailableFunds];
 
 type Props = {
+  numberFormatter: NumberFormatter;
   state: BudgetState;
   dispatch: Dispatch<Action>;
   moneyMoney: MoneyMoneyRes;
@@ -31,7 +32,12 @@ function getProgress(i: number) {
   return (100 / (STEPS.length - 1)) * i;
 }
 
-export default function NewBudget({ state, dispatch, moneyMoney }: Props) {
+export default function NewBudget({
+  state,
+  dispatch,
+  moneyMoney,
+  numberFormatter,
+}: Props) {
   const [
     {
       step: { Comp },
@@ -112,6 +118,7 @@ export default function NewBudget({ state, dispatch, moneyMoney }: Props) {
           dispatch={dispatch}
           moneyMoney={moneyMoney}
           nextPage={nextPage}
+          numberFormatter={numberFormatter}
         />
       </Content>
     </HeaderHeightProvider>

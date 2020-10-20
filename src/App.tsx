@@ -1,11 +1,19 @@
 import './theme.scss';
-import React, { Suspense, useState, useCallback, ReactNode } from 'react';
+import React, {
+  Suspense,
+  useState,
+  useCallback,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import classNames from 'classnames';
 import {
   InitRes,
   getInitData,
   useBudgetReducer,
   initialInitDataRes,
+  InitDataWithState,
 } from './budget';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
@@ -16,29 +24,24 @@ const Welcome = React.lazy(() => import('./views/Welcome'));
 const NewBudget = React.lazy(() => import('./views/NewBudget'));
 const Main = React.lazy(() => import('./views/Main'));
 
-function App({ readInitialView }: { readInitialView: InitRes }) {
-  const [initialView, initialState] = readInitialView();
-  const [view, setView] = useState('new' as typeof initialView);
-  const [moneyMoney, updateSettings] = useMoneyMoney();
-  const [state, dispatch] = useBudgetReducer(initialState, updateSettings);
+function App(initData: InitDataWithState) {
+  const [view, setView] = useState(initData.view);
+  const [moneyMoney, updateSettings] = useMoneyMoney(initData.res);
+  const [state, dispatch] = useBudgetReducer(initData.state, updateSettings);
   const numberFormatter = useNumberFormatter(state.settings.fractionDigits);
   const openBudget = useCallback(() => {
     setView('budget');
-  }, []);
-  const openNew = useCallback(() => {
-    setView('new');
-  }, []);
+  }, [setView]);
 
   return (
     <ErrorBoundary>
       <Suspense fallback={<Startup />}>
         {((): ReactNode => {
           switch (view) {
-            case 'welcome':
-              return <Welcome onCreate={openNew} />;
             case 'new':
               return (
                 <NewBudget
+                  numberFormatter={numberFormatter}
                   state={state}
                   dispatch={dispatch}
                   onCreate={openBudget}
@@ -48,8 +51,8 @@ function App({ readInitialView }: { readInitialView: InitRes }) {
             default:
               return (
                 <Main
-                  view={view}
                   numberFormatter={numberFormatter}
+                  view={view}
                   moneyMoney={moneyMoney}
                   state={state}
                   dispatch={dispatch}
@@ -61,6 +64,28 @@ function App({ readInitialView }: { readInitialView: InitRes }) {
       </Suspense>
     </ErrorBoundary>
   );
+}
+
+type AppWelcomeSwitchProps = {
+  readInitialView: InitRes;
+  setInitRes: Dispatch<SetStateAction<InitRes>>;
+};
+function AppWelcomeSwitch({
+  readInitialView,
+  setInitRes,
+}: AppWelcomeSwitchProps) {
+  const initData = readInitialView();
+  const openNew = useCallback(() => {
+    // setInitRes
+    // setView('new');
+  }, []);
+
+  switch (initData.view) {
+    case 'welcome':
+      return <Welcome onCreate={openNew} />;
+    default:
+      return <App {...initData} />;
+  }
 }
 
 export default function AppWrapper() {
@@ -79,7 +104,10 @@ export default function AppWrapper() {
     >
       <Suspense fallback={<Startup />}>
         <ErrorBoundary>
-          <App readInitialView={retryReadInit} />
+          <AppWelcomeSwitch
+            readInitialView={retryReadInit}
+            setInitRes={setInitRes}
+          />
         </ErrorBoundary>
       </Suspense>
     </div>

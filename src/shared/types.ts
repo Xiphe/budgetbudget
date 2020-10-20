@@ -1,5 +1,6 @@
-export type View =
-  | { type: 'new'; file?: never }
-  | { type: 'welcome'; file?: never }
-  | { type: 'budget'; file: string }
-  | { type: 'settings'; file: string };
+export type ViewNew = { type: 'new'; file?: never };
+export type ViewWelcome = { type: 'welcome'; file?: never };
+export type ViewBudget = { type: 'budget'; file: string };
+export type ViewSettings = { type: 'settings'; file: string };
+
+export type View = ViewNew | ViewWelcome | ViewBudget | ViewSettings;

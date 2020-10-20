@@ -9,8 +9,8 @@ import getCategories, {
 } from './getCategories';
 import getAccounts, { AccountsResource, filterAccounts } from './getAccounts';
 import { BudgetState } from '../budget';
-import { initialInitData } from '../budget/getInitData';
-import { useRetryResource } from '../lib';
+import { useRetryResource, Resource } from '../lib';
+import { Category, InteropAccount, Transaction } from './Types';
 
 export type MoneyMoneyRes = {
   readCategories: CategoryResource;
@@ -24,58 +24,57 @@ type RequiredSettings = Pick<
   'accounts' | 'currency' | 'startDate'
 >;
 
-let initialSettings: RequiredSettings | null;
-const pSettings = initialInitData.then(([_, { settings }]) => {
-  initialSettings = settings;
-  return settings;
-});
-const initialAccountsRes = getAccounts();
-const initialCategoriesRes = getCategories();
-const initialTransactionsRes = getTransactions(pSettings);
+export type InitialRes = {
+  settings: RequiredSettings;
+  accounts: Resource<InteropAccount[]>;
+  categories: Resource<Category[]>;
+  transactions: Resource<Transaction[]>;
+};
 
-function ignoreError(cb: () => void) {
+export function createInitialRes(
+  view: 'budget' | 'settings' | 'new',
+  settings: RequiredSettings,
+): InitialRes {
+  const init: InitialRes = {
+    settings,
+    accounts: getAccounts(),
+    categories: getCategories(),
+    transactions: getTransactions(settings),
+  };
+
   try {
-    cb();
+    switch (view) {
+      case 'budget':
+        init.categories();
+        init.transactions();
+        break;
+      case 'settings':
+      case 'new':
+        init.accounts();
+        break;
+    }
   } catch (err) {
     /* ¯\_(ツ)_/¯ */
   }
+
+  return init;
 }
 
-initialInitData.then(([initialView]) => {
-  switch (initialView) {
-    case 'budget':
-      ignoreError(() => initialCategoriesRes());
-      ignoreError(() => initialTransactionsRes());
-      break;
-    case 'settings':
-    case 'new':
-      ignoreError(() => initialAccountsRes());
-      break;
-  }
-});
-
-export function useMoneyMoney(): [
-  MoneyMoneyRes,
-  (settings: RequiredSettings) => void,
-] {
-  if (!initialSettings) {
-    throw new Error(
-      'Unexpected useMoneyMoney call before initialSettings are resolved',
-    );
-  }
-
+export function useMoneyMoney(
+  initialRes: InitialRes,
+): [MoneyMoneyRes, (settings: RequiredSettings) => void] {
   const [currency, setCurrency] = useState<BudgetState['settings']['currency']>(
-    initialSettings.currency,
+    initialRes.settings.currency,
   );
 
-  const settingsRef = useRef(initialSettings);
+  const settingsRef = useRef<RequiredSettings>(initialRes.settings);
 
-  const [readAccounts, setAccountsRes] = useState(() => initialAccountsRes);
+  const [readAccounts, setAccountsRes] = useState(() => initialRes.accounts);
   const [readCategories, setCategoriesRes] = useState(
-    () => initialCategoriesRes,
+    () => initialRes.categories,
   );
   const [readTransactions, setTransactionsRes] = useState(
-    () => initialTransactionsRes,
+    () => initialRes.transactions,
   );
 
   const refreshAll = useCallback(() => {
@@ -85,9 +84,7 @@ export function useMoneyMoney(): [
     const newCategoriesRes = getCategories();
     setCategoriesRes(() => newCategoriesRes);
 
-    const newTransactionsRes = getTransactions(
-      Promise.resolve(settingsRef.current),
-    );
+    const newTransactionsRes = getTransactions(settingsRef.current);
     setTransactionsRes(() => newTransactionsRes);
   }, []);
 
@@ -117,9 +114,7 @@ export function useMoneyMoney(): [
       oldSettings.accounts !== newSettings.accounts ||
       oldSettings.startDate !== newSettings.startDate
     ) {
-      const newTransactionsRes = getTransactions(
-        Promise.resolve(settingsRef.current),
-      );
+      const newTransactionsRes = getTransactions(settingsRef.current);
       setTimeout(() => {
         setTransactionsRes(() => newTransactionsRes);
       }, 10);

@@ -7,10 +7,14 @@ import {
   Balance as BalanceT,
 } from './Types';
 import { AccountsResource as AccountsResourceT } from './getAccounts';
-import { MoneyMoneyRes as MoneyMoneyResT } from './useMoneyMoney';
-export { getAccounts } from './getAccounts';
-export { default as getTransactionsRes } from './getTransactions';
-export { useMoneyMoney } from './useMoneyMoney';
+import {
+  MoneyMoneyRes as MoneyMoneyResT,
+  InitialRes as InitialResT,
+} from './useMoneyMoney';
+export { getAccounts, filterAccounts } from './getAccounts';
+export { getTransactions } from './getTransactions';
+export { getCategories } from './getCategories';
+export { useMoneyMoney, createInitialRes } from './useMoneyMoney';
 export { default as calculateBalances } from './calculateBalances';
 export * from './errors';
 export type AccountsResource = AccountsResourceT;
@@ -21,3 +25,4 @@ export type Balances = BalancesT;
 export type Balance = BalanceT;
 export type AmountWithTransactions = AmountWithTransactionsT;
 export type MoneyMoneyRes = MoneyMoneyResT;
+export type InitialRes = InitialResT;

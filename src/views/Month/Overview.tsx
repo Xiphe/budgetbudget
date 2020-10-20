@@ -68,14 +68,34 @@ export default function Overview({
       {data && (
         <>
           <ul className={styles.headTable}>
+            {data.prevMonth.startBalance !== undefined && (
+              <ListItem
+                amount={numberFormatter.format(data.prevMonth.startBalance)}
+                title="Start Balance"
+              />
+            )}
+            {data.prevMonth.toBudget > 0 && (
+              <ListItem
+                amount={numberFormatter.format(data.prevMonth.toBudget)}
+                title={`Not Budgeted in ${format(subMonths(date, 1), 'MMM')}`}
+              />
+            )}
+            {data.prevMonth.toBudget < 0 && (
+              <ListItem
+                amount={numberFormatter.format(data.prevMonth.toBudget)}
+                title={`OverBudgeted in ${format(subMonths(date, 1), 'MMM')}`}
+              />
+            )}
             <ListItem
-              amount={numberFormatter.format(data.availableThisMonth.amount)}
-              title="Available Funds"
+              amount={numberFormatter.format(data.income.amount)}
+              title="Income"
             />
-            <ListItem
-              amount={numberFormatter.format(data.overspendPrevMonth)}
-              title={`Overspend in ${format(subMonths(date, 1), 'MMM')}`}
-            />
+            {data.prevMonth.overspend !== 0 && (
+              <ListItem
+                amount={numberFormatter.format(data.prevMonth.overspend)}
+                title={`Overspend in ${format(subMonths(date, 1), 'MMM')}`}
+              />
+            )}
             {data.uncategorized.amount !== 0 && (
               <ListItem
                 amount={numberFormatter.format(data.uncategorized.amount)}
@@ -90,7 +110,9 @@ export default function Overview({
             />
             <ListItem
               className={budgetClasses}
-              amount={numberFormatter.format(data.toBudget)}
+              amount={numberFormatter.format(
+                data.toBudget === -0 ? 0 : data.toBudget,
+              )}
               title={data.toBudget >= 0 ? 'To Budget' : 'Overbudgeted'}
             />
           </ul>

@@ -118,6 +118,7 @@
 }
 .singleBudgetWrap {
   @extend .singleBudgetDimensions;
+  background: var(--background-color);
   overflow: scroll;
   display: flex;
 }

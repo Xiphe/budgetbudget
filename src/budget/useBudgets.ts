@@ -28,24 +28,19 @@ export default function useBudgets(
   );
   const getInitial = useMemo(() => {
     const initial: InterMonthData = {
+      startBalance,
       uncategorized: { amount: 0, transactions: [] },
       total: { budgeted: 0, spend: 0, balance: 0 },
       categories: [],
-      overspendPrevMonth: 0,
+      prevMonth: {
+        toBudget: 0,
+        overspend: 0,
+      },
       toBudget: 0,
       income: { amount: 0, transactions: [] },
       overspendRolloverState: {},
       rollover: { total: 0 },
-      availableThisMonth: {
-        amount: 0,
-        transactions: [],
-      },
-      available: [
-        {
-          amount: startBalance,
-          transactions: [],
-        },
-      ],
+      available: [],
     };
     return () => initial;
   }, [startBalance]);

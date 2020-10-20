@@ -105,6 +105,54 @@ function withRetry<T extends (...args: any[]) => Promise<any>>(
   }) as any;
 }
 
+function extractTransactions(val: unknown): unknown[] {
+  if (
+    typeof val === 'object' &&
+    val !== null &&
+    Array.isArray((val as any).transactions)
+  ) {
+    return (val as any).transactions;
+  }
+
+  throw new Error('Unexpected transactions object');
+}
+
+async function exportTransactions(
+  _: any,
+  accountNumbers: string[],
+  startDate: string,
+): Promise<unknown[]>;
+async function exportTransactions(_: any): Promise<unknown[]>;
+async function exportTransactions(
+  _: any,
+  accountNumbers?: string[],
+  startDate?: string,
+): Promise<unknown[]> {
+  if (accountNumbers && startDate) {
+    const transactions = await Promise.all(
+      accountNumbers.map(async (accountNumber) => {
+        return parse(
+          await osascript(
+            join(scriptsDir, 'exportTransactions.applescript'),
+            accountNumber,
+            startDate,
+          ),
+        );
+      }),
+    );
+
+    return transactions
+      .map(extractTransactions)
+      .reduce((m, ts) => m.concat(ts), []);
+  }
+
+  return extractTransactions(
+    parse(
+      await osascript(join(scriptsDir, 'exportAllTransactions.applescript')),
+    ),
+  );
+}
+
 export default function moneymoneyHandlers(ipcMain: IpcMain) {
   ipcMain.handle(
     'MM_EXPORT_ACCOUNTS',
@@ -119,31 +167,7 @@ export default function moneymoneyHandlers(ipcMain: IpcMain) {
     }),
   );
 
-  ipcMain.handle(
-    'MM_EXPORT_TRANSACTIONS',
-    withRetry(async (_, accountNumbers: string[], startDate: string) => {
-      return Promise.all(
-        accountNumbers.map(async (accountNumber) => {
-          return parse(
-            await osascript(
-              join(scriptsDir, 'exportTransactions.applescript'),
-              accountNumber,
-              startDate,
-            ),
-          );
-        }),
-      );
-    }),
-  );
-
-  ipcMain.handle(
-    'MM_EXPORT_ALL_TRANSACTIONS',
-    withRetry(async () => {
-      return parse(
-        await osascript(join(scriptsDir, 'exportAllTransactions.applescript')),
-      );
-    }),
-  );
+  ipcMain.handle('MM_EXPORT_TRANSACTIONS', withRetry(exportTransactions));
 
   ipcMain.handle(
     'MM_EXPORT_CATEGORIES',

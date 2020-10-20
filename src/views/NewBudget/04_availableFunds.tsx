@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import cx from 'classnames';
 
 import SingleBudget from './components/SingleBudget';
@@ -11,9 +11,6 @@ const AvailableFunds: Step = {
     return true;
   },
   Comp(props) {
-    const sidebarRef = useRef<HTMLDivElement | null>(null);
-    const budgetRef = useRef<HTMLDivElement | null>(null);
-
     return (
       <>
         <SingleBudget {...props} small />

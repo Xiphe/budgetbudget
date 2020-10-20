@@ -122,15 +122,19 @@ export type OverspendRollover = { [key: string]: boolean };
 export type Rollover = { total: number; [key: string]: number };
 
 export type InterMonthData = {
+  startBalance?: number;
   uncategorized: AmountWithTransactions;
   categories: (BudgetCategoryRow | BudgetCategoryGroup)[];
   toBudget: number;
   total: BudgetRow;
   income: AmountWithPartialTransactions;
-  overspendPrevMonth: number;
+  prevMonth: {
+    overspend: number;
+    startBalance?: number;
+    toBudget: number;
+  };
   overspendRolloverState: OverspendRollover;
   available: AmountWithPartialTransactions[];
-  availableThisMonth: AmountWithPartialTransactions;
   rollover: Rollover;
 };
 export type MonthData = {

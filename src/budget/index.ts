@@ -9,7 +9,10 @@ import {
   BudgetCategoryGroup as BudgetCategoryGroupT,
 } from './Types';
 import { Action as ActionT } from './budgetReducer';
-import { InitRes as InitResT } from './getInitData';
+import {
+  InitRes as InitResT,
+  InitDataWithState as InitDataWithStateT,
+} from './getInitData';
 
 export * from './budgetReducer';
 export { VERSION } from './Types';
@@ -22,6 +25,7 @@ export {
 } from './getInitData';
 
 export type InitRes = InitResT;
+export type InitDataWithState = InitDataWithStateT;
 export type Action = ActionT;
 export type BudgetState = BudgetStateT;
 export type BudgetListEntry = BudgetListEntryT;

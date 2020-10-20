@@ -1,4 +1,4 @@
-import { Transaction, validateTransactionByAccount } from './Types';
+import { Transaction, validateTransactions } from './Types';
 import format from 'date-fns/format';
 import { ipcRenderer } from 'electron';
 import { createResource, Resource } from '../lib';
@@ -11,37 +11,41 @@ export const filterCurrency = memoizeOne(
     transactions.filter(({ currency: c }) => c === currency),
 );
 
-async function getTransactions(
+export async function getTransactions(): Promise<Transaction[]>;
+export async function getTransactions(
   accountNumbers: string[],
   startDateTimestamp: number,
+): Promise<Transaction[]>;
+export async function getTransactions(
+  accountNumbers?: string[],
+  startDateTimestamp?: number,
 ): Promise<Transaction[]> {
+  if (!accountNumbers || !startDateTimestamp) {
+    return validateTransactions(
+      await ipcRenderer.invoke('MM_EXPORT_TRANSACTIONS'),
+    );
+  }
+
   if (accountNumbers.length === 0) {
     return [];
   }
 
   const startDate = format(new Date(startDateTimestamp), 'yyyy-MM-dd');
-  const transactionsByAccount = validateTransactionByAccount(
+
+  return validateTransactions(
     await ipcRenderer.invoke(
       'MM_EXPORT_TRANSACTIONS',
       accountNumbers,
       startDate,
     ),
   );
-
-  return transactionsByAccount.reduce(
-    (memo, { transactions }) => memo.concat(transactions),
-    [] as Transaction[],
-  );
 }
 
-export default function getTransactionsResource(
-  p: Promise<{
-    accounts: string[];
-    startDate: number;
-  }>,
-): TransactionsResource {
-  return createResource(async () => {
-    const { accounts, startDate } = await p;
-    return getTransactions(accounts, startDate);
-  });
+export default function getTransactionsResource(settings: {
+  accounts: string[];
+  startDate: number;
+}): TransactionsResource {
+  return createResource(() =>
+    getTransactions(settings.accounts, settings.startDate),
+  );
 }
