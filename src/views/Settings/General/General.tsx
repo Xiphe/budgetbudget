@@ -1,23 +1,18 @@
-import React, { useMemo, Suspense } from 'react';
-import { createNumberFormatter } from '../../../lib';
+import React, { Suspense } from 'react';
 import Setting from '../Setting';
 import NameSetting from './Name';
 import AccountSetting from './Account';
-import NumberLocaleSetting from './NumberLocale';
 import FractionDigitsSetting from './FractionDigits';
 import StartDateSetting from './StartDate';
 import StartBalanceSetting from './StartBalance';
 import CurrencySetting from './Currency';
 import { Props } from './Types';
 import { Loading } from '../../../components';
+import { NumberFormatter } from '../../../lib/createNumberFormatter';
 
-export default function Settings(props: Props) {
-  const { numberLocale, fractionDigits } = props.state.settings;
-  const numberFormatter = useMemo(
-    () => createNumberFormatter(fractionDigits, numberLocale),
-    [fractionDigits, numberLocale],
-  );
-
+export default function Settings(
+  props: Props & { numberFormatter: NumberFormatter },
+) {
   return (
     <>
       <NameSetting {...props} />
@@ -29,14 +24,10 @@ export default function Settings(props: Props) {
         </Suspense>
       </Setting>
       <hr />
-      <Setting label="Number format Example">
-        {numberFormatter.format(12345.6789)}
-      </Setting>
-      <NumberLocaleSetting {...props} />
       <FractionDigitsSetting {...props} />
       <hr />
       <StartDateSetting {...props} />
-      <StartBalanceSetting {...props} numberFormatter={numberFormatter} />
+      <StartBalanceSetting {...props} />
     </>
   );
 }

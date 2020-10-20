@@ -11,9 +11,6 @@ export const INITIAL_STATE = unsaved({
 
 export const ACTION_INIT = Symbol('INIT');
 export const ACTION_SET_NAME = Symbol('SET_NAME');
-export const ACTION_SETTINGS_SET_NUMBER_LOCALE = Symbol(
-  'ACTION_SETTINGS_SET_NUMBER_LOCALE',
-);
 export const ACTION_SETTINGS_SET_FRACTION_DIGITS = Symbol(
   'ACTION_SETTINGS_SET_FRACTION_DIGITS',
 );
@@ -68,10 +65,6 @@ type SetCategoryRolloverAction = {
 };
 type SetNameAction = {
   type: typeof ACTION_SET_NAME;
-  payload: string;
-};
-type SetSettingsNumberLocale = {
-  type: typeof ACTION_SETTINGS_SET_NUMBER_LOCALE;
   payload: string;
 };
 type SetSettingsFractionDigits = {
@@ -131,7 +124,6 @@ export type Action =
   | SetCategoryValueAction
   | SetCategoryRolloverAction
   | SetNameAction
-  | SetSettingsNumberLocale
   | SetSettingsFractionDigits
   | SetSettingsSelectedAccounts
   | SetSettingsStartDate
@@ -232,14 +224,6 @@ function budgetReducer(state: BudgetState, action: Action): BudgetState {
       return {
         ...state,
         name: action.payload,
-      };
-    case ACTION_SETTINGS_SET_NUMBER_LOCALE:
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          numberLocale: action.payload,
-        },
       };
     case ACTION_SETTINGS_SET_FRACTION_DIGITS:
       return {

@@ -5,6 +5,7 @@ import General from '../Settings/General';
 import Categories from '../Settings/Categories';
 import useMenu from '../../lib/useMenu';
 import { MoneyMoneyRes } from '../../moneymoney';
+import { useNumberFormatter } from '../../lib';
 
 type Props = {
   state: BudgetState;
@@ -25,6 +26,8 @@ export default function NewBudget({
   if (state === null) {
     throw new Error('Unexpected non-initialized state');
   }
+
+  const numberFormatter = useNumberFormatter(state.settings.fractionDigits);
 
   return (
     <Content
@@ -51,7 +54,12 @@ export default function NewBudget({
       }
     >
       {page === 'general' && (
-        <General moneyMoney={moneyMoney} state={state} dispatch={dispatch} />
+        <General
+          moneyMoney={moneyMoney}
+          state={state}
+          dispatch={dispatch}
+          numberFormatter={numberFormatter}
+        />
       )}
       {page === 'categories' && (
         <Categories moneyMoney={moneyMoney} state={state} dispatch={dispatch} />

@@ -44,6 +44,14 @@ export default function main() {
     'AppleColorPreferencesChangedNotification',
     () => windowManager.broadcast('UPDATE_COLOR_PREFERENCES'),
   );
+  let localeCC = app.getLocaleCountryCode();
+  setInterval(() => {
+    const newCC = app.getLocaleCountryCode();
+    if (newCC !== localeCC) {
+      localeCC = newCC;
+      windowManager.broadcast('UPDATE_LOCALE_COUNTRY_CODE');
+    }
+  }, 5000);
   app.on('window-all-closed', () => {
     defaultMenu.activate();
   });

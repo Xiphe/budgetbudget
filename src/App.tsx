@@ -9,7 +9,7 @@ import {
 } from './budget';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
-import { useRetryResource } from './lib';
+import { useNumberFormatter, useRetryResource } from './lib';
 import { useMoneyMoney } from './moneymoney';
 
 const Welcome = React.lazy(() => import('./views/Welcome'));
@@ -21,6 +21,7 @@ function App({ readInitialView }: { readInitialView: InitRes }) {
   const [view, setView] = useState(initialView);
   const [moneyMoney, updateSettings] = useMoneyMoney();
   const [state, dispatch] = useBudgetReducer(initialState, updateSettings);
+  const numberFormatter = useNumberFormatter(state.settings.fractionDigits);
   const openBudget = useCallback(() => {
     setView('budget');
   }, []);
@@ -48,6 +49,7 @@ function App({ readInitialView }: { readInitialView: InitRes }) {
               return (
                 <Main
                   view={view}
+                  numberFormatter={numberFormatter}
                   moneyMoney={moneyMoney}
                   state={state}
                   dispatch={dispatch}

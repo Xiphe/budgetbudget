@@ -1,3 +1,6 @@
+import { remote, ipcRenderer } from 'electron';
+import { useEffect, useMemo, useState } from 'react';
+
 type FormatOptions = {
   thousandDelimiter?: boolean;
   withFractions?: boolean;
@@ -54,3 +57,23 @@ export default function createNumberFormatter(
 }
 
 export type NumberFormatter = ReturnType<typeof createNumberFormatter>;
+
+export function useNumberFormatter(fractionDigits: number) {
+  const [localeCC, setLocaleCC] = useState(() =>
+    remote.app.getLocaleCountryCode(),
+  );
+  useEffect(() => {
+    const handler = () => {
+      setLocaleCC(remote.app.getLocaleCountryCode());
+    };
+    ipcRenderer.addListener('UPDATE_LOCALE_COUNTRY_CODE', handler);
+    return () => {
+      ipcRenderer.removeListener('UPDATE_LOCALE_COUNTRY_CODE', handler);
+    };
+  }, []);
+
+  return useMemo(() => createNumberFormatter(fractionDigits, localeCC), [
+    fractionDigits,
+    localeCC,
+  ]);
+}

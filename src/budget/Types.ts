@@ -8,7 +8,14 @@ import {
 import { isLeft } from 'fp-ts/lib/Either';
 import { ThrowReporter } from 'io-ts/lib/ThrowReporter';
 
-export const VERSION = '0.0.2';
+/**
+ * ## 0.0.1 -> 0.0.2
+ * now using uuids to reference categories and accounts
+ *
+ * ## 0.0.2 -> 0.0.3
+ * removed setting.numberLocale in favor of always using system
+ */
+export const VERSION = '0.0.3';
 
 const categoryShape = t.partial({
   amount: t.number,
@@ -31,7 +38,6 @@ const incomeCategoryShape = t.type(
 );
 const settingsShape = t.type(
   {
-    numberLocale: t.string,
     fractionDigits: t.number,
     startDate: t.number,
     currency: t.string,
@@ -43,6 +49,8 @@ const settingsShape = t.type(
 );
 const optionalSettingsShape = t.partial(
   {
+    /** @deprecated */
+    numberLocale: t.string,
     collapsedCategories: t.array(t.string),
   },
   'optionalSettings',
