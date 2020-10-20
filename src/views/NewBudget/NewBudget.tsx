@@ -14,8 +14,9 @@ import useSelectAllAccounts from './useSelectAllAccounts';
 import Welcome from './01_welcome';
 import Categories from './02_categories';
 import FillCategories from './03_fillCategories';
+import AvailableFunds from './04_availableFunds';
 
-const STEPS: Step[] = [Welcome, Categories, FillCategories];
+const STEPS: Step[] = [Welcome, Categories, FillCategories, AvailableFunds];
 
 type Props = {
   state: BudgetState;
@@ -24,7 +25,7 @@ type Props = {
   onCreate: () => void;
 };
 
-const INITIAL_STEP = 2;
+const INITIAL_STEP = 3;
 
 function getProgress(i: number) {
   return (100 / (STEPS.length - 1)) * i;

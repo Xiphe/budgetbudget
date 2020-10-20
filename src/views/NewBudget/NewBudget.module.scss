@@ -121,3 +121,7 @@
   overflow: scroll;
   display: flex;
 }
+.singleBudgetWrapSmall {
+  min-width: 33%;
+  max-width: calc(var(--sidebar-width) * 1.5);
+}

@@ -1,4 +1,4 @@
-import React, { Suspense, useRef, MutableRefObject, useMemo } from 'react';
+import React, { Suspense, useRef, useMemo } from 'react';
 import cx from 'classnames';
 import {
   ErrorBoundary,
@@ -9,71 +9,10 @@ import {
 } from '../../components';
 import { SidebarHeader, SidebarWrap } from '../CategorySidebar';
 import CategorySidebar from './components/CategorySidebar';
-import { Step, StepCompProps } from './Types';
+import SingleBudget from './components/SingleBudget';
+import { Step } from './Types';
 import styles from './NewBudget.module.scss';
-import { MonthData, useBudgetData } from '../../budget';
-import Month from '../Month';
-import { useSyncScrollY, createNumberFormatter } from '../../lib';
-
-function SingleBudget({
-  state,
-  moneyMoney,
-  innerRef,
-  syncScrollY,
-}: StepCompProps & {
-  innerRef?: MutableRefObject<HTMLDivElement | null>;
-  syncScrollY?: MutableRefObject<HTMLDivElement | null>;
-}) {
-  const { months, numberFormatter, categories } = useBudgetData(
-    state,
-    moneyMoney,
-  );
-  const syncScroll = useSyncScrollY(syncScrollY);
-  const month = useMemo<MonthData>(() => {
-    return {
-      ...months[0],
-      get: (): ReturnType<MonthData['get']> => {
-        const data = months[0].get();
-
-        return {
-          ...data,
-          uncategorized: { amount: 0, transactions: [] },
-          total: {
-            balance: 0,
-            budgeted: 0,
-            spend: 0,
-          },
-          categories: data.categories.map((cat) => ({
-            ...cat,
-            balance: 0,
-            budgeted: 0,
-            spend: 0,
-          })),
-        };
-      },
-    };
-  }, [months]);
-
-  return (
-    <div
-      className={styles.singleBudgetWrap}
-      ref={innerRef}
-      onScroll={syncScroll}
-    >
-      <Month
-        width="full"
-        key={month.key}
-        monthKey={month.key}
-        date={month.date}
-        initialVisible={true}
-        collapsedCategories={state.settings.collapsedCategories}
-        month={month}
-        categories={categories || []}
-        numberFormatter={numberFormatter}
-      />
-    </div>
-  );
-}
+import { createNumberFormatter } from '../../lib';
 
 const IntroIncomeCats: Step = {
   title: 'Fill Categories',
