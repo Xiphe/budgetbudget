@@ -1,6 +1,6 @@
 import { Account, validateAccount, InteropAccount } from './Types';
 import { ipcRenderer } from 'electron';
-import { createResource, Resource } from '../lib';
+import { Resource } from '../lib';
 import memoizeOne from 'memoize-one';
 
 export const filterAccounts = memoizeOne(
@@ -48,10 +48,4 @@ export async function getAccounts(): Promise<InteropAccount[]> {
   }
 
   return probablyAccounts.map(validateAccount);
-}
-
-export default function getInteropAccountsResource(): Resource<
-  InteropAccount[]
-> {
-  return createResource(async () => getAccounts());
 }

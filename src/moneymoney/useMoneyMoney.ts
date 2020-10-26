@@ -1,15 +1,17 @@
 import { useMemo, useCallback, useState, useRef } from 'react';
-import getTransactions, {
+import {
+  getTransactions,
   TransactionsResource,
   filterCurrency,
 } from './getTransactions';
-import getCategories, {
+import {
+  getCategories,
   CategoryResource,
   splitCurrencyCategories,
 } from './getCategories';
-import getAccounts, { AccountsResource, filterAccounts } from './getAccounts';
+import { AccountsResource, filterAccounts, getAccounts } from './getAccounts';
 import { BudgetState } from '../budget';
-import { createHOR, Resource, withRetry } from '../lib';
+import { createHOR, createResource, Resource, withRetry } from '../lib';
 import { Category, InteropAccount, Transaction } from './Types';
 
 export type MoneyMoneyRes = {
@@ -37,9 +39,14 @@ export function createInitialRes(
 ): InitialRes {
   const init: InitialRes = {
     settings,
-    accounts: getAccounts(),
-    categories: getCategories(),
-    transactions: getTransactions(settings),
+    accounts: createResource(() => getAccounts(), { lazy: true }),
+    categories: createResource(() => getCategories(), { lazy: true }),
+    transactions: createResource(
+      () => getTransactions(settings.accounts, settings.startDate),
+      {
+        lazy: true,
+      },
+    ),
   };
 
   try {
@@ -110,9 +117,13 @@ export function useMoneyMoney(
       oldSettings.accounts !== newSettings.accounts ||
       oldSettings.startDate !== newSettings.startDate
     ) {
-      const newTransactionsRes = getTransactions(settingsRef.current);
+      const { accounts, startDate } = newSettings;
       setTimeout(() => {
-        setTransactionsRes(newTransactionsRes);
+        setTransactionsRes(
+          createResource(() => getTransactions(accounts, startDate), {
+            lazy: true,
+          }),
+        );
       }, 10);
     }
   }, []);

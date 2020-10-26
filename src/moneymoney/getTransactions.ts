@@ -1,7 +1,7 @@
 import { Transaction, validateTransactions } from './Types';
 import format from 'date-fns/format';
 import { ipcRenderer } from 'electron';
-import { createResource, Resource } from '../lib';
+import { Resource } from '../lib';
 import memoizeOne from 'memoize-one';
 
 export type TransactionsResource = Resource<Transaction[]>;
@@ -38,14 +38,5 @@ export async function getTransactions(
       accountNumbers,
       startDate,
     ),
-  );
-}
-
-export default function getTransactionsResource(settings: {
-  accounts: string[];
-  startDate: number;
-}): TransactionsResource {
-  return createResource(() =>
-    getTransactions(settings.accounts, settings.startDate),
   );
 }
