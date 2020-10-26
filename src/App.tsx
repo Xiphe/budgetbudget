@@ -19,7 +19,9 @@ import {
   useAppState,
   useNumberFormatter,
   withRetry,
+  createNewInitialAppState,
   initialAppStateRes,
+  createResource,
 } from './lib';
 
 const Welcome = React.lazy(() => import('./views/Welcome'));
@@ -74,9 +76,8 @@ type AppWelcomeSwitchProps = {
 function AppWelcomeSwitch({ initDataRes, setInitRes }: AppWelcomeSwitchProps) {
   const initData = initDataRes.read();
   const openNew = useCallback(() => {
-    // setInitRes
-    // setView('new');
-  }, []);
+    setInitRes(createResource(() => createNewInitialAppState()));
+  }, [setInitRes]);
 
   switch (initData.view) {
     case 'welcome':

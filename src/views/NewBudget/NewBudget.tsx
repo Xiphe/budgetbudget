@@ -10,7 +10,6 @@ import useMenu from '../../lib/useMenu';
 import { OK, Step } from './Types';
 import { MoneyMoneyRes } from '../../moneymoney';
 import { HeaderHeightProvider, NumberFormatter } from '../../lib';
-import useSelectAllAccounts from './useSelectAllAccounts';
 import Welcome from './01_welcome';
 import Categories from './02_categories';
 import FillCategories from './03_fillCategories';
@@ -26,7 +25,7 @@ type Props = {
   onCreate: () => void;
 };
 
-const INITIAL_STEP = 3;
+const INITIAL_STEP = 0;
 
 function getProgress(i: number) {
   return (100 / (STEPS.length - 1)) * i;
@@ -81,11 +80,6 @@ export default function NewBudget({
   const setOk = useCallback((ok: OK) => {
     setStep((step) => ({ ...step, ok }));
   }, []);
-  useSelectAllAccounts({
-    dispatch,
-    currency: state.settings.currency,
-    accounts: state.settings.accounts,
-  });
 
   if (state === null) {
     throw new Error('Unexpected non-initialized state');

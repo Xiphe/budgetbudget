@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
+import isError from './isError';
 type Read<T> = () => T;
 export type Resource<T, Q = T> = {
   read: () => T;
@@ -68,7 +69,7 @@ export function withRetry<R>(
     try {
       return res.read();
     } catch (e) {
-      if (e instanceof Error) {
+      if (isError(e)) {
         throw Object.assign(e, {
           retry() {
             setNewRes(res.recreate());
