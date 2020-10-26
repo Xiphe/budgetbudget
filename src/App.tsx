@@ -6,18 +6,18 @@ import React, {
   ReactNode,
   Dispatch,
   SetStateAction,
+  useMemo,
 } from 'react';
 import classNames from 'classnames';
 import {
   InitRes,
-  getInitData,
   useBudgetReducer,
   initialInitDataRes,
   InitDataWithState,
 } from './budget';
 import { ErrorBoundary, Startup } from './components';
 import styles from './App.module.scss';
-import { useNumberFormatter, useRetryResource } from './lib';
+import { createHOR, useNumberFormatter, withRetry } from './lib';
 import { useMoneyMoney } from './moneymoney';
 
 const Welcome = React.lazy(() => import('./views/Welcome'));
@@ -67,14 +67,11 @@ function App(initData: InitDataWithState) {
 }
 
 type AppWelcomeSwitchProps = {
-  readInitialView: InitRes;
+  initDataRes: InitRes;
   setInitRes: Dispatch<SetStateAction<InitRes>>;
 };
-function AppWelcomeSwitch({
-  readInitialView,
-  setInitRes,
-}: AppWelcomeSwitchProps) {
-  const initData = readInitialView();
+function AppWelcomeSwitch({ initDataRes, setInitRes }: AppWelcomeSwitchProps) {
+  const initData = initDataRes.read();
   const openNew = useCallback(() => {
     // setInitRes
     // setView('new');
@@ -89,10 +86,10 @@ function AppWelcomeSwitch({
 }
 
 export default function AppWrapper() {
-  const [readInit, setInitRes] = useState(() => initialInitDataRes);
-  const retryReadInit = useRetryResource(
-    readInit,
-    useCallback(() => setInitRes(getInitData()), []),
+  const [initRes, setInitRes] = useState(initialInitDataRes);
+  const initResWithRetry = useMemo(
+    () => createHOR(initRes, withRetry(setInitRes)),
+    [initRes],
   );
 
   return (
@@ -105,7 +102,7 @@ export default function AppWrapper() {
       <Suspense fallback={<Startup />}>
         <ErrorBoundary>
           <AppWelcomeSwitch
-            readInitialView={retryReadInit}
+            initDataRes={initResWithRetry}
             setInitRes={setInitRes}
           />
         </ErrorBoundary>

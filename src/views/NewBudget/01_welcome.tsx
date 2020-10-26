@@ -15,7 +15,7 @@ const Welcome: Step = {
     useEffect(() => {
       try {
         /* prefetch for next page */
-        moneyMoney.readCategories();
+        moneyMoney.categories.read();
       } catch (err) {
         /* ¯\_(ツ)_/¯ */
       }

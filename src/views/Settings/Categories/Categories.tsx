@@ -4,12 +4,12 @@ import IncomeCategories from './IncomeCategories';
 import { MoneyMoneyRes } from '../../../moneymoney';
 
 export default function CategorySettings({
-  moneyMoney: { readCategories },
+  moneyMoney,
   ...props
 }: Omit<Props, 'categories'> & {
   moneyMoney: MoneyMoneyRes;
 }) {
-  const [categories] = readCategories();
+  const [categories] = moneyMoney.categories.read();
 
   return <IncomeCategories {...props} categories={categories} />;
 }

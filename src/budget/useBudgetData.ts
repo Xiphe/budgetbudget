@@ -5,12 +5,12 @@ import useFilteredCategories from './useFilteredCategories';
 
 export default function useBudgetData(
   state: BudgetState,
-  { readCategories, readTransactions }: MoneyMoneyRes,
+  moneyMoney: MoneyMoneyRes,
 ) {
   const { incomeCategories } = state.settings;
 
-  const transactions = readTransactions();
-  const [categories, defaultCategories] = readCategories();
+  const transactions = moneyMoney.transactions.read();
+  const [categories, defaultCategories] = moneyMoney.categories.read();
   const usableCategories = useFilteredCategories(incomeCategories, categories);
 
   const [months, extendFuture] = useBudgets(

@@ -10,9 +10,9 @@ export default function AccountSettings({
   state: {
     settings: { accounts },
   },
-  moneyMoney: { readAccounts },
+  moneyMoney,
 }: Props) {
-  const allAccounts = readAccounts();
+  const allAccounts = moneyMoney.accounts.read();
   const { value, onChange, error, ...rest } = useInputProps({
     internal: false,
     value: accounts,

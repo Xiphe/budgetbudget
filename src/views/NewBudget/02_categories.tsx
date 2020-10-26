@@ -26,7 +26,7 @@ const HasCategories: FC<{
   no?: ReactNode;
   moneyMoney: ComponentProps<Step['Comp']>['moneyMoney'];
 }> = ({ yes = null, no = null, moneyMoney }) => {
-  const [categories] = moneyMoney.readCategories();
+  const [categories] = moneyMoney.categories.read();
 
   if (categories.length) {
     return <>{yes}</>;
@@ -49,7 +49,7 @@ const Welcome: Step = {
     useEffect(() => {
       try {
         /* prefetch for next page */
-        moneyMoney.readTransactions();
+        moneyMoney.transactions.read();
       } catch (err) {
         /* ¯\_(ツ)_/¯ */
       }

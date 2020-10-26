@@ -9,13 +9,13 @@ import getCategories, {
 } from './getCategories';
 import getAccounts, { AccountsResource, filterAccounts } from './getAccounts';
 import { BudgetState } from '../budget';
-import { useRetryResource, Resource } from '../lib';
+import { createHOR, Resource, withRetry } from '../lib';
 import { Category, InteropAccount, Transaction } from './Types';
 
 export type MoneyMoneyRes = {
-  readCategories: CategoryResource;
-  readTransactions: TransactionsResource;
-  readAccounts: AccountsResource;
+  categories: CategoryResource;
+  transactions: TransactionsResource;
+  accounts: AccountsResource;
   refresh: () => void;
 };
 
@@ -45,12 +45,12 @@ export function createInitialRes(
   try {
     switch (view) {
       case 'budget':
-        init.categories();
-        init.transactions();
+        init.categories.read();
+        init.transactions.read();
         break;
       case 'settings':
       case 'new':
-        init.accounts();
+        init.accounts.read();
         break;
     }
   } catch (err) {
@@ -69,42 +69,38 @@ export function useMoneyMoney(
 
   const settingsRef = useRef<RequiredSettings>(initialRes.settings);
 
-  const [readAccounts, setAccountsRes] = useState(() => initialRes.accounts);
-  const [readCategories, setCategoriesRes] = useState(
-    () => initialRes.categories,
-  );
+  const [accountsRes, setAccountsRes] = useState(initialRes.accounts);
+  const [readCategories, setCategoriesRes] = useState(initialRes.categories);
   const [readTransactions, setTransactionsRes] = useState(
-    () => initialRes.transactions,
+    initialRes.transactions,
   );
 
   const refreshAll = useCallback(() => {
-    const newAccountsRes = getAccounts();
-    setAccountsRes(() => newAccountsRes);
-
-    const newCategoriesRes = getCategories();
-    setCategoriesRes(() => newCategoriesRes);
-
-    const newTransactionsRes = getTransactions(settingsRef.current);
-    setTransactionsRes(() => newTransactionsRes);
+    setAccountsRes((prev) => prev.recreate());
+    setCategoriesRes((prev) => prev.recreate());
+    setTransactionsRes((prev) => prev.recreate());
   }, []);
 
-  const readRetryAccounts = useRetryResource(readAccounts, refreshAll);
-  const readFilteredAccounts = useCallback(
-    () => filterAccounts(currency, readRetryAccounts()),
-    [currency, readRetryAccounts],
-  );
+  const filteredAccountsRes = useMemo(() => {
+    const retryRes = createHOR(accountsRes, withRetry(refreshAll));
+    return createHOR(retryRes, (res) => () =>
+      filterAccounts(currency, res.read()),
+    );
+  }, [currency, refreshAll, accountsRes]);
 
-  const readRetryCategories = useRetryResource(readCategories, refreshAll);
-  const readSplitCategories = useCallback(
-    () => splitCurrencyCategories(currency, readRetryCategories()),
-    [currency, readRetryCategories],
-  );
+  const splitCategoriesRes = useMemo(() => {
+    const retryRes = createHOR(readCategories, withRetry(refreshAll));
+    return createHOR(retryRes, (res) => () =>
+      splitCurrencyCategories(currency, res.read()),
+    );
+  }, [currency, refreshAll, readCategories]);
 
-  const readRetryTransactions = useRetryResource(readTransactions, refreshAll);
-  const readFilteredTransactions = useCallback(
-    () => filterCurrency(currency, readRetryTransactions()),
-    [currency, readRetryTransactions],
-  );
+  const filteredTransactionsRes = useMemo(() => {
+    const retryRes = createHOR(readTransactions, withRetry(refreshAll));
+    return createHOR(retryRes, (res) => () =>
+      filterCurrency(currency, res.read()),
+    );
+  }, [currency, refreshAll, readTransactions]);
 
   const updateSettings = useCallback((newSettings: RequiredSettings) => {
     setCurrency(newSettings.currency);
@@ -116,22 +112,22 @@ export function useMoneyMoney(
     ) {
       const newTransactionsRes = getTransactions(settingsRef.current);
       setTimeout(() => {
-        setTransactionsRes(() => newTransactionsRes);
+        setTransactionsRes(newTransactionsRes);
       }, 10);
     }
   }, []);
 
   const moneyMoney = useMemo(
     (): MoneyMoneyRes => ({
-      readAccounts: readFilteredAccounts,
-      readCategories: readSplitCategories,
-      readTransactions: readFilteredTransactions,
+      accounts: filteredAccountsRes,
+      categories: splitCategoriesRes,
+      transactions: filteredTransactionsRes,
       refresh: refreshAll,
     }),
     [
-      readFilteredAccounts,
-      readSplitCategories,
-      readFilteredTransactions,
+      filteredAccountsRes,
+      splitCategoriesRes,
+      filteredTransactionsRes,
       refreshAll,
     ],
   );

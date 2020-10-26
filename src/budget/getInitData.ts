@@ -50,8 +50,4 @@ async function getInitData(): Promise<InitData> {
   }
 }
 
-export const initialInitData = getInitData();
-export const initialInitDataRes = createResource(initialInitData);
-export default function createInitDataRes() {
-  return createResource(getInitData());
-}
+export const initialInitDataRes = createResource(() => getInitData());

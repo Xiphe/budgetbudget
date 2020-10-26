@@ -11,14 +11,14 @@ import { MoneyMoneyRes } from '../../../moneymoney';
 function RecalculateButton({
   settings: { accounts },
   update,
-  readAccounts,
-  readTransactions,
-}: Pick<MoneyMoneyRes, 'readAccounts' | 'readTransactions'> & {
+  moneyMoney,
+}: {
+  moneyMoney: MoneyMoneyRes;
   settings: Props['state']['settings'];
   update: (payload: number) => void;
 }) {
-  const allAccounts = readAccounts();
-  const transactions = readTransactions();
+  const allAccounts = moneyMoney.accounts.read();
+  const transactions = moneyMoney.transactions.read();
   const recalculate = useCallback(() => {
     const transactionsSum = transactions.reduce(
       (memo, { amount }) => memo + amount,
@@ -78,7 +78,7 @@ export default function StartBalanceSetting({
         }
       >
         <RecalculateButton
-          {...moneyMoney}
+          moneyMoney={moneyMoney}
           settings={settings}
           update={update}
         />

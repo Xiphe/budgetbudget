@@ -23,7 +23,7 @@ export default function CatSidebar({
 }: Props) {
   const [categories] = (() => {
     try {
-      return moneyMoney.readCategories();
+      return moneyMoney.categories.read();
     } catch (err) {
       if (!ignoreLoadingError || !(err instanceof Error)) {
         throw err;
