@@ -4,7 +4,7 @@ import React, {
   useCallback,
   useState,
 } from 'react';
-import { Action, BudgetState } from '../../budget';
+import { BudgetAction, BudgetState } from '../../budget';
 import { Content, Button, Header, HeaderSpacer } from '../../components';
 import useMenu from '../../lib/useMenu';
 import { OK, Step } from './Types';
@@ -21,7 +21,7 @@ const STEPS: Step[] = [Welcome, Categories, FillCategories, AvailableFunds];
 type Props = {
   numberFormatter: NumberFormatter;
   state: BudgetState;
-  dispatch: Dispatch<Action>;
+  dispatch: Dispatch<BudgetAction>;
   moneyMoney: MoneyMoneyRes;
   onCreate: () => void;
 };

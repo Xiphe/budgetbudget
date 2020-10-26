@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import isSameMonth from 'date-fns/isSameMonth';
 import differenceInCalendarMonths from 'date-fns/differenceInCalendarMonths';
-import { BudgetState, Action, useBudgetData } from '../../budget';
+import { BudgetState, BudgetAction, useBudgetData } from '../../budget';
 import { Content, InfiniteSlider, ScrollTo } from '../../components';
 import {
   HeaderHeightProvider,
@@ -25,7 +25,7 @@ import { SidebarHeader, SidebarWrap } from '../CategorySidebar';
 
 type Props = {
   state: BudgetState;
-  dispatch: Dispatch<Action>;
+  dispatch: Dispatch<BudgetAction>;
   moneyMoney: MoneyMoneyRes;
   numberFormatter: NumberFormatter;
 };

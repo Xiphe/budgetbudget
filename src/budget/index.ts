@@ -9,20 +9,15 @@ import {
   BudgetCategoryGroup as BudgetCategoryGroupT,
 } from './Types';
 import { Action as ActionT } from './budgetReducer';
-import {
-  InitRes as InitResT,
-  InitDataWithState as InitDataWithStateT,
-} from './getInitData';
 
 export * from './budgetReducer';
 export { VERSION } from './Types';
 export { default as useBudgetData } from './useBudgetData';
 export { default as useFilteredCategories } from './useFilteredCategories';
-export { initialInitDataRes } from './getInitData';
+export { default as readBudgetStateFromFile } from './readBudgetStateFromFile';
+export { default as createInitialBudgetState } from './createInitialState';
 
-export type InitRes = InitResT;
-export type InitDataWithState = InitDataWithStateT;
-export type Action = ActionT;
+export type BudgetAction = ActionT;
 export type BudgetState = BudgetStateT;
 export type BudgetListEntry = BudgetListEntryT;
 export type BudgetRow = BudgetRowT;

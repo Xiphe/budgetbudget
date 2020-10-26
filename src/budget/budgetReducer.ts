@@ -1,6 +1,5 @@
 import { BudgetState, Category, IncomeCategory, VERSION } from './Types';
-import { useCallback, useReducer } from 'react';
-import { initialSettings, unsaved } from '../lib';
+import { initialSettings, unsaved, AppAction } from '../lib';
 
 export const INITIAL_STATE = unsaved({
   name: '',
@@ -210,7 +209,10 @@ function updateSettingsIncomeCategory(
   };
 }
 
-function budgetReducer(state: BudgetState, action: Action): BudgetState {
+export function budgetReducer(
+  state: BudgetState,
+  action: AppAction,
+): BudgetState {
   if (action.type === ACTION_INIT) {
     return action.payload;
   }
@@ -325,25 +327,7 @@ function budgetReducer(state: BudgetState, action: Action): BudgetState {
             .concat(action.payload.collapsed ? [action.payload.id] : []),
         },
       };
+    default:
+      return state;
   }
-}
-
-export function useBudgetReducer(
-  initialState: BudgetState,
-  settingsHook: (settings: BudgetState['settings']) => void,
-) {
-  const hookedReducer = useCallback(
-    (state: BudgetState, action: Action) => {
-      const newState = budgetReducer(state, action);
-
-      if (newState.settings !== state.settings) {
-        settingsHook(newState.settings);
-      }
-
-      return newState;
-    },
-    [settingsHook],
-  );
-
-  return useReducer(hookedReducer, initialState);
 }

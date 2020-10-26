@@ -2,7 +2,7 @@ import { Dispatch, useMemo } from 'react';
 import {
   ACTION_SET_CATEGORY_VALUE,
   ACTION_SET_CATEGORY_ROLLOVER,
-  Action,
+  BudgetAction,
 } from '../../budget';
 
 export type ActionCreators = {
@@ -15,7 +15,7 @@ export default function useSetBudgeted({
   dispatch,
 }: {
   monthKey: string;
-  dispatch?: Dispatch<Action>;
+  dispatch?: Dispatch<BudgetAction>;
 }) {
   return useMemo<ActionCreators | undefined>(
     () =>

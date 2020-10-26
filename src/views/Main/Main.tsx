@@ -1,5 +1,5 @@
 import React, { Dispatch, useCallback } from 'react';
-import { Action, BudgetState } from '../../budget';
+import { BudgetAction, BudgetState } from '../../budget';
 import { NumberFormatter, useMenu, useSave } from '../../lib';
 import { MoneyMoneyRes } from '../../moneymoney';
 
@@ -11,7 +11,7 @@ type MainViewProps = {
   state: BudgetState;
   moneyMoney: MoneyMoneyRes;
   numberFormatter: NumberFormatter;
-  dispatch: Dispatch<Action>;
+  dispatch: Dispatch<BudgetAction>;
   setView: (view: 'budget' | 'settings') => void;
 };
 export default function MainView({

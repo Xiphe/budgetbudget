@@ -1,5 +1,5 @@
 import React, { Dispatch, useState } from 'react';
-import { BudgetState, Action } from '../../budget';
+import { BudgetState, BudgetAction } from '../../budget';
 import { Content, Tab, TabBar, Header, Button } from '../../components';
 import General from './General';
 import Categories from './Categories';
@@ -9,7 +9,7 @@ import { NumberFormatter } from '../../lib';
 type Props = {
   numberFormatter: NumberFormatter;
   state: BudgetState;
-  dispatch: Dispatch<Action>;
+  dispatch: Dispatch<BudgetAction>;
   moneyMoney: MoneyMoneyRes;
   onClose: () => void;
 };

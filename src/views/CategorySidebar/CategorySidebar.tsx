@@ -2,7 +2,10 @@ import React, { MutableRefObject, useCallback, Dispatch } from 'react';
 import { Sidebar, Row } from '../../components';
 import { Category } from '../../moneymoney';
 import styles from './CategorySidebar.module.scss';
-import { Action, ACTION_SETTINGS_SET_CATEGORY_COLLAPSED } from '../../budget';
+import {
+  BudgetAction,
+  ACTION_SETTINGS_SET_CATEGORY_COLLAPSED,
+} from '../../budget';
 import { mapCategories, useSyncScrollY } from '../../lib';
 
 type Props = {
@@ -10,7 +13,7 @@ type Props = {
   innerRef?: MutableRefObject<HTMLDivElement | null>;
   syncScrollY?: MutableRefObject<HTMLDivElement | null>;
   collapsedCategories?: string[];
-  dispatch: Dispatch<Action>;
+  dispatch: Dispatch<BudgetAction>;
 };
 export default function CategorySidebar({
   categories,
