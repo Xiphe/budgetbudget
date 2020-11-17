@@ -1,5 +1,7 @@
 import React, { MutableRefObject, useCallback, Dispatch } from 'react';
 import { Sidebar, Row } from '../../components';
+import SingleCategory from './SingleCategory';
+import CategorySpacer from './CategorySpacer';
 import { Category } from '../../moneymoney';
 import styles from './CategorySidebar.module.scss';
 import {
@@ -67,16 +69,10 @@ export default function CategorySidebar({
               groupClosed={groupClosed}
               className={styles.row}
             >
-              {!group && (
-                <span
-                  style={{ backgroundImage: `url(${icon})` }}
-                  className={styles.icon}
-                />
-              )}
-              <span className={styles.title}>{name}</span>
+              <SingleCategory name={name} icon={!group ? icon : undefined} />
               {group && (
                 <>
-                  <span className={styles.spacer} />
+                  <CategorySpacer />
                   {collapsedCategories.includes(uuid) ? (
                     <button
                       className={styles.showHide}

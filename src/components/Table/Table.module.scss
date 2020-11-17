@@ -1,0 +1,17 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  thead {
+    font-weight: bold;
+  }
+  tbody {
+    tr:nth-child(odd) {
+      td {
+        background-color: rgba(var(--dim-colors), 0.05);
+      }
+    }
+  }
+  td {
+    padding: 0.2em 0.5em;
+  }
+}

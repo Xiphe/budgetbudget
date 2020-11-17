@@ -4,6 +4,12 @@
   @include button();
   margin-right: 1em;
   padding: 0.15em 0.8em;
+  height: 1.4rem;
+  line-height: 1.25;
+}
+
+.noMargin {
+  margin-right: 0;
 }
 
 .primary {

@@ -112,6 +112,10 @@ type RemoveSettingsIncomeCategory = {
 };
 type AddSettingsIncomeCategory = {
   type: typeof ACTION_SETTINGS_ADD_INCOME_CATEGORY;
+  payload?: {
+    categoryId: string;
+    availableIn?: number;
+  };
 };
 type SetSettingsCurrency = {
   type: typeof ACTION_SETTINGS_SET_CURRENCY;
@@ -312,8 +316,8 @@ export function budgetReducer(
         settings: {
           ...state.settings,
           incomeCategories: state.settings.incomeCategories.concat({
-            id: null,
-            availableIn: 0,
+            id: action.payload?.categoryId || null,
+            availableIn: action.payload?.availableIn || 0,
           }),
         },
       };

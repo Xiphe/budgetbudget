@@ -126,3 +126,36 @@
   min-width: 33%;
   max-width: calc(var(--sidebar-width) * 1.5);
 }
+.singleBudgetWrapFullHeight {
+  overflow: visible;
+}
+
+.incomeCategoryWrap {
+  min-width: 50%;
+  max-width: 50%;
+}
+
+.table {
+  td {
+    text-align: center;
+  }
+}
+td.tableTitle {
+  text-align: left;
+  font-weight: bold;
+  background-color: transparent !important;
+  width: 5em;
+}
+
+.expanseHeadline {
+  display: flex;
+  align-items: center;
+}
+
+.expanseHeadlineSpacer {
+  flex-grow: 1;
+}
+
+.prevButton {
+  font-size: 0.8rem;
+}

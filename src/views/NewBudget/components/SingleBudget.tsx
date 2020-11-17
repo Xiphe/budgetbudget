@@ -31,15 +31,40 @@ function zeroAll(data: InterMonthData): InterMonthData {
   };
 }
 
+export function onlyIncome(data: InterMonthData): InterMonthData {
+  return {
+    income: data.income,
+    prevMonth: { overspend: 0, toBudget: 0 },
+    overspendRolloverState: {},
+    rollover: { total: 0 },
+    toBudget: data.income.amount,
+    available: [],
+    uncategorized: { amount: 0, transactions: [] },
+    total: {
+      balance: 0,
+      budgeted: 0,
+      spend: 0,
+    },
+    categories: data.categories.map((cat) => ({
+      ...cat,
+      balance: 0,
+      budgeted: 0,
+      spend: 0,
+    })),
+  };
+}
+
 export default function SingleBudget({
   state,
   moneyMoney,
   innerRef,
   syncScrollY,
   small,
+  fullHeight,
   numberFormatter,
   mapMonthData = zeroAll,
 }: StepCompProps & {
+  fullHeight?: boolean;
   mapMonthData?: (data: InterMonthData) => InterMonthData;
   small?: boolean;
   innerRef?: MutableRefObject<HTMLDivElement | null>;
@@ -49,8 +74,8 @@ export default function SingleBudget({
   const syncScroll = useSyncScrollY(syncScrollY);
   const month = useMemo<MonthData>(() => {
     return {
-      ...months[0],
-      get: () => mapMonthData(months[0].get()),
+      ...months[1],
+      get: () => mapMonthData(months[1].get()),
     };
   }, [months, mapMonthData]);
 
@@ -59,6 +84,7 @@ export default function SingleBudget({
       className={cx(
         styles.singleBudgetWrap,
         small && styles.singleBudgetWrapSmall,
+        fullHeight && styles.singleBudgetWrapFullHeight,
       )}
       ref={innerRef}
       onScroll={syncScroll}

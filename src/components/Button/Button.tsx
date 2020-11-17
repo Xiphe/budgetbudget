@@ -4,10 +4,12 @@ import styles from './Button.module.scss';
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   primary?: boolean;
+  noMargin?: boolean;
 };
 export default function Button({
   className,
   primary,
+  noMargin,
   children,
   ...rest
 }: Props) {
@@ -17,6 +19,7 @@ export default function Button({
         className,
         styles.button,
         primary && styles.primary,
+        noMargin && styles.noMargin,
       )}
       {...rest}
     >

@@ -15,6 +15,7 @@ export { default as Select } from './Select';
 export { default as Container } from './Container';
 export { default as Row } from './Row';
 export { default as Button } from './Button';
+export { default as Table } from './Table';
 export { default as InfiniteSlider } from './InfiniteSlider';
 export * from './TabBar';
 export type ScrollTo = ScrollToT;

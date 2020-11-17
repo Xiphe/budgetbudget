@@ -2,6 +2,12 @@
   display: flex;
   height: var(--row-height);
   align-items: center;
+  padding-left: calc(1rem + var(--indent) * 1rem);
+  padding-right: 1rem;
+}
+.noPadding {
+  padding-left: calc(var(--indent) * 1rem);
+  padding-right: 0rem;
 }
 .odd {
   background-color: rgba(var(--dim-colors), 0.05);

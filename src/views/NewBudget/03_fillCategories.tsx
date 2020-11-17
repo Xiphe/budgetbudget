@@ -77,12 +77,12 @@ const IntroIncomeCats: Step = {
             </p>
             <h3>This Money is taken from "To Budget"</h3>
             <p>
-              But currently there are{' '}
-              <strong>{props.numberFormatter.format(0)}</strong> "Available
-              Funds" and thereby no money available to budget.
+              But currently there is{' '}
+              <strong>{props.numberFormatter.format(0)}</strong> Income and
+              thereby no money available to budget.
             </p>
             <Button primary onClick={props.nextPage}>
-              Configure Available Funds
+              Configure Income
             </Button>
           </div>
         </div>

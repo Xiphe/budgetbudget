@@ -13,7 +13,8 @@ import { HeaderHeightProvider, NumberFormatter } from '../../lib';
 import Welcome from './01_welcome';
 import Categories from './02_categories';
 import FillCategories from './03_fillCategories';
-import AvailableFunds from './04_availableFunds';
+import AvailableFunds from './04_incomeCategories';
+import styles from './NewBudget.module.scss';
 
 const STEPS: Step[] = [Welcome, Categories, FillCategories, AvailableFunds];
 
@@ -28,9 +29,16 @@ type Props = {
 const INITIAL_STEP = 0;
 
 function getProgress(i: number) {
-  return (100 / (STEPS.length - 1)) * i;
+  return Math.round((100 / (STEPS.length - 1)) * i);
 }
 
+type StepState = {
+  step: Step;
+  nextTitle: string | undefined;
+  prev: boolean;
+  progress: number;
+  ok: OK;
+};
 export default function NewBudget({
   state,
   dispatch,
@@ -40,19 +48,16 @@ export default function NewBudget({
   const [
     {
       step: { Comp },
+      prev,
       ok,
       nextTitle,
       progress,
     },
     setStep,
-  ] = useState<{
-    step: Step;
-    nextTitle: string | undefined;
-    progress: number;
-    ok: OK;
-  }>(() => ({
+  ] = useState<StepState>(() => ({
     step: STEPS[INITIAL_STEP],
     progress: getProgress(INITIAL_STEP),
+    prev: false,
     nextTitle: STEPS[INITIAL_STEP + 1]?.title,
     ok: STEPS[INITIAL_STEP].initialOk(state),
   }));
@@ -70,6 +75,25 @@ export default function NewBudget({
 
         return {
           step: nextStep,
+          prev: true,
+          nextTitle,
+          progress: getProgress(nextIndex),
+          ok: nextStep.initialOk(state),
+        };
+      });
+    });
+  }, [startTransition, state]);
+
+  const prevPage = useCallback(() => {
+    startTransition(() => {
+      setStep(({ step }) => {
+        const nextIndex = STEPS.indexOf(step) - 1;
+        const nextStep = STEPS[nextIndex];
+        const nextTitle = STEPS[STEPS.indexOf(nextStep) + 1]?.title;
+
+        return {
+          step: nextStep,
+          prev: nextIndex !== 0,
           nextTitle,
           progress: getProgress(nextIndex),
           ok: nextStep.initialOk(state),
@@ -93,6 +117,11 @@ export default function NewBudget({
           <Header>
             <span>Create a new Budget ({progress}%)</span>
             <HeaderSpacer />
+            {prev ? (
+              <Button onClick={prevPage} className={styles.prevButton}>
+                ◀
+              </Button>
+            ) : null}
             <Button>Jump to Settings</Button>
             {nextTitle ? (
               <Button
@@ -112,6 +141,7 @@ export default function NewBudget({
           dispatch={dispatch}
           moneyMoney={moneyMoney}
           nextPage={nextPage}
+          prevPage={prevPage}
           numberFormatter={numberFormatter}
         />
       </Content>

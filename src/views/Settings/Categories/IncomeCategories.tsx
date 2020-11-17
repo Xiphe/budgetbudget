@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '../../../components';
-import Setting from '../Setting';
+// import Setting from '../Setting';
 import { Props } from './Types';
 import IncomeCategorySelect from './IncomeCategorySelect';
 import IncomeCategoryAvailableInput from './IncomeCategoryAvailableInput';
@@ -10,7 +10,7 @@ import {
   ACTION_SETTINGS_ADD_INCOME_CATEGORY,
 } from '../../../budget';
 
-export default function CategorySettings({
+export default function IncomeCategorySetting({
   state,
   dispatch,
   categories,
@@ -18,8 +18,9 @@ export default function CategorySettings({
   const { incomeCategories } = state.settings;
   const incomeCategoryIds = incomeCategories.map(({ id }) => id);
 
+  // <Setting label="Income categories">
   return (
-    <Setting label="Income categories">
+    <>
       <ul className={styles.incomeCategories}>
         {incomeCategories.map(({ id, availableIn }) => {
           return (
@@ -64,6 +65,7 @@ export default function CategorySettings({
           +
         </Button>
       )}
-    </Setting>
+    </>
+    // </Setting>
   );
 }

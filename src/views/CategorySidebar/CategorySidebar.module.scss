@@ -18,8 +18,6 @@
 }
 
 .row {
-  padding-left: calc(1rem + var(--indent) * 1rem);
-  padding-right: 1rem;
   &:hover {
     .showHide {
       opacity: 1;

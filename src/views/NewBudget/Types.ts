@@ -5,6 +5,7 @@ import { MoneyMoneyRes } from '../../moneymoney';
 
 export type StepCompProps = {
   nextPage: () => void;
+  prevPage: () => void;
   state: BudgetState;
   dispatch: Dispatch<BudgetAction>;
   moneyMoney: MoneyMoneyRes;

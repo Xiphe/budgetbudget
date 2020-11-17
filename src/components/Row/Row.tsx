@@ -6,12 +6,14 @@ type Props = Omit<HTMLAttributes<HTMLDivElement>, 'style'> & {
   indent?: number;
   leaf?: boolean;
   odd?: boolean;
+  noPadding?: boolean;
   'data-row'?: never;
   groupClosed?: boolean;
 };
 export default function Row({
   indent = 0,
   leaf = false,
+  noPadding = false,
   odd,
   groupClosed,
   className,
@@ -26,6 +28,7 @@ export default function Row({
       className={classNames(
         className,
         styles.row,
+        noPadding && styles.noPadding,
         !leaf && styles.group,
         odd && styles.odd,
         groupClosed && styles.groupClosed,

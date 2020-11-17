@@ -86,7 +86,7 @@ export default async function createInitialState(): Promise<BudgetState> {
   const transactionsOfAccounts = allTransactions.filter(({ accountUuid }) =>
     accountUuids.includes(accountUuid),
   );
-  const startDate = startOfMonth(subMonths(getToday(), 1));
+  const startDate = startOfMonth(subMonths(getToday(), 2));
 
   return {
     name: '',
