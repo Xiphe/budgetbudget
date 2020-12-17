@@ -2,7 +2,7 @@
   <a href="https://budgetbudget.app">
     <img 
       width="150"
-      src="https://user-images.githubusercontent.com/911218/91666679-fcacd780-eafe-11ea-99ed-149b13371e3e.png"
+      src="https://user-images.githubusercontent.com/911218/102475657-6e7f4180-405a-11eb-9722-06f500fd4492.png"
       alt="BudgetBudget App Icon"
     />
   </a>
