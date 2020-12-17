@@ -47,15 +47,19 @@ export default function useSave(menu: Menu, state: BudgetState | null) {
       quitAfterSave.current = false;
       window.onbeforeunload = enable ? warnUnsavedChanges(quitAfterSave) : null;
       ipcRenderer.send('FILE_EDITED', enable);
-      menu.getMenuItemById(MENU_ID_SAVE).enabled = enable;
+      const save = menu.getMenuItemById(MENU_ID_SAVE);
+      if (save) {
+        save.enabled = enable;
+      }
       enabledRef.current = enable;
     },
     [menu],
   );
   useEffect(() => {
-    menu.getMenuItemById(MENU_ID_SAVE_AS).enabled = Boolean(
-      state && !isError(state) && state.name,
-    );
+    const save = menu.getMenuItemById(MENU_ID_SAVE_AS);
+    if (save) {
+      save.enabled = Boolean(state && !isError(state) && state.name);
+    }
   }, [menu, state]);
   useEffect(() => {
     const saveCanceled = () => {
