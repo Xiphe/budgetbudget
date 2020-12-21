@@ -8,11 +8,8 @@ import StartDateSetting from './StartDate';
 import CurrencySetting from './Currency';
 import { Props } from './Types';
 import { Loading } from '../../../components';
-import { NumberFormatter } from '../../../lib/createNumberFormatter';
 
-export default function Settings(
-  props: Props & { numberFormatter: NumberFormatter },
-) {
+export default function Settings(props: Props) {
   return (
     <>
       <Setting label="Name" id="setting-name">

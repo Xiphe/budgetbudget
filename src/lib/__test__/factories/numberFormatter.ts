@@ -1,4 +1,4 @@
-import { NumberFormatter } from '../../createNumberFormatter';
+import { NumberFormatter } from '../../NumberFormatter';
 
 const ni = () => {
   throw new Error('Not Implemented');

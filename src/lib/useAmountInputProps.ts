@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { NumberFormatter } from './createNumberFormatter';
+import { NumberFormatter } from './NumberFormatter';
 import { createNumberStepper } from './numberStepper';
 import useInputProps from './useInputProps';
 

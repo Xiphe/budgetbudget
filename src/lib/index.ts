@@ -1,4 +1,4 @@
-import { NumberFormatter as NumberFormatterT } from './createNumberFormatter';
+import { NumberFormatter as NumberFormatterT } from './NumberFormatter';
 import { Resource as ResourceT } from './createResource';
 import { AppAction as AppActionT } from './useAppState';
 import {
@@ -14,9 +14,10 @@ export type InitialAppState = InitialAppStateT;
 export { default as formatDateKey } from './formatDateKey';
 export { default as roundWithFractions } from './roundWithFractions';
 export {
-  default as createNumberFormatter,
+  createNumberFormatter,
+  NumberFormatterProvider,
   useNumberFormatter,
-} from './createNumberFormatter';
+} from './NumberFormatter';
 export { default as useInputProps } from './useInputProps';
 export { default as useAmountInputProps } from './useAmountInputProps';
 export { default as getSharedSettings } from './getSharedSettings';

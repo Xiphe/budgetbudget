@@ -14,7 +14,6 @@ import {
   VisibleMothContextProvider,
   getToday,
   MonthsContextProvider,
-  NumberFormatter,
 } from '../../lib';
 import Month from '../Month';
 import BudgetHeader from './Header';
@@ -28,15 +27,9 @@ type Props = {
   state: BudgetState;
   dispatch: Dispatch<BudgetAction>;
   moneyMoney: MoneyMoneyRes;
-  numberFormatter: NumberFormatter;
 };
 
-export default function Budget({
-  state,
-  dispatch,
-  moneyMoney,
-  numberFormatter,
-}: Props) {
+export default function Budget({ state, dispatch, moneyMoney }: Props) {
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const onSliderScrollRef = useRef<((target: HTMLDivElement) => void) | null>(
@@ -125,15 +118,8 @@ export default function Budget({
                   collapsedCategories={state.settings.collapsedCategories}
                   month={month}
                   categories={categories || []}
-                  numberFormatter={numberFormatter}
                 >
-                  {(data) => (
-                    <Overview
-                      month={month}
-                      data={data}
-                      numberFormatter={numberFormatter}
-                    />
-                  )}
+                  {(data) => <Overview month={month} data={data} />}
                 </Month>
               ))}
             </InfiniteSlider>

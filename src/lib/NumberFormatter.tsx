@@ -1,14 +1,18 @@
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  createContext,
+  ReactNode,
+  useContext,
+} from 'react';
 import { remote, ipcRenderer } from 'electron';
-import { useEffect, useMemo, useState } from 'react';
 
 type FormatOptions = {
   thousandDelimiter?: boolean;
   withFractions?: boolean;
 };
-export default function createNumberFormatter(
-  fractionDigits: number,
-  locale: string,
-) {
+export function createNumberFormatter(fractionDigits: number, locale: string) {
   const fractionStep = 1 / Math.pow(10, fractionDigits);
   const formatter = Intl.NumberFormat(locale);
   const formatterWithFraction = Intl.NumberFormat(locale, {
@@ -57,8 +61,15 @@ export default function createNumberFormatter(
 }
 
 export type NumberFormatter = ReturnType<typeof createNumberFormatter>;
+const NumberFormatterContext = createContext<NumberFormatter | null>(null);
 
-export function useNumberFormatter(fractionDigits: number) {
+export function NumberFormatterProvider({
+  fractionDigits,
+  children,
+}: {
+  children: ReactNode;
+  fractionDigits: number;
+}) {
   const [localeCC, setLocaleCC] = useState(() =>
     remote.app.getLocaleCountryCode(),
   );
@@ -72,8 +83,25 @@ export function useNumberFormatter(fractionDigits: number) {
     };
   }, []);
 
-  return useMemo(() => createNumberFormatter(fractionDigits, localeCC), [
-    fractionDigits,
-    localeCC,
-  ]);
+  const numberFormatter = useMemo(
+    () => createNumberFormatter(fractionDigits, localeCC),
+    [fractionDigits, localeCC],
+  );
+
+  return (
+    <NumberFormatterContext.Provider value={numberFormatter}>
+      {children}
+    </NumberFormatterContext.Provider>
+  );
+}
+export function useNumberFormatter() {
+  const numberFormatter = useContext(NumberFormatterContext);
+
+  if (!numberFormatter) {
+    throw new Error(
+      'Can not useNumberFormatter outside of NumberFormatterProvider',
+    );
+  }
+
+  return numberFormatter;
 }

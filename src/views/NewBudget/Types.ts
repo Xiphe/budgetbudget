@@ -1,6 +1,5 @@
 import { Dispatch, ReactElement } from 'react';
 import { BudgetState, BudgetAction } from '../../budget';
-import { NumberFormatter } from '../../lib';
 import { MoneyMoneyRes } from '../../moneymoney';
 
 export type StepCompProps = {
@@ -10,7 +9,6 @@ export type StepCompProps = {
   dispatch: Dispatch<BudgetAction>;
   moneyMoney: MoneyMoneyRes;
   setOk: (ok: OK) => void;
-  numberFormatter: NumberFormatter;
 };
 export type OK = boolean | 'primary';
 export type Step = {

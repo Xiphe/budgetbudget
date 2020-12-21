@@ -17,11 +17,11 @@ import {
   InitialAppData,
   Resource,
   useAppState,
-  useNumberFormatter,
   withRetry,
   createNewInitialAppState,
   initialAppStateRes,
   createResource,
+  NumberFormatterProvider,
 } from './lib';
 
 const Welcome = React.lazy(() => import('./views/Welcome'));
@@ -31,41 +31,40 @@ const Main = React.lazy(() => import('./views/Main'));
 function App(initData: InitialAppState) {
   const [view, setView] = useState(initData.view);
   const [budget, moneyMoney, dispatch] = useAppState(initData);
-  const numberFormatter = useNumberFormatter(budget.settings.fractionDigits);
   const openBudget = useCallback(() => {
     setView('budget');
   }, [setView]);
 
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<Startup />}>
-        {((): ReactNode => {
-          switch (view) {
-            case 'new':
-              return (
-                <NewBudget
-                  numberFormatter={numberFormatter}
-                  state={budget}
-                  dispatch={dispatch}
-                  onCreate={openBudget}
-                  moneyMoney={moneyMoney}
-                />
-              );
-            default:
-              return (
-                <Main
-                  numberFormatter={numberFormatter}
-                  view={view}
-                  moneyMoney={moneyMoney}
-                  state={budget}
-                  dispatch={dispatch}
-                  setView={setView}
-                />
-              );
-          }
-        })()}
-      </Suspense>
-    </ErrorBoundary>
+    <NumberFormatterProvider fractionDigits={budget.settings.fractionDigits}>
+      <ErrorBoundary>
+        <Suspense fallback={<Startup />}>
+          {((): ReactNode => {
+            switch (view) {
+              case 'new':
+                return (
+                  <NewBudget
+                    state={budget}
+                    dispatch={dispatch}
+                    onCreate={openBudget}
+                    moneyMoney={moneyMoney}
+                  />
+                );
+              default:
+                return (
+                  <Main
+                    view={view}
+                    moneyMoney={moneyMoney}
+                    state={budget}
+                    dispatch={dispatch}
+                    setView={setView}
+                  />
+                );
+            }
+          })()}
+        </Suspense>
+      </ErrorBoundary>
+    </NumberFormatterProvider>
   );
 }
 

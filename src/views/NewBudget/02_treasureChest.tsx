@@ -12,14 +12,35 @@ import styles from './NewBudget.module.scss';
 import { Account } from '../../moneymoney';
 import { CurrencySetting, AccountSetting } from '../Settings';
 import * as accountIcons from './accountIcons';
-import { currencySign } from '../../lib';
+import { currencySign, useNumberFormatter } from '../../lib';
+
+function ExamplaricAccount({
+  balance,
+  currency,
+}: {
+  balance: string | number;
+  currency?: string;
+}) {
+  const numberFormatter = useNumberFormatter();
+  return (
+    <>
+      <span className={cx(balance < 0 && styles.negative)}>
+        {typeof balance === 'number'
+          ? numberFormatter.format(balance)
+          : balance}{' '}
+      </span>{' '}
+      {currency}
+    </>
+  );
+}
 
 const OnePot: Step = {
   title: 'The Treasure-Chest',
   initialOk() {
     return true;
   },
-  Comp({ nextPage, moneyMoney, state, dispatch, numberFormatter, setOk }) {
+  Comp({ nextPage, moneyMoney, state, dispatch, setOk }) {
+    const numberFormatter = useNumberFormatter();
     const [customizeAccounts, setCustomizeAccounts] = useState<boolean>(false);
     const accounts = moneyMoney.accounts.read();
     const currencies = moneyMoney.currencies.read();
@@ -183,7 +204,8 @@ const OnePot: Step = {
                 )}
               >
                 {numberFormatter.format(exampleAccounts[0].balance)}{' '}
-              </span>
+              </span>{' '}
+              {signedCurrency}
               <img src={exampleAccounts[0].icon} alt="account" />→
               <br />
               {exampleAccounts[2] ? (
@@ -194,7 +216,8 @@ const OnePot: Step = {
                     )}
                   >
                     {numberFormatter.format(exampleAccounts[2].balance)}{' '}
-                  </span>
+                  </span>{' '}
+                  {signedCurrency}
                   <img src={exampleAccounts[2].icon} alt="account" />→
                 </>
               ) : (
@@ -217,7 +240,8 @@ const OnePot: Step = {
                     )}
                   >
                     {numberFormatter.format(exampleAccounts[1].balance)}
-                  </span>
+                  </span>{' '}
+                  {signedCurrency}
                 </>
               ) : (
                 <>

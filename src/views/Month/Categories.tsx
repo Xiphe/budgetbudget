@@ -5,7 +5,7 @@ import { BudgetCategoryRow, BudgetCategoryGroup } from '../../budget';
 import { Row } from '../../components';
 import { Props } from './Types';
 import styles from './Month.module.scss';
-import { NumberFormatter, mapCategories } from '../../lib';
+import { mapCategories, useNumberFormatter } from '../../lib';
 import { ActionCreators } from './useActions';
 import BudgetInput from './BudgetInput';
 
@@ -16,12 +16,10 @@ type CategoriesProps = Omit<Props, 'budget'> &
 
 type BudgetRowProps = BudgetCategoryRow &
   Partial<ActionCreators> & {
-    numberFormatter: NumberFormatter;
     groupClosed: boolean;
     odd: boolean;
   };
 function BudgetRow({
-  numberFormatter,
   groupClosed,
   name,
   odd,
@@ -34,7 +32,7 @@ function BudgetRow({
   toggleRollover,
   indentation,
 }: BudgetRowProps) {
-  const { format } = numberFormatter;
+  const { format } = useNumberFormatter();
 
   const showContextMenu = useMemo(() => {
     if (!toggleRollover) {
@@ -80,7 +78,6 @@ function BudgetRow({
             onChange={setBudgeted}
             value={budgeted}
             categoryId={uuid}
-            numberFormatter={numberFormatter}
           />
         ) : (
           format(budgeted)
@@ -110,12 +107,11 @@ function BudgetRow({
 
 export default function Categories({
   budgetCategories = [],
-  numberFormatter,
   setBudgeted,
   toggleRollover,
   collapsedCategories = [],
 }: CategoriesProps) {
-  const { format } = numberFormatter;
+  const { format } = useNumberFormatter();
   return (
     <div role="grid">
       {mapCategories(
@@ -170,7 +166,6 @@ export default function Categories({
               toggleRollover={toggleRollover}
               odd={!(i % 2)}
               groupClosed={groupClosed}
-              numberFormatter={numberFormatter}
             />
           );
         },

@@ -9,7 +9,7 @@ import { Content, Button, Header, HeaderSpacer } from '../../components';
 import useMenu from '../../lib/useMenu';
 import { OK, Step } from './Types';
 import { MoneyMoneyRes } from '../../moneymoney';
-import { HeaderHeightProvider, NumberFormatter } from '../../lib';
+import { HeaderHeightProvider } from '../../lib';
 import Welcome from './01_welcome';
 import TreasureChest from './02_treasureChest';
 // import NameAndPurpose from './__03_nameAndPurpose';
@@ -30,14 +30,13 @@ const STEPS: Step[] = [
 ];
 
 type Props = {
-  numberFormatter: NumberFormatter;
   state: BudgetState;
   dispatch: Dispatch<BudgetAction>;
   moneyMoney: MoneyMoneyRes;
   onCreate: () => void;
 };
 
-const INITIAL_STEP = 2;
+const INITIAL_STEP = 1;
 
 function getProgress(i: number) {
   return Math.round((100 / (STEPS.length - 1)) * i);
@@ -50,12 +49,7 @@ type StepState = {
   progress: number;
   ok: OK;
 };
-export default function NewBudget({
-  state,
-  dispatch,
-  moneyMoney,
-  numberFormatter,
-}: Props) {
+export default function NewBudget({ state, dispatch, moneyMoney }: Props) {
   const [
     {
       step: { Comp },
@@ -153,7 +147,6 @@ export default function NewBudget({
           moneyMoney={moneyMoney}
           nextPage={nextPage}
           prevPage={prevPage}
-          numberFormatter={numberFormatter}
         />
       </Content>
     </HeaderHeightProvider>

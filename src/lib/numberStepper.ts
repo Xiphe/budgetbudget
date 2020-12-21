@@ -1,5 +1,5 @@
 import { KeyboardEvent } from 'react';
-import { NumberFormatter } from './createNumberFormatter';
+import { NumberFormatter } from './NumberFormatter';
 import { DATE_INPUT_RGX } from './parseBudgetInput';
 import parseISO from 'date-fns/parseISO';
 import addYears from 'date-fns/addYears';

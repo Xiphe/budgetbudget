@@ -1,6 +1,6 @@
 import React, { Dispatch, useCallback } from 'react';
 import { BudgetAction, BudgetState } from '../../budget';
-import { NumberFormatter, useMenu, useSave } from '../../lib';
+import { useMenu, useSave } from '../../lib';
 import { MoneyMoneyRes } from '../../moneymoney';
 
 const Settings = React.lazy(() => import('../Settings'));
@@ -10,14 +10,12 @@ type MainViewProps = {
   view: 'budget' | 'settings';
   state: BudgetState;
   moneyMoney: MoneyMoneyRes;
-  numberFormatter: NumberFormatter;
   dispatch: Dispatch<BudgetAction>;
   setView: (view: 'budget' | 'settings') => void;
 };
 export default function MainView({
   moneyMoney,
   state,
-  numberFormatter,
   dispatch,
   view,
   setView,
@@ -33,12 +31,7 @@ export default function MainView({
   switch (view) {
     case 'budget':
       return (
-        <Budget
-          moneyMoney={moneyMoney}
-          state={state}
-          dispatch={dispatch}
-          numberFormatter={numberFormatter}
-        />
+        <Budget moneyMoney={moneyMoney} state={state} dispatch={dispatch} />
       );
     case 'settings':
       return (
@@ -47,7 +40,6 @@ export default function MainView({
           state={state}
           dispatch={dispatch}
           onClose={openBudget}
-          numberFormatter={numberFormatter}
         />
       );
   }

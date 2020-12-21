@@ -1,4 +1,3 @@
-import { NumberFormatter } from '../../lib';
 import { MonthData, BudgetAction } from '../../budget';
 import { Dispatch } from 'react';
 import { Category } from '../../moneymoney';
@@ -9,6 +8,5 @@ export type Props = {
   collapsedCategories?: string[];
   date: Date;
   categories: Category[];
-  numberFormatter: NumberFormatter;
   month: MonthData;
 };

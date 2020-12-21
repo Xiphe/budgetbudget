@@ -52,13 +52,12 @@ function FirstMonthBudget(
 ) {
   const { months, categories } = useBudgetData(props.state, props.moneyMoney);
   const firstMonth = months[0];
-  const month = firstMonth;
-  // useMemo((): MonthData => {
-  //   return {
-  //     ...firstMonth,
-  //     get: () => onlyBudgets(firstMonth.get()),
-  //   };
-  // }, [firstMonth]);
+  const month = useMemo((): MonthData => {
+    return {
+      ...firstMonth,
+      get: () => onlyBudgets(firstMonth.get()),
+    };
+  }, [firstMonth]);
 
   return (
     <SingleBudget
@@ -79,15 +78,9 @@ function FirstMonthBudget(
           {data && (
             <>
               <HadTable>
-                <ToBudget
-                  toBudget={data.toBudget}
-                  numberFormatter={props.numberFormatter}
-                />
+                <ToBudget toBudget={data.toBudget} />
               </HadTable>
-              <BudgetTotals
-                numberFormatter={props.numberFormatter}
-                {...data.total}
-              />
+              <BudgetTotals {...data.total} />
             </>
           )}
         </>
@@ -184,6 +177,7 @@ const FirstMonth: Step = {
                 </>
               )}
             </p>
+
             <p>
               We want to see <strong>0 To Budget</strong>, meaning every cent
               we've put into the treasure chest now has a purpose.

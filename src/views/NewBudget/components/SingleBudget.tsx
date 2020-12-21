@@ -77,7 +77,6 @@ export default function SingleBudget({
   small,
   fullHeight,
   dispatch,
-  numberFormatter,
   children,
   month,
   categories,
@@ -103,7 +102,6 @@ export default function SingleBudget({
         collapsedCategories={state.settings.collapsedCategories}
         month={month}
         categories={categories || []}
-        numberFormatter={numberFormatter}
       >
         {children}
       </Month>

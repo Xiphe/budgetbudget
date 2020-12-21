@@ -4,10 +4,8 @@ import { Content, Tab, TabBar, Header, Button } from '../../components';
 import General from './General';
 import Categories from './Categories';
 import { MoneyMoneyRes } from '../../moneymoney';
-import { NumberFormatter } from '../../lib';
 
 type Props = {
-  numberFormatter: NumberFormatter;
   state: BudgetState;
   dispatch: Dispatch<BudgetAction>;
   moneyMoney: MoneyMoneyRes;

@@ -4,7 +4,7 @@ import isBefore from 'date-fns/isBefore';
 import parseISO from 'date-fns/parseISO';
 import isSameMonth from 'date-fns/isSameMonth';
 import { Parser } from 'expr-eval';
-import { NumberFormatter } from './createNumberFormatter';
+import { NumberFormatter } from './NumberFormatter';
 
 const EMPTY_BUDGET_ROW = {
   budgeted: 0,

@@ -3,9 +3,8 @@ import cx from 'classnames';
 import format from 'date-fns/format';
 import subMonths from 'date-fns/subMonths';
 import styles from './Month.module.scss';
-import { Props as CommonProps } from './Types';
 import { MonthData, DetailedMonthData } from '../../budget';
-import { NumberFormatter } from '../../lib';
+import { useNumberFormatter } from '../../lib';
 import { InterMonthData } from '../../budget/Types';
 
 type ListItemProps = {
@@ -28,9 +27,9 @@ export function ListItem({ amount, title, big, negative }: ListItemProps) {
 
 type ToBudgetProps = {
   toBudget: number;
-  numberFormatter: NumberFormatter;
 };
-export function ToBudget({ toBudget, numberFormatter }: ToBudgetProps) {
+export function ToBudget({ toBudget }: ToBudgetProps) {
+  const numberFormatter = useNumberFormatter();
   return (
     <ListItem
       big={toBudget !== 0}
@@ -48,15 +47,13 @@ export function Title(props: { children: ReactNode }) {
 export function HadTable(props: { children: ReactNode }) {
   return <ul className={cx(styles.headTable)}>{props.children}</ul>;
 }
-type BudgetTotalsProps = InterMonthData['total'] & {
-  numberFormatter: NumberFormatter;
-};
+
 export function BudgetTotals({
   budgeted,
   spend,
   balance,
-  numberFormatter,
-}: BudgetTotalsProps) {
+}: InterMonthData['total']) {
+  const numberFormatter = useNumberFormatter();
   return (
     <div className={cx(styles.budgetTotals)}>
       <div>
@@ -81,13 +78,10 @@ export function BudgetTotals({
 type Props = {
   month: MonthData;
   data?: DetailedMonthData;
-  numberFormatter: NumberFormatter;
 };
-export default function Overview({
-  month: { name, date },
-  data,
-  numberFormatter,
-}: Props) {
+export default function Overview({ month: { name, date }, data }: Props) {
+  const numberFormatter = useNumberFormatter();
+
   return (
     <div>
       <Title>{name}</Title>
@@ -134,12 +128,9 @@ export default function Overview({
               )}
               title="Budgeted"
             />
-            <ToBudget
-              toBudget={data.toBudget}
-              numberFormatter={numberFormatter}
-            />
+            <ToBudget toBudget={data.toBudget} />
           </HadTable>
-          <BudgetTotals numberFormatter={numberFormatter} {...data.total} />
+          <BudgetTotals {...data.total} />
         </>
       )}
     </div>

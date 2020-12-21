@@ -95,7 +95,7 @@ export default async function createInitialState(): Promise<BudgetState> {
     settings: {
       currency,
       incomeCategories: getIncomeCategories(transactionsOfAccounts),
-      accounts: ['de1b0787-ec69-442f-8883-0057a21abd3d'], //accountUuids,
+      accounts: accountUuids, // ['de1b0787-ec69-442f-8883-0057a21abd3d'], //accountUuids,
       fractionDigits: 2,
       startDate: startDate.getTime(),
     },
