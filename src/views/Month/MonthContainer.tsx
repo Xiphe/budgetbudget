@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, ReactNode } from 'react';
 import cx from 'classnames';
 import {
   useIsVisible,
@@ -6,24 +6,28 @@ import {
   MonthContextProvider,
 } from '../../lib';
 import Header from './Header';
-import Overview from './Overview';
 import Categories from './Categories';
 import { Props as BaseProps } from './Types';
 import styles from './Month.module.scss';
 import format from 'date-fns/format';
 import useActions from './useActions';
+import { InterMonthData, MonthData } from '../../budget/Types';
 
 type Props = BaseProps & {
   initialVisible?: boolean;
+  children:
+    | ReactNode
+    | ((data: InterMonthData | undefined, month: MonthData) => ReactNode);
   width?: 'auto' | 'full';
 };
 
 export default function MonthContainer({
   initialVisible = false,
   width = 'auto',
+  children,
   ...props
 }: Props) {
-  const { date, month, numberFormatter } = props;
+  const { date, month } = props;
   const isVisible = useIsVisible();
   const setVisibleMonth = useSetVisibleMonth();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -48,11 +52,7 @@ export default function MonthContainer({
           aria-label={format(date, 'MMMM yyyy')}
         >
           <Header>
-            <Overview
-              month={month}
-              data={data}
-              numberFormatter={numberFormatter}
-            />
+            {typeof children === 'function' ? children(data, month) : children}
           </Header>
           {data ? (
             <Categories

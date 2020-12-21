@@ -1,14 +1,15 @@
-import React, { MutableRefObject, useMemo } from 'react';
+import React, { MutableRefObject, Dispatch, ComponentProps } from 'react';
 import cx from 'classnames';
 import { StepCompProps } from '../Types';
 import styles from '../NewBudget.module.scss';
-import { MonthData, useBudgetData } from '../../../budget';
+import { Action, MonthData } from '../../../budget';
 import Month from '../../Month';
 import { useSyncScrollY } from '../../../lib';
+import { Category } from '../../../moneymoney';
 
 type InterMonthData = ReturnType<MonthData['get']>;
 
-function zeroAll(data: InterMonthData): InterMonthData {
+export function zeroAll(data: InterMonthData): InterMonthData {
   return {
     income: { amount: 0, transactions: [] },
     prevMonth: { overspend: 0, toBudget: 0 },
@@ -29,6 +30,10 @@ function zeroAll(data: InterMonthData): InterMonthData {
       spend: 0,
     })),
   };
+}
+
+export function noop(data: InterMonthData): InterMonthData {
+  return data;
 }
 
 export function onlyIncome(data: InterMonthData): InterMonthData {
@@ -54,30 +59,30 @@ export function onlyIncome(data: InterMonthData): InterMonthData {
   };
 }
 
+type Props = StepCompProps & {
+  fullHeight?: boolean;
+  small?: boolean;
+  dispatch?: Dispatch<Action>;
+  children: ComponentProps<typeof Month>['children'];
+  innerRef?: MutableRefObject<HTMLDivElement | null>;
+  syncScrollY?: MutableRefObject<HTMLDivElement | null>;
+  month: MonthData;
+  categories: Category[];
+};
+
 export default function SingleBudget({
   state,
-  moneyMoney,
   innerRef,
   syncScrollY,
   small,
   fullHeight,
+  dispatch,
   numberFormatter,
-  mapMonthData = zeroAll,
-}: StepCompProps & {
-  fullHeight?: boolean;
-  mapMonthData?: (data: InterMonthData) => InterMonthData;
-  small?: boolean;
-  innerRef?: MutableRefObject<HTMLDivElement | null>;
-  syncScrollY?: MutableRefObject<HTMLDivElement | null>;
-}) {
-  const { months, categories } = useBudgetData(state, moneyMoney);
+  children,
+  month,
+  categories,
+}: Props) {
   const syncScroll = useSyncScrollY(syncScrollY);
-  const month = useMemo<MonthData>(() => {
-    return {
-      ...months[1],
-      get: () => mapMonthData(months[1].get()),
-    };
-  }, [months, mapMonthData]);
 
   return (
     <div
@@ -91,7 +96,7 @@ export default function SingleBudget({
     >
       <Month
         width="full"
-        key={month.key}
+        dispatch={dispatch}
         monthKey={month.key}
         date={month.date}
         initialVisible={true}
@@ -99,7 +104,9 @@ export default function SingleBudget({
         month={month}
         categories={categories || []}
         numberFormatter={numberFormatter}
-      />
+      >
+        {children}
+      </Month>
     </div>
   );
 }

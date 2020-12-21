@@ -14,6 +14,7 @@ import {
 } from '../../budget';
 import { mapCategories } from '../../lib';
 import Input from '../Settings/Input';
+import Overview from '../Month/Overview';
 
 const AvailableFunds: Step = {
   title: 'Fill Categories',
@@ -33,7 +34,15 @@ const AvailableFunds: Step = {
 
     return (
       <>
-        <SingleBudget {...props} small fullHeight mapMonthData={onlyIncome} />
+        <SingleBudget {...props} small fullHeight mapMonthData={onlyIncome}>
+          {(data, month) => (
+            <Overview
+              data={data}
+              month={month}
+              numberFormatter={props.numberFormatter}
+            />
+          )}
+        </SingleBudget>
         <div
           className={cx(
             styles.explainWrap,

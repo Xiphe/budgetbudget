@@ -39,6 +39,10 @@ export const filterAccounts = memoizeOne(
   },
 );
 
+export function getCurrencies(accounts: InteropAccount[]): string[] {
+  return Array.from(new Set(accounts.map(({ currency }) => currency))).sort();
+}
+
 export type AccountsResource = Resource<Account[]>;
 export async function getAccounts(): Promise<InteropAccount[]> {
   const probablyAccounts = await ipcRenderer.invoke('MM_EXPORT_ACCOUNTS');

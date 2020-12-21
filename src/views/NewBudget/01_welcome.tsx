@@ -23,7 +23,13 @@ const Welcome: Step = {
     return (
       <div className={cx(styles.explainWrap, styles.explainBody)}>
         <h1 className={styles.center}>Hi and Welcome to BudgetBudget</h1>
-        <div className={cx(styles.explainSpace, styles.personal)}>
+        <div
+          className={cx(
+            styles.explainSpace,
+            styles.personal,
+            styles.embossVertical,
+          )}
+        >
           <img src={me} alt="Portrait of Hannes Diercks" />
           <div>
             <h2>I'm Hannes </h2>
@@ -38,16 +44,24 @@ const Welcome: Step = {
           </div>
         </div>
         <div className={styles.explainSpace}>
-          <h2 className={styles.center}>Some notes on Privacy and Security</h2>
+          <h2 className={styles.center}>
+            <span role="img" aria-label="lock">
+              🔒
+            </span>{' '}
+            Some notes on Privacy and Security
+          </h2>
           <div className={styles.explainCols}>
             <div>
               <h3>
-                BudgetBudget operates <strong>read only</strong> on MoneyMoney.
+                <span role="img" aria-label="eyes">
+                  👀
+                </span>{' '}
+                Read only
               </h3>
               <p>
-                In fact, the only <strong>write operation</strong> MoneyMoney
-                provides to other apps is adding transactions to Offline
-                Accounts - and BudgetBudget won't do that.
+                The only <strong>write operation</strong> MoneyMoney allows
+                other apps is adding transactions to Offline Accounts - and
+                BudgetBudget won't do that.
               </p>
               <p>
                 That means whatever happens in this App <strong>can not</strong>{' '}
@@ -55,20 +69,41 @@ const Welcome: Step = {
               </p>
             </div>
             <div>
-              <h3>Budgets are single files</h3>
+              <h3>
+                <span role="img" aria-label="mac">
+                  💻
+                </span>{' '}
+                Offline
+              </h3>
               <p>
-                You can have as many budget files as you like. BudgetBudget will
-                not encrypt these files itself but it's quite easy to store them
-                in a encrypted vault.
+                BudgetBudget only connects to the internet to automatically
+                update itself. Your <strong>data stays on your mac</strong>{' '}
+                unless you upload it yourself.
               </p>
               <p>
-                Budget files <strong>do not store any financial data</strong>{' '}
-                from MoneyMoney. They contain only the amount of money you've
-                budgeted and the settings.
+                I also do not collect usage statistics but instead hope that
+                you'll write an email or open an issue if you encounter
+                problems.
+              </p>
+            </div>
+            <div>
+              <h3>
+                <span role="img" aria-label="document">
+                  📄
+                </span>{' '}
+                Single files
+              </h3>
+              <p>
+                A budget is a single un-encrypted file, you can have as many as
+                you like and store them wherever you want.
+              </p>
+              <p>
+                Budget files{' '}
+                <strong>do not contain any transaction data</strong> - Only the
+                amount of money you've budgeted and the settings.
               </p>
             </div>
           </div>
-          <p className={styles.center}>Explore and try things out!</p>
           <p className={styles.center}>
             <Button primary onClick={nextPage}>
               Let's get started

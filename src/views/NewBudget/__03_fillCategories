@@ -12,6 +12,7 @@ import CategorySidebar from './components/CategorySidebar';
 import SingleBudget from './components/SingleBudget';
 import { Step } from './Types';
 import styles from './NewBudget.module.scss';
+import Overview from '../Month/Overview';
 
 const IntroIncomeCats: Step = {
   title: 'Fill Categories',
@@ -61,7 +62,15 @@ const IntroIncomeCats: Step = {
                 {...props}
                 innerRef={budgetRef}
                 syncScrollY={sidebarRef}
-              />
+              >
+                {(data, month) => (
+                  <Overview
+                    data={data}
+                    month={month}
+                    numberFormatter={props.numberFormatter}
+                  />
+                )}
+              </SingleBudget>
             </Suspense>
           </ErrorBoundary>
           <div className={cx(styles.explainBody, styles.explainSpaceS)}>

@@ -12,7 +12,7 @@ import {
 
 import { BudgetState, IncomeCategory, VERSION } from './Types';
 
-function getStartBalance(
+export function getStartBalance(
   startDate: Date,
   transactions: Transaction[],
   accounts: Account[],
@@ -86,7 +86,7 @@ export default async function createInitialState(): Promise<BudgetState> {
   const transactionsOfAccounts = allTransactions.filter(({ accountUuid }) =>
     accountUuids.includes(accountUuid),
   );
-  const startDate = startOfMonth(subMonths(getToday(), 2));
+  const startDate = startOfMonth(subMonths(getToday(), 1));
 
   return {
     name: '',
@@ -95,14 +95,9 @@ export default async function createInitialState(): Promise<BudgetState> {
     settings: {
       currency,
       incomeCategories: getIncomeCategories(transactionsOfAccounts),
-      accounts: accountUuids,
+      accounts: ['de1b0787-ec69-442f-8883-0057a21abd3d'], //accountUuids,
       fractionDigits: 2,
       startDate: startDate.getTime(),
-      startBalance: getStartBalance(
-        startDate,
-        transactionsOfAccounts,
-        accounts,
-      ),
     },
   };
 }

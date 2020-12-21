@@ -4,20 +4,33 @@ import isAfter from 'date-fns/isAfter';
 import differenceInCalendarMonths from 'date-fns/differenceInCalendarMonths';
 import { formatDateKey, roundWithFractions, getToday } from '../lib';
 import getMonthData from './getMonthData';
-import { Transaction, Category, calculateBalances } from '../moneymoney';
+import {
+  Transaction,
+  Category,
+  calculateBalances,
+  Account,
+} from '../moneymoney';
 import { BudgetState, MonthData, InterMonthData } from './Types';
+import { getStartBalance } from './createInitialState';
 
 const EMPTY_TRANSACTIONS: Transaction[] = [];
 
 export default function useBudgets(
   transactions: Transaction[] = EMPTY_TRANSACTIONS,
+  accounts: Account[],
   categories: Category[] = [],
   defaultCategories: Category[] = [],
   {
     budgets,
-    settings: { incomeCategories, fractionDigits, startBalance, startDate },
+    settings: {
+      incomeCategories,
+      fractionDigits,
+      startDate: startTimeStamp,
+      accounts: selectedAccounts,
+    },
   }: BudgetState,
 ): [MonthData[], (add: number) => void] {
+  const startDate = new Date(startTimeStamp);
   const defaultCategoryIds = useMemo(
     () => defaultCategories.map(({ uuid }) => uuid),
     [defaultCategories],
@@ -25,6 +38,16 @@ export default function useBudgets(
   const balances = useMemo(
     () => calculateBalances(transactions, defaultCategoryIds),
     [transactions, defaultCategoryIds],
+  );
+
+  const startBalance = useMemo(
+    () =>
+      getStartBalance(
+        startDate,
+        transactions,
+        accounts.filter(({ uuid }) => selectedAccounts.includes(uuid)),
+      ),
+    [startDate, transactions, accounts, selectedAccounts],
   );
   const getInitial = useMemo(() => {
     const initial: InterMonthData = {
@@ -52,7 +75,7 @@ export default function useBudgets(
     const today = getToday();
     const sorted = Object.keys(balances)
       .concat(Object.keys(budgets))
-      .concat(formatDateKey(new Date(startDate)))
+      .concat(formatDateKey(startDate))
       .sort();
     const lastExisting = sorted[sorted.length - 1];
     const lastPlusFuture = lastExisting

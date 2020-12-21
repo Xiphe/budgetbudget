@@ -2,11 +2,11 @@ import React, { useCallback } from 'react';
 import { useInputProps } from '../../../lib';
 import { ACTION_SET_NAME } from '../../../budget';
 import Input from '../Input';
-import Setting from '../Setting';
 import { Props } from './Types';
 
 export default function NameSetting({
   state: { name },
+  id,
   dispatch,
 }: Props & { id?: string }) {
   const inputProps = useInputProps({
@@ -26,13 +26,11 @@ export default function NameSetting({
   });
 
   return (
-    <Setting label="Name" id="setting-name">
-      <Input
-        {...inputProps}
-        type="text"
-        id="setting-name"
-        placeholder="Private, Family, Band, ..."
-      />
-    </Setting>
+    <Input
+      {...inputProps}
+      type="text"
+      id={id}
+      placeholder="Private, Family, Band, ..."
+    />
   );
 }

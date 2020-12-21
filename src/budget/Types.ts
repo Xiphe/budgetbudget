@@ -41,7 +41,7 @@ const settingsShape = t.type(
     fractionDigits: t.number,
     startDate: t.number,
     currency: t.string,
-    startBalance: t.number,
+    // startBalance: t.number,
     accounts: t.array(t.string),
     incomeCategories: t.array(incomeCategoryShape),
   },

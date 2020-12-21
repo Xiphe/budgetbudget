@@ -16,9 +16,6 @@ export const ACTION_SETTINGS_SET_FRACTION_DIGITS = Symbol(
 export const ACTION_SETTINGS_SET_SELECTED_ACCOUNTS = Symbol(
   'ACTION_SETTINGS_SET_SELECTED_ACCOUNTS',
 );
-export const ACTION_SETTINGS_SET_START_BALANCE = Symbol(
-  'ACTION_SETTINGS_SET_START_BALANCE',
-);
 export const ACTION_SETTINGS_SET_CURRENCY = Symbol(
   'ACTION_SETTINGS_SET_CURRENCY',
 );
@@ -81,10 +78,6 @@ type SetSettingsStartDate = {
   type: typeof ACTION_SETTINGS_SET_START_DATE;
   payload: number;
 };
-type SetSettingsStartBalance = {
-  type: typeof ACTION_SETTINGS_SET_START_BALANCE;
-  payload: number;
-};
 type SetSettingsIncomeCategories = {
   type: typeof ACTION_SETTINGS_SET_INCOME_CATEGORIES;
   payload: {
@@ -140,7 +133,6 @@ export type Action =
   | SetSettingsFractionDigits
   | SetSettingsSelectedAccounts
   | SetSettingsStartDate
-  | SetSettingsStartBalance
   | SetSettingsCurrency
   | SetSettingsIncomeCategories
   | UpdateSettingsIncomeCategory
@@ -264,14 +256,6 @@ export function budgetReducer(
         settings: {
           ...state.settings,
           startDate: action.payload,
-        },
-      };
-    case ACTION_SETTINGS_SET_START_BALANCE:
-      return {
-        ...state,
-        settings: {
-          ...state.settings,
-          startBalance: action.payload,
         },
       };
     case ACTION_SETTINGS_SET_CURRENCY:

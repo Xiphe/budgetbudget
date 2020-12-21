@@ -9,7 +9,6 @@ const settings: BudgetState['settings'] = {
   incomeCategories: [],
   fractionDigits: 2,
   startDate: startOfMonth(subMonths(getToday(), 1)).getTime(),
-  startBalance: 0,
 };
 
 export default settings;

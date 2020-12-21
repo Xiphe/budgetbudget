@@ -3,7 +3,6 @@ import format from 'date-fns/format';
 import { useInputProps, getToday } from '../../../lib';
 import { ACTION_SETTINGS_SET_START_DATE } from '../../../budget';
 import Input from '../Input';
-import Setting from '../Setting';
 import styles from '../Settings.module.scss';
 import { Props } from './Types';
 
@@ -13,8 +12,9 @@ export default function StartDateSetting({
   state: {
     settings: { startDate },
   },
+  id,
   dispatch,
-}: Props) {
+}: Props & { id?: string }) {
   const someDateString = useMemo(() => getToday().toLocaleDateString(), []);
   const inputProps = useInputProps({
     value: startDate,
@@ -40,14 +40,12 @@ export default function StartDateSetting({
   });
 
   return (
-    <Setting label="Start Date" id="setting-start-date">
-      <Input
-        id="setting-start-date"
-        className={styles.dateInput}
-        {...inputProps}
-        type="date"
-        placeholder={`${someDateString}, ...`}
-      />
-    </Setting>
+    <Input
+      id={id}
+      className={styles.dateInput}
+      {...inputProps}
+      type="date"
+      placeholder={`${someDateString}, ...`}
+    />
   );
 }

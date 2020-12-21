@@ -31,11 +31,16 @@
 }
 .header {
   position: sticky;
+  overflow: hidden;
   z-index: 20;
   top: 0px;
+  opacity: 0;
   height: var(--month-header-height);
-  transition: height 200ms ease-out;
+  transition: height 200ms ease-out, opacity 300ms ease-in-out 100ms;
   background: var(--background-color);
+}
+.headerMounted {
+  opacity: 1;
 }
 .headerBorder {
   display: block;

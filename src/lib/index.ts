@@ -27,6 +27,7 @@ export {
 } from './initialAppState';
 export { default as getToday } from './getToday';
 export { default as isError } from './isError';
+export { default as currencySign } from './currencySign';
 export {
   default as createResource,
   withRetry,
@@ -38,6 +39,7 @@ export { default as useSyncScrollY } from './useSyncScrollY';
 export { default as mapCategories } from './mapCategories';
 export { default as parseBudgetInput } from './parseBudgetInput';
 export { default as useAppState } from './useAppState';
+export { default as useMounted } from './useMounted';
 export { useRecentFiles } from './useRecentFiles';
 export {
   VisibleMothContextProvider,
@@ -50,9 +52,6 @@ export {
   MonthContextProvider,
   useMonth,
 } from './MonthProvider';
-export {
-  HeaderHeightProvider,
-  useRegisterHeaderHeight,
-} from './HeaderHeightContext';
+export { HeaderHeightProvider, useRegisterHeader } from './HeaderHeightContext';
 export * from './guards';
 export * from './useIsVisible';

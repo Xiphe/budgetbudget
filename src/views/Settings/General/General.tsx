@@ -4,7 +4,7 @@ import NameSetting from './Name';
 import AccountSetting from './Account';
 import FractionDigitsSetting from './FractionDigits';
 import StartDateSetting from './StartDate';
-import StartBalanceSetting from './StartBalance';
+// import StartBalanceSetting from './__StartBalance';
 import CurrencySetting from './Currency';
 import { Props } from './Types';
 import { Loading } from '../../../components';
@@ -15,7 +15,7 @@ export default function Settings(
 ) {
   return (
     <>
-      <Setting label="Name">
+      <Setting label="Name" id="setting-name">
         <NameSetting {...props} id="setting-name" />
       </Setting>
       <CurrencySetting {...props} />
@@ -28,8 +28,10 @@ export default function Settings(
       <hr />
       <FractionDigitsSetting {...props} />
       <hr />
-      <StartDateSetting {...props} />
-      <StartBalanceSetting {...props} />
+      <Setting label="Start Date" id="setting-start-date">
+        <StartDateSetting {...props} id="setting-start-date" />
+      </Setting>
+      {/* <StartBalanceSetting {...props} /> */}
     </>
   );
 }

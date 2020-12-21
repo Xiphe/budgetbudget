@@ -22,6 +22,7 @@ import CategorySidebar from '../CategorySidebar/CategorySidebar';
 import styles from './Budget.module.scss';
 import { MoneyMoneyRes } from '../../moneymoney';
 import { SidebarHeader, SidebarWrap } from '../CategorySidebar';
+import Overview from '../Month/Overview';
 
 type Props = {
   state: BudgetState;
@@ -125,7 +126,15 @@ export default function Budget({
                   month={month}
                   categories={categories || []}
                   numberFormatter={numberFormatter}
-                />
+                >
+                  {(data) => (
+                    <Overview
+                      month={month}
+                      data={data}
+                      numberFormatter={numberFormatter}
+                    />
+                  )}
+                </Month>
               ))}
             </InfiniteSlider>
           </Content>

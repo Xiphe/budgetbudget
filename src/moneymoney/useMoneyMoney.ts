@@ -9,7 +9,12 @@ import {
   CategoryResource,
   splitCurrencyCategories,
 } from './getCategories';
-import { AccountsResource, filterAccounts, getAccounts } from './getAccounts';
+import {
+  AccountsResource,
+  filterAccounts,
+  getAccounts,
+  getCurrencies,
+} from './getAccounts';
 import {
   ACTION_SETTINGS_SET_CURRENCY,
   ACTION_SETTINGS_SET_SELECTED_ACCOUNTS,
@@ -33,6 +38,7 @@ export type MoneyMoneyRes = {
   categories: CategoryResource;
   transactions: TransactionsResource;
   accounts: AccountsResource;
+  currencies: Resource<string[]>;
   refresh: () => void;
 };
 
@@ -89,6 +95,9 @@ export function moneyMoneyReducer(
       };
     }
     case ACTION_SETTINGS_SET_START_DATE: {
+      if (action.payload === state.settings.startDate) {
+        return state;
+      }
       const newSettings = {
         ...state.settings,
         startDate: action.payload,
@@ -116,12 +125,17 @@ export function useMoneyMoney(
   const refresh = useCallback(() => dispatch({ type: ACTION_MM_REFRESH }), [
     dispatch,
   ]);
+  const allAccountsRes = useMemo(() => {
+    return createHOR(baseAccountsRes, withRetry(refresh));
+  }, [baseAccountsRes, refresh]);
   const filteredAccountsRes = useMemo(() => {
-    const retryRes = createHOR(baseAccountsRes, withRetry(refresh));
-    return createHOR(retryRes, (res) => () =>
+    return createHOR(allAccountsRes, (res) => () =>
       filterAccounts(currency, res.read()),
     );
-  }, [currency, baseAccountsRes, refresh]);
+  }, [currency, allAccountsRes]);
+  const currenciesRes = useMemo(() => {
+    return createHOR(allAccountsRes, (res) => () => getCurrencies(res.read()));
+  }, [allAccountsRes]);
 
   const splitCategoriesRes = useMemo(() => {
     const retryRes = createHOR(baseCategoriesRes, withRetry(refresh));
@@ -142,9 +156,16 @@ export function useMoneyMoney(
       accounts: filteredAccountsRes,
       categories: splitCategoriesRes,
       transactions: filteredTransactionsRes,
+      currencies: currenciesRes,
       refresh,
     }),
-    [filteredAccountsRes, splitCategoriesRes, filteredTransactionsRes, refresh],
+    [
+      filteredAccountsRes,
+      splitCategoriesRes,
+      filteredTransactionsRes,
+      currenciesRes,
+      refresh,
+    ],
   );
 }
 

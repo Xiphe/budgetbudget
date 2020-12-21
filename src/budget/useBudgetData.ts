@@ -9,12 +9,14 @@ export default function useBudgetData(
 ) {
   const { incomeCategories } = state.settings;
 
+  const accounts = moneyMoney.accounts.read();
   const transactions = moneyMoney.transactions.read();
   const [categories, defaultCategories] = moneyMoney.categories.read();
   const usableCategories = useFilteredCategories(incomeCategories, categories);
 
   const [months, extendFuture] = useBudgets(
     transactions,
+    accounts,
     usableCategories,
     defaultCategories,
     state,

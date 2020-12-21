@@ -1,0 +1,83 @@
+import React, {
+  useEffect,
+  useMemo,
+  unstable_useTransition,
+  useState,
+} from 'react';
+import cx from 'classnames';
+import { Button } from '../../components';
+import logo from '../../img/logo.png';
+import { Step } from './Types';
+import styles from './NewBudget.module.scss';
+import { Account } from '../../moneymoney';
+import {
+  CurrencySetting,
+  AccountSetting,
+  NameSetting,
+  StartDateSetting,
+} from '../Settings';
+import * as accountIcons from './accountIcons';
+import { currencySign } from '../../lib';
+
+const NameAndPurpose: Step = {
+  title: 'Set Purpose',
+  initialOk() {
+    return true;
+  },
+  Comp({ nextPage, moneyMoney, state, dispatch, numberFormatter, setOk }) {
+    const accounts = moneyMoney.accounts.read();
+
+    const {
+      settings: { accounts: selectedAccounts, currency },
+    } = state;
+    const balance = useMemo((): number => {
+      return accounts
+        .filter(({ uuid }) => selectedAccounts.includes(uuid))
+        .reduce((b, { balance }) => b + balance, 0);
+    }, [accounts, selectedAccounts]);
+    const signedCurrency = currencySign(currency);
+
+    return (
+      <div className={cx(styles.explainWrap, styles.explainBody)}>
+        <h1 className={styles.center}>
+          Capture the purpose or context of this money
+        </h1>
+        <div className={styles.embossVertical}>
+          <div className={styles.treasuregramm}>
+            <div className={styles.treasure}>
+              <img src={logo} alt="treasure chest" />
+            </div>
+          </div>
+          <p className={cx(balance < 0 && styles.negative, styles.treasureSum)}>
+            <strong>{numberFormatter.format(balance)}</strong> {signedCurrency}
+            {balance >= 0 ? ' to Budget' : ' Overbudgeted'}
+          </p>
+        </div>
+        <div className={cx(styles.explainSpace, styles.twoCols)}>
+          <div>
+            <h3>
+              <span role="img" aria-label="suspicious look">
+                🧐
+              </span>{' '}
+              Doesn't look right?
+            </h3>
+            <NameSetting
+              state={state}
+              dispatch={dispatch}
+              moneyMoney={moneyMoney}
+            />
+          </div>
+          <div>
+            <StartDateSetting
+              state={state}
+              dispatch={dispatch}
+              moneyMoney={moneyMoney}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  },
+};
+
+export default NameAndPurpose;
