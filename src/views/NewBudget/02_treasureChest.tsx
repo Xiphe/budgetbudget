@@ -14,23 +14,47 @@ import { CurrencySetting, AccountSetting } from '../Settings';
 import * as accountIcons from './accountIcons';
 import { currencySign, useNumberFormatter } from '../../lib';
 
-function ExamplaricAccount({
+function ExemplarilyAccount({
   balance,
+  account,
+  icon,
+  left,
   currency,
 }: {
   balance: string | number;
+  account: string;
+  icon: string;
+  left?: boolean;
   currency?: string;
 }) {
   const numberFormatter = useNumberFormatter();
-  return (
+
+  const img = left ? (
     <>
-      <span className={cx(balance < 0 && styles.negative)}>
-        {typeof balance === 'number'
-          ? numberFormatter.format(balance)
-          : balance}{' '}
-      </span>{' '}
-      {currency}
+      {' '}
+      <img src={icon} alt="account" />→
     </>
+  ) : (
+    <>
+      ←<img src={icon} alt="account" />{' '}
+    </>
+  );
+
+  return (
+    <span className={cx(styles.exemplarilyAccount, left && styles.accountLeft)}>
+      {left ? null : img}
+      <span className={styles.accountAndAmount}>
+        <span className={styles.account}>{account}</span>
+        <br />
+        <span className={cx(balance < 0 && styles.negative)}>
+          {typeof balance === 'number'
+            ? numberFormatter.format(balance)
+            : balance}{' '}
+        </span>{' '}
+        {currency}
+      </span>
+      {left ? img : null}
+    </span>
   );
 }
 
@@ -198,59 +222,56 @@ const OnePot: Step = {
         <div className={styles.embossVertical}>
           <div className={styles.treasuregramm}>
             <p>
-              <span
-                className={cx(
-                  exampleAccounts[0].balance < 0 && styles.negative,
-                )}
-              >
-                {numberFormatter.format(exampleAccounts[0].balance)}{' '}
-              </span>{' '}
-              {signedCurrency}
-              <img src={exampleAccounts[0].icon} alt="account" />→
-              <br />
+              <ExemplarilyAccount
+                balance={exampleAccounts[0].balance}
+                account={exampleAccounts[0].name}
+                currency={signedCurrency}
+                icon={exampleAccounts[0].icon}
+                left
+              />
               {exampleAccounts[2] ? (
-                <>
-                  <span
-                    className={cx(
-                      exampleAccounts[2].balance < 0 && styles.negative,
-                    )}
-                  >
-                    {numberFormatter.format(exampleAccounts[2].balance)}{' '}
-                  </span>{' '}
-                  {signedCurrency}
-                  <img src={exampleAccounts[2].icon} alt="account" />→
-                </>
+                <ExemplarilyAccount
+                  balance={exampleAccounts[2].balance}
+                  account={exampleAccounts[2].name}
+                  currency={signedCurrency}
+                  icon={exampleAccounts[2].icon}
+                  left
+                />
               ) : (
-                <>
-                  ...
-                  <img src={accountIcons.One} alt="account" />→
-                </>
+                <ExemplarilyAccount
+                  balance={-742}
+                  account="Other account"
+                  currency={signedCurrency}
+                  icon={accountIcons.One}
+                  left
+                />
               )}
             </p>
+
             <div className={styles.treasure}>
               <img src={logo} alt="treasure chest" />
             </div>
             <p>
               {exampleAccounts[1] ? (
-                <>
-                  ←<img src={exampleAccounts[1].icon} alt="account" />{' '}
-                  <span
-                    className={cx(
-                      exampleAccounts[1].balance < 0 && styles.negative,
-                    )}
-                  >
-                    {numberFormatter.format(exampleAccounts[1].balance)}
-                  </span>{' '}
-                  {signedCurrency}
-                </>
+                <ExemplarilyAccount
+                  balance={exampleAccounts[1].balance}
+                  account={exampleAccounts[1].name}
+                  currency={signedCurrency}
+                  icon={exampleAccounts[1].icon}
+                />
               ) : (
-                <>
-                  ←<img src={accountIcons.Two} alt="account" />
-                  ...
-                </>
+                <ExemplarilyAccount
+                  balance={742}
+                  account="Other account"
+                  currency={signedCurrency}
+                  icon={accountIcons.Two}
+                />
               )}
-              <br />
-              ←<img src={accountIcons.Three} alt="account" /> ...
+              <ExemplarilyAccount
+                balance="..."
+                account="Your other accounts"
+                icon={accountIcons.Three}
+              />
             </p>
           </div>
           <p className={cx(balance < 0 && styles.negative, styles.treasureSum)}>

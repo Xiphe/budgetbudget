@@ -136,15 +136,27 @@
 
   p {
     width: 50%;
-    font-size: 1.5rem;
-    margin-top: 0;
-    img {
-      position: relative;
-      top: 0.45em;
-      margin: 0 0.3em;
-    }
   }
-  p:first-child {
+}
+.exemplarilyAccount {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  img {
+    margin: 0 0.3em;
+  }
+}
+.accountAndAmount {
+  display: inline-block;
+  font-size: 1.2rem;
+  margin: 0 0.5rem;
+}
+.account {
+  font-size: 0.8rem;
+}
+.accountLeft {
+  justify-content: flex-end;
+  .accountAndAmount {
     text-align: right;
   }
 }
