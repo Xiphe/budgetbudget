@@ -11,12 +11,10 @@ function addStdErr(err, stderr) {
   return err;
 }
 
-function osascript(scriptFile, ...args) {
+function osascript() {
   return new Promise((resolve, reject) => {
     exec(
-      `osascript ${scriptFile} ${args
-        .map((arg) => `"${arg.replace(/"/g, '\\"')}"`)
-        .join(' ')}`,
+      `osascript -e "tell application \\"MoneyMoney\\" to export transactions from account \\"${ACCOUNT}\\" from date \\"${START_DATE}\\" as \\"plist\\""`,
       { maxBuffer: MAX_BUFFER },
       (err, stdout, stderr) => {
         if (err) {
@@ -33,11 +31,7 @@ function osascript(scriptFile, ...args) {
   });
 }
 
-osascript(
-  `${__dirname}/main/scripts/exportTransactions.applescript`,
-  ACCOUNT,
-  START_DATE,
-)
+osascript()
   .then((data) => {
     console.log(data);
     console.log('OK');
