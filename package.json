@@ -9,7 +9,6 @@
     "test": "craco test",
     "test:cypress": "export PORT=$(get-port 8765); concurrently npm:start:testserver npm:start:cypress",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --mac --arm64 --x64",
     "inspect:asar": "rm -rf app_asar && asar extract dist/mac/BudgetBudget.app/Contents/Resources/app.asar ./app_asar",
     "start:cra": "BROWSER=none craco start",
     "start:electron": "npm run wait:server && SERVER_URL=http://localhost:$PORT NODE_ENV=development electron .",
@@ -64,7 +63,7 @@
       [
         "@semantic-release/exec",
         {
-          "prepareCmd": "npm --no-git-tag-version version ${nextRelease.version} && npm run build && npx --no-install electron-builder --mac --publish never"
+          "prepareCmd": "npm --no-git-tag-version version ${nextRelease.version} && npm run build && npx --no-install electron-builder --mac --arm64 --x64 --publish never"
         }
       ],
       [
