@@ -4,47 +4,71 @@ import React, {
   useContext,
   useState,
   useCallback,
+  useMemo,
+  useRef,
 } from 'react';
 
-type HeaderHeight = (height: number) => () => void;
-const HeaderHeightContext = createContext<null | HeaderHeight>(null);
-
-function useHeaderHeight(): [number, HeaderHeight] {
-  const [headerHeights, setHeaderHeights] = useState<number[]>([]);
-  const registerBigHeader = useCallback((height: number) => {
-    setHeaderHeights((prevBigHeaders) => prevBigHeaders.concat(height));
-    return () => {
-      setHeaderHeights((prevBigHeaders) => {
-        const index = prevBigHeaders.indexOf(height);
-        return [
-          ...prevBigHeaders.slice(0, index),
-          ...prevBigHeaders.slice(index + 1),
-        ];
-      });
-    };
-  }, []);
-
-  return [Math.max(...headerHeights), registerBigHeader];
-}
+type RegisterHeaderHeight = (id: number, header: HTMLElement | null) => void;
+const HeaderHeightContext = createContext<null | RegisterHeaderHeight>(null);
 
 export const HeaderHeightProvider: FC = ({ children }) => {
-  const [headerHeight, registerHeaderHeight] = useHeaderHeight();
+  const headers = useRef<{ [k: number]: HTMLElement }>({});
+  const [height, setHeight] = useState<number>(0);
+  const observer = useMemo(
+    () =>
+      new ResizeObserver(() => {
+        requestAnimationFrame(() => {
+          setHeight(
+            Math.max(
+              0,
+              ...Object.values(headers.current).map(
+                (elm) => elm.getBoundingClientRect().height,
+              ),
+            ),
+          );
+        });
+      }),
+    [setHeight],
+  );
+  const registerHeader = useCallback<RegisterHeaderHeight>(
+    (id, header) => {
+      if (headers.current[id] === header) {
+        return;
+      }
+      if (header === null) {
+        observer.unobserve(headers.current[id]);
+        delete headers.current[id];
+        return;
+      }
+      observer.observe(header);
+      headers.current[id] = header;
+    },
+    [headers, observer],
+  );
 
   return (
-    <HeaderHeightContext.Provider value={registerHeaderHeight}>
-      <div style={{ '--month-header-height': `${headerHeight}px` } as any}>
+    <HeaderHeightContext.Provider value={registerHeader}>
+      <div style={{ '--month-header-height': `${height}px` } as any}>
         {children}
       </div>
     </HeaderHeightContext.Provider>
   );
 };
 
-export function useRegisterHeaderHeight() {
-  const registerHeaderHeight = useContext(HeaderHeightContext);
-  if (!registerHeaderHeight) {
+let i = 0;
+export function useRegisterHeader() {
+  const id = useMemo(() => i++, []);
+  const registerHeader = useContext(HeaderHeightContext);
+  const callback = useCallback(
+    (elm: HTMLElement | null) => {
+      registerHeader!(id, elm);
+    },
+    [registerHeader, id],
+  );
+  if (!registerHeader) {
     throw new Error(
-      'Can not use useRegisterHeaderHeight without HeaderHeightContext.Provider',
+      'Can not use useRegisterHeader without HeaderHeightContext.Provider',
     );
   }
-  return registerHeaderHeight;
+  return callback;
 }

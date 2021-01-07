@@ -1,8 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import classNames from 'classnames';
 import format from 'date-fns/format';
 import subMonths from 'date-fns/subMonths';
-import { useRegisterHeaderHeight } from '../../lib';
 import styles from './Month.module.scss';
 import { Props as CommonProps } from './Types';
 import { MonthData, DetailedMonthData } from '../../budget';
@@ -34,27 +33,6 @@ export default function Overview({
   numberFormatter,
 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const registerHeaderHeight = useRegisterHeaderHeight();
-  useEffect(() => {
-    let cleanup: () => void = () => {};
-    const registerHeight = () => {
-      requestAnimationFrame(() => {
-        cleanup();
-        cleanup = registerHeaderHeight(
-          Math.ceil(
-            ref.current ? ref.current.getBoundingClientRect().height : 0,
-          ),
-        );
-      });
-    };
-    const observer = new ResizeObserver(registerHeight);
-    observer.observe(ref.current!);
-
-    return () => {
-      observer.disconnect();
-      cleanup();
-    };
-  }, [registerHeaderHeight]);
   const budgetClasses = data
     ? classNames(
         data.toBudget !== 0 && styles.bigBudget,

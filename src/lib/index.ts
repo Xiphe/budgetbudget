@@ -36,9 +36,6 @@ export {
   MonthContextProvider,
   useMonth,
 } from './MonthProvider';
-export {
-  HeaderHeightProvider,
-  useRegisterHeaderHeight,
-} from './HeaderHeightContext';
+export { HeaderHeightProvider, useRegisterHeader } from './HeaderHeightContext';
 export * from './guards';
 export * from './useIsVisible';
