@@ -18,6 +18,8 @@
 .monthInner {
   min-height: 100%;
   border-right: 1px solid var(--element-border-color);
+  padding-bottom: calc(300px - var(--month-header-height));
+  transition: padding 200ms ease-out;
 }
 .title {
   text-align: center;
