@@ -15,6 +15,7 @@
   --element-shadow-alpha: 0.1;
   --element-shadow: 0px 0px 0px 0.5px rgba(0, 0, 0, 0.15),
     0px 1px 1px rgba(0, 0, 0, 0.2);
+  --negative-color: #e64848;
 }
 [data-theme^='dark'] {
   --dim-colors: 255, 255, 255;
@@ -32,6 +33,7 @@
   --input-outline-dim: rgb(110, 110, 110);
   --element-shadow-alpha: 0.4;
   --element-shadow: 0px 1px 3px rgba(0, 0, 0, 0.4);
+  --negative-color: #e00d0d;
 }
 :root {
   --row-height: 1.8rem;
@@ -40,7 +42,6 @@
   --font: 'Roboto';
   --font-mono: 'Roboto Mono';
   --button-color-active: white;
-  --negative-color: rgb(var(--accent-colors));
 }
 #root {
   --input-border-color: rgba(var(--dim-colors), 0.15);
