@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useState } from 'react';
+import cx from 'classnames';
 import classNames from 'classnames';
 import format from 'date-fns/format';
 import subMonths from 'date-fns/subMonths';
@@ -32,20 +33,26 @@ export default function Overview({
   data,
   numberFormatter,
 }: Props) {
-  const ref = useRef<HTMLDivElement | null>(null);
   const budgetClasses = data
     ? classNames(
         data.toBudget !== 0 && styles.bigBudget,
         data.toBudget < 0 && styles.negative,
       )
     : '';
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const i = setTimeout(() => setVisible(Boolean(data)), 50);
+    return () => clearTimeout(i);
+  }, [data]);
 
   return (
-    <div ref={ref}>
+    <div>
       <h3 className={styles.title}>{name}</h3>
       {data && (
         <>
-          <ul className={styles.headTable}>
+          <ul
+            className={cx(styles.headTable, visible && styles.headTableVisible)}
+          >
             <ListItem
               amount={numberFormatter.format(data.availableThisMonth.amount)}
               title="Available Funds"

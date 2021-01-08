@@ -34,6 +34,7 @@
   transition: height 200ms ease-out;
   background: var(--background-color);
 }
+
 .headerBorder {
   display: block;
   position: absolute;
@@ -48,6 +49,8 @@
   list-style: none;
   margin: 0;
   padding: 0 0 3.3rem;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out 200ms;
   li {
     span {
       display: inline-block;
@@ -73,7 +76,9 @@
     line-height: 1.1em;
   }
 }
-
+.headTableVisible {
+  opacity: 1;
+}
 .bigBudget {
   font-size: 1.5em;
 }
