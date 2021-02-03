@@ -119,6 +119,13 @@ export default function BudgetHeader({ scrollRef, onClick }: Props) {
           ))}
         </div>
       </div>
+      <button
+        name={formatDateKey(new Date())}
+        className={styles.todayButton}
+        onClick={handleClick as any}
+      >
+        Today
+      </button>
     </Header>
   );
 }

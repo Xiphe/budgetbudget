@@ -9,7 +9,8 @@
   -webkit-app-region: no-drag;
   height: 1.5rem;
   position: relative;
-  margin: 0.4rem auto;
+  margin: 0.4rem;
+  margin-left: auto;
   width: 70vw;
   max-width: 40rem;
   overflow: hidden;
@@ -68,4 +69,34 @@ button.unloadedMonthListEntry {
   position: sticky;
   left: 0;
   font-weight: 200;
+}
+.todayButton {
+  -webkit-app-region: no-drag;
+  display: inline-block;
+  position: relative;
+  height: 1.5rem;
+  margin: 0.4rem;
+  padding: 0rem 0.5rem;
+  margin-right: auto;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  border-radius: 3px;
+  color: var(--main-color);
+  font-size: 0.9rem;
+  line-height: 1.5rem;
+  transition: border-color 1s;
+}
+button.todayButton {
+  cursor: pointer;
+  &:focus {
+    outline: none;
+  }
+  &:global.focus-visible {
+    z-index: 1;
+    @include focusOutline();
+  }
+  &:active {
+    background-color: rgba(var(--dim-colors), 0.2);
+  }
 }
