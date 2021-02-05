@@ -96,6 +96,7 @@ export default function createWindowManager(
       titleBarStyle: 'hiddenInset',
       vibrancy: 'sidebar',
       webPreferences: {
+        enableBlinkFeatures: 'CSSColorSchemeUARendering',
         worldSafeExecuteJavaScript: true,
         enableRemoteModule: true,
         nodeIntegration: true,
