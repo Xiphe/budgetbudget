@@ -18,11 +18,34 @@ type Props = {
   scrollRef: MutableRefObject<((target: HTMLDivElement) => void) | null>;
 };
 
+function isHTMLElement(target: EventTarget): target is HTMLElement {
+  return typeof (target as any).nodeName === 'string';
+}
+
+function isHTMLButtonElement(elm: HTMLElement): elm is HTMLButtonElement {
+  return elm.nodeName === 'BUTTON';
+}
+
+function findButton(
+  target: EventTarget | HTMLElement | null,
+): null | HTMLButtonElement {
+  if (!target || !isHTMLElement(target)) {
+    return null;
+  }
+  if (isHTMLButtonElement(target)) {
+    return target;
+  }
+  return findButton(target.parentElement);
+}
+
 export default function BudgetHeader({ scrollRef, onClick }: Props) {
   const months: { date: Date; key: string }[] = useMonths();
   const handleClick = useCallback(
-    ({ target }: { target: HTMLButtonElement }) => {
-      onClick(target.name);
+    ({ target }: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      const button = findButton(target);
+      if (button) {
+        onClick(button.name);
+      }
     },
     [onClick],
   );
@@ -111,7 +134,7 @@ export default function BudgetHeader({ scrollRef, onClick }: Props) {
                   visibleMonthKeys.includes(key) &&
                     styles.currentMonthListEntry,
                 )}
-                onClick={handleClick as any}
+                onClick={handleClick}
               >
                 {format(date, 'MMM')}
               </button>
@@ -122,7 +145,7 @@ export default function BudgetHeader({ scrollRef, onClick }: Props) {
       <button
         name={formatDateKey(new Date())}
         className={styles.todayButton}
-        onClick={handleClick as any}
+        onClick={handleClick}
       >
         Today
       </button>
