@@ -1,17 +1,25 @@
 @import '../../lib/mixins.scss';
 
 .month {
-  min-height: calc(100vh - var(--header-height));
-  min-width: calc(100vw - var(--sidebar-width));
-  max-width: calc(100vw - var(--sidebar-width));
+  min-height: calc(100vh - var(--header-height) - var(--scrollbar-y, 0));
+  min-width: calc(100vw - var(--sidebar-width) - var(--scrollbar-x, 0));
+  max-width: calc(100vw - var(--sidebar-width) - var(--scrollbar-x, 0));
   height: var(--sidebar-height, 'auto');
   @media (min-width: 800px) {
-    min-width: calc(calc(100vw - var(--sidebar-width)) / 2);
-    max-width: calc(calc(100vw - var(--sidebar-width)) / 2);
+    min-width: calc(
+      calc(100vw - var(--sidebar-width) - var(--scrollbar-x, 0)) / 2
+    );
+    max-width: calc(
+      calc(100vw - var(--sidebar-width) - var(--scrollbar-x, 0)) / 2
+    );
   }
   @media (min-width: 1100px) {
-    min-width: calc(calc(100vw - var(--sidebar-width)) / 3);
-    max-width: calc(calc(100vw - var(--sidebar-width)) / 3);
+    min-width: calc(
+      calc(100vw - var(--sidebar-width) - var(--scrollbar-x, 0)) / 3
+    );
+    max-width: calc(
+      calc(100vw - var(--sidebar-width) - var(--scrollbar-x, 0)) / 3
+    );
   }
 }
 

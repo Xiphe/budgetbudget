@@ -39,7 +39,9 @@
 .categorySidebar {
   border-right: none;
   height: calc(100% - var(--month-header-height));
-  padding-bottom: calc(300px - var(--month-header-height));
+  padding-bottom: calc(
+    300px - var(--month-header-height) + var(--scrollbar-y, 0)
+  );
   transition: height, padding 200ms ease-out;
   overflow-y: scroll;
   &::-webkit-scrollbar {
