@@ -1,6 +1,7 @@
 .content {
   margin-top: var(--header-height);
   height: calc(100vh - var(--header-height));
+  overflow: hidden;
 }
 .padding {
   padding: 0 2rem;

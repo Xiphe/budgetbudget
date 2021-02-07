@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 import styles from './Content.module.scss';
-import ScrollbarDimensionProvider from '../ScrollBarDimensionProvider';
 
 type Props = {
   className?: string;
@@ -22,7 +21,7 @@ export default function Content({
   return (
     <>
       {header}
-      <ScrollbarDimensionProvider
+      <div
         className={classNames(
           className,
           styles.content,
@@ -32,7 +31,7 @@ export default function Content({
         )}
       >
         {children}
-      </ScrollbarDimensionProvider>
+      </div>
     </>
   );
 }

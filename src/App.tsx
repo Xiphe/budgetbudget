@@ -7,7 +7,11 @@ import {
   useBudgetReducer,
   initialInitDataRes,
 } from './budget';
-import { ErrorBoundary, Startup } from './components';
+import {
+  ErrorBoundary,
+  Startup,
+  ScrollBarDimensionProvider,
+} from './components';
 import styles from './App.module.scss';
 import { useNumberFormatter, useRetryResource } from './lib';
 import { useMoneyMoney } from './moneymoney';
@@ -71,7 +75,7 @@ export default function AppWrapper() {
   );
 
   return (
-    <div
+    <ScrollBarDimensionProvider
       className={classNames(
         styles.app,
         process.env.REACT_APP_ENV === 'test' && styles.appTest,
@@ -82,6 +86,6 @@ export default function AppWrapper() {
           <App readInitialView={retryReadInit} />
         </ErrorBoundary>
       </Suspense>
-    </div>
+    </ScrollBarDimensionProvider>
   );
 }

@@ -10,5 +10,6 @@ export { default as Select } from './Select';
 export { default as Row } from './Row';
 export { default as Button } from './Button';
 export { default as InfiniteSlider } from './InfiniteSlider';
+export { default as ScrollBarDimensionProvider } from './ScrollBarDimensionProvider';
 export * from './TabBar';
 export type ScrollTo = ScrollToT;
