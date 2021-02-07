@@ -23,7 +23,34 @@ jobs:
           CYPRESS_INSTALL_BINARY: 0
           ADBLOCK: true
       - run: npm test
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - uses: actions/cache@v1
+        id: dependencies-v1
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-dependencies-v1-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dependencies-v1-
+      - run: npm install
+        if: steps.dependencies-v1.outputs.cache-hit != 'true'
+        env:
+          CYPRESS_INSTALL_BINARY: 0
+          ADBLOCK: true
+      - run: npm run build:renderer
+        env:
+          REACT_APP_ENV: test
+      - uses: actions/upload-artifact@v2
+        with:
+          name: test-build-v1
+          path: build/**
   test:
+    needs: [build-test]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -46,12 +73,16 @@ jobs:
         env:
           CYPRESS_INSTALL_BINARY: 0
           ADBLOCK: true
+      - uses: actions/download-artifact@v2
+        with:
+          name: test-build-v1
+          path: build
       - uses: cypress-io/github-action@v2
         with:
           parallel: true
           record: true
           group: 2x-ubuntu-node-12
-          start: npm run start:testserver
+          start: npx serve build -l 8765
           wait-on: http://localhost:8765
         env:
           PORT: 8765
