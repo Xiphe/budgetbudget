@@ -21,6 +21,7 @@ export default function createSettings(
     fractionDigits: 2,
     startDate: 1562450400000,
     startBalance: 0,
+    ignorePendingTransactions: false,
     ...settings,
   };
 }

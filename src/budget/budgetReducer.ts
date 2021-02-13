@@ -14,6 +14,9 @@ export const ACTION_SET_NAME = Symbol('SET_NAME');
 export const ACTION_SETTINGS_SET_FRACTION_DIGITS = Symbol(
   'ACTION_SETTINGS_SET_FRACTION_DIGITS',
 );
+export const ACTION_SETTINGS_SET_IGNORE_PENDING_TRANSACTIONS = Symbol(
+  'ACTION_SETTINGS_SET_IGNORE_PENDING_TRANSACTIONS',
+);
 export const ACTION_SETTINGS_SET_SELECTED_ACCOUNTS = Symbol(
   'ACTION_SETTINGS_SET_SELECTED_ACCOUNTS',
 );
@@ -71,6 +74,10 @@ type SetSettingsFractionDigits = {
   type: typeof ACTION_SETTINGS_SET_FRACTION_DIGITS;
   payload: number;
 };
+type SetSettingsIgnorePendingTransactions = {
+  type: typeof ACTION_SETTINGS_SET_IGNORE_PENDING_TRANSACTIONS;
+  payload: boolean;
+};
 type SetSettingsSelectedAccounts = {
   type: typeof ACTION_SETTINGS_SET_SELECTED_ACCOUNTS;
   payload: string[];
@@ -125,6 +132,7 @@ export type Action =
   | SetCategoryRolloverAction
   | SetNameAction
   | SetSettingsFractionDigits
+  | SetSettingsIgnorePendingTransactions
   | SetSettingsSelectedAccounts
   | SetSettingsStartDate
   | SetSettingsStartBalance
@@ -231,6 +239,14 @@ function budgetReducer(state: BudgetState, action: Action): BudgetState {
         settings: {
           ...state.settings,
           fractionDigits: action.payload,
+        },
+      };
+    case ACTION_SETTINGS_SET_IGNORE_PENDING_TRANSACTIONS:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          ignorePendingTransactions: action.payload,
         },
       };
     case ACTION_SETTINGS_SET_SELECTED_ACCOUNTS:

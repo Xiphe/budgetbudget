@@ -8,6 +8,7 @@ const settings: BudgetState['settings'] = {
   currency: 'EUR',
   incomeCategories: [],
   fractionDigits: 2,
+  ignorePendingTransactions: false,
   startDate: startOfMonth(subMonths(getToday(), 1)).getTime(),
   startBalance: 0,
 };

@@ -9,6 +9,7 @@ import CurrencySetting from './Currency';
 import { Props } from './Types';
 import { Loading } from '../../../components';
 import { NumberFormatter } from '../../../lib/createNumberFormatter';
+import IgnorePendingTransactionsSetting from './IgnorePendingTransactions';
 
 export default function Settings(
   props: Props & { numberFormatter: NumberFormatter },
@@ -25,6 +26,8 @@ export default function Settings(
       </Setting>
       <hr />
       <FractionDigitsSetting {...props} />
+      <hr />
+      <IgnorePendingTransactionsSetting {...props} />
       <hr />
       <StartDateSetting {...props} />
       <StartBalanceSetting {...props} />

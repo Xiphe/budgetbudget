@@ -7,6 +7,7 @@ import {
 } from '../moneymoney';
 import { isLeft } from 'fp-ts/lib/Either';
 import { ThrowReporter } from 'io-ts/lib/ThrowReporter';
+import semver from 'semver';
 
 /**
  * ## 0.0.1 -> 0.0.2
@@ -14,8 +15,11 @@ import { ThrowReporter } from 'io-ts/lib/ThrowReporter';
  *
  * ## 0.0.2 -> 0.0.3
  * removed setting.numberLocale in favor of always using system
+ *
+ * ## 0.0.3 -> 0.0.4
+ * added setting.ignorePendingTransactions
  */
-export const VERSION = '0.0.3';
+export const VERSION = '0.0.4';
 
 const categoryShape = t.partial({
   amount: t.number,
@@ -39,6 +43,7 @@ const incomeCategoryShape = t.type(
 const settingsShape = t.type(
   {
     fractionDigits: t.number,
+    ignorePendingTransactions: t.boolean,
     startDate: t.number,
     currency: t.string,
     startBalance: t.number,
@@ -76,13 +81,17 @@ export function validateBudgetState(data: unknown): BudgetState {
   if (typeof data !== 'object' || data === null) {
     throw new Error('Invalid budget file format');
   }
-  const version: unknown = (data as any).version;
-  if (!version || version === '0.0.1') {
+  const version: string = (data as any).version as string;
+  if (!version || !semver.valid(version) || !semver.satisfies(version, '>0.0.1')){
     throw new Error(
       'File format not supported. Please use an earlier version of BudgetBudget to open this file',
     );
   }
-
+  // Upgrade to 0.0.4 version format
+  if (semver.lt(version, '0.0.4')) {
+    (data as any).settings.ignorePendingTransactions = false;
+    (data as any).version = '0.0.4';
+  }
   const c = budgetStateShape.decode(data);
   if (isLeft(c)) {
     throw ThrowReporter.report(c);
