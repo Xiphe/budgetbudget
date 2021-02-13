@@ -15,7 +15,7 @@ export default function useBudgets(
   defaultCategories: Category[] = [],
   {
     budgets,
-    settings: { incomeCategories, fractionDigits, startBalance, startDate },
+    settings: { incomeCategories, fractionDigits, startBalance, startDate, ignorePendingTransactions },
   }: BudgetState,
 ): [MonthData[], (add: number) => void] {
   const defaultCategoryIds = useMemo(
@@ -23,8 +23,8 @@ export default function useBudgets(
     [defaultCategories],
   );
   const balances = useMemo(
-    () => calculateBalances(transactions, defaultCategoryIds),
-    [transactions, defaultCategoryIds],
+    () => calculateBalances(transactions, defaultCategoryIds, ignorePendingTransactions),
+    [transactions, defaultCategoryIds, ignorePendingTransactions],
   );
   const getInitial = useMemo(() => {
     const initial: InterMonthData = {

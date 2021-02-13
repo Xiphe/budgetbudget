@@ -4,8 +4,12 @@ import { formatDateKey } from '../lib';
 export default function calculateBalances(
   transactions: Transaction[],
   defaultCategoryIds: string[],
+  ignorePendingTransactions: boolean
 ): Balances {
   return transactions.reduce((memo, transaction) => {
+    if (!transaction.booked && ignorePendingTransactions) {
+      return memo;
+    }
     const key = formatDateKey(transaction.bookingDate);
     let balance = memo[key];
     if (!balance) {
