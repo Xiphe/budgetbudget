@@ -10,7 +10,7 @@ import classNames from 'classnames';
 import addMonths from 'date-fns/addMonths';
 import format from 'date-fns/format';
 import { Header } from '../../components';
-import { useVisibleMonths, formatDateKey, useMonths } from '../../lib';
+import { useVisibleMonths, formatDateKey, useMonths, getToday } from '../../lib';
 import styles from './Budget.module.scss';
 
 type Props = {
@@ -143,7 +143,7 @@ export default function BudgetHeader({ scrollRef, onClick }: Props) {
         </div>
       </div>
       <button
-        name={formatDateKey(new Date())}
+        name={formatDateKey(getToday())}
         className={styles.todayButton}
         onClick={handleClick}
       >
