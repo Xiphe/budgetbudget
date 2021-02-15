@@ -49,7 +49,7 @@ describe('Create New Budget', () => {
     cy.readBudget('/my_new.budget')
       .should('include', {
         name: 'My New Budget',
-        version: '0.0.3',
+        version: '0.0.4',
       })
       .and('deep.nested.include', {
         'settings.accounts': [accounts[0].uuid],
