@@ -8,6 +8,7 @@ type Props = {
   children: ReactNode;
   padding?: boolean;
   flex?: boolean;
+  scroll?: boolean;
   background?: boolean;
 };
 export default function Content({
@@ -17,6 +18,7 @@ export default function Content({
   background,
   className,
   flex,
+  scroll,
 }: Props) {
   return (
     <>
@@ -27,6 +29,7 @@ export default function Content({
           styles.content,
           padding && styles.padding,
           flex && styles.flex,
+          scroll && styles.scroll,
           background && styles.background,
         )}
       >

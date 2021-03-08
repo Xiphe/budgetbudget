@@ -24,6 +24,7 @@ export default function Settings(props: Props) {
     <Content
       padding
       background
+      scroll
       header={
         <Header>
           <Button title="close" disabled={!valid} onClick={props.onClose}>
