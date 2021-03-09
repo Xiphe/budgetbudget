@@ -32,6 +32,7 @@ export default function NewBudget({
   return (
     <Content
       padding
+      scroll
       header={
         <Header>
           <span>Create a new Budget</span>
