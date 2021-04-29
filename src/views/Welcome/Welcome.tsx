@@ -10,8 +10,8 @@ type Props = {
 };
 export default function Welcome({ onCreate }: Props) {
   const [
-    startTransition,
     transitioning,
+    startTransition,
   ] = (React as any).unstable_useTransition({
     timeoutMs: 3000,
   });

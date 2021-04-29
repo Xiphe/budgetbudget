@@ -3,4 +3,4 @@ if (process.env.REACT_APP_ENV !== 'test') {
   Object.assign(console, functions);
 }
 
-export default null;
+export const noop = null;

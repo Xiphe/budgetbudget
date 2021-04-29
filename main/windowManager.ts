@@ -99,6 +99,7 @@ export default function createWindowManager(
         enableBlinkFeatures: 'CSSColorSchemeUARendering',
         worldSafeExecuteJavaScript: true,
         enableRemoteModule: true,
+        contextIsolation: false,
         nodeIntegration: true,
       },
     });
