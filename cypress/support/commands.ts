@@ -80,9 +80,16 @@ Cypress.Commands.add('checkTrailingHandlers', () => {
   cy._bb().then(({ _electron }) => _electron.checkTrailingHandlers());
 });
 Cypress.Commands.add('categoryValue', (category, cell) => {
-  return cy.findByRole('row', { name: category }).within(() => {
-    return cy.findByRole('gridcell', { name: cell });
-  });
+  let sub: JQuery<HTMLElement> | null = null;
+  cy.findByRole('row', { name: category })
+    .within(() => {
+      cy.findByRole('gridcell', {
+        name: cell,
+      }).then((s) => (sub = s));
+    })
+    .then(() => {
+      cy.wrap(sub);
+    });
 });
 
 Cypress.Commands.add('clickMenu', (...path) => {
@@ -133,7 +140,7 @@ Cypress.Commands.add(
     cy._bb().then(({ _startApp }) => _startApp());
     if (waitUntilLoaded) {
       cy.findByText(/BudgetBudget - Loading/i).should('be.visible');
-      cy.findByText(/BudgetBudget - Loading/i).should('not.be.visible');
+      cy.findByText(/BudgetBudget - Loading/i).should('not.exist');
     }
   },
 );

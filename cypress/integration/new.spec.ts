@@ -40,7 +40,7 @@ describe('Create New Budget', () => {
     cy.findByDisplayValue(/please select/i).select(categories[1].name);
 
     cy.findByText(/Create "My New Budget"/i).click();
-    cy.findByText(/Available Funds/i).should('be.visible');
+    cy.findByRole('region', { name: /July 2019/ }).should('be.visible');
 
     cy.bb().then(({ electron: { ipcMain } }) =>
       ipcMain.send('SAVE', '/my_new.budget'),
