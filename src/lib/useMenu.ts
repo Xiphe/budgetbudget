@@ -6,6 +6,8 @@ import {
   createEditMenu,
   createOpenRecent,
   CreateMenuCallbacks,
+  createWindowMenu,
+  createHelpMenu,
 } from '../shared/createMenu';
 import { useRecentFiles } from './useRecentFiles';
 import { RecentFile } from '../shared/settings';
@@ -60,6 +62,8 @@ function buildMenu(callbacks: CreateMenuCallbacks, recentFiles: RecentFile[]) {
           entries: fileMenuEntries.concat(refreshEntry),
         }),
         createEditMenu(),
+        createWindowMenu(),
+        createHelpMenu()
       ],
       callbacks,
     ),
