@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  ipcRenderer,
-  remote,
-  MenuItemConstructorOptions,
-  OpenExternalOptions,
-} from 'electron';
+import { ipcRenderer, remote, MenuItemConstructorOptions } from 'electron';
 import {
   createMenu,
   createFileMenu,
