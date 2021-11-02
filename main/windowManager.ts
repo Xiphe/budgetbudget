@@ -1,4 +1,4 @@
-import { BrowserWindow, IpcMain, WebContents, App } from 'electron';
+import { BrowserWindow, IpcMain, WebContents, App, shell, OpenExternalOptions } from 'electron';
 import { join } from 'path';
 import { Settings } from '../src/shared/settings';
 import { View } from '../src/shared/types';
@@ -133,12 +133,9 @@ export default function createWindowManager(
     });
   }
 
-  ipcMain.handle(
-    'INIT',
-    (ev): View => {
-      return ev.sender.initialView;
-    },
-  );
+  ipcMain.handle('INIT', (ev): View => {
+    return ev.sender.initialView;
+  });
   ipcMain.on('QUIT', (ev) => {
     const win = getWindow(ev.sender);
     if (!win) {
@@ -152,6 +149,9 @@ export default function createWindowManager(
       throw new Error('Can not set edited for unregistered window');
     }
     win.setDocumentEdited(edited);
+  });
+  ipcMain.handle('OPEN_EXTERNAL', (_, url: string, options: OpenExternalOptions) => {
+    shell.openExternal(url, options)
   });
   ipcMain.handle('MENU_FILE_NEW', () => {
     createWindow({ type: 'new' });

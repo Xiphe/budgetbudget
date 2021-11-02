@@ -1,4 +1,4 @@
-import { MenuItemConstructorOptions, shell } from 'electron';
+import { MenuItemConstructorOptions, OpenExternalOptions } from 'electron';
 import { basename } from 'path';
 import { RecentFile } from './settings';
 
@@ -121,32 +121,39 @@ export function createWindowMenu(): MenuConfig {
   return {
     label: 'Window',
     submenu: [
-      { 
+      {
         role: 'minimize',
-        accelerator: 'Command+M'
+        accelerator: 'Command+M',
       },
       { role: 'zoom' },
       { type: 'separator' },
-      { role: 'front' }
+      { role: 'front' },
     ],
-    role: 'window'
-  }
+    role: 'window',
+  };
 }
 
-export function createHelpMenu(): MenuConfig {
+interface HelpMenuOptions {
+  openExternal: (url: string, options?: OpenExternalOptions) => void;
+}
+export function createHelpMenu({ openExternal }: HelpMenuOptions): MenuConfig {
   return {
-    label: "Help",
+    label: 'Help',
     submenu: [
       {
         label: 'Advanced Budget Input',
-        click: () => shell.openExternal('https://github.com/Xiphe/budgetbudget/wiki/BudgetInput')
+        click: () =>
+          openExternal(
+            'https://github.com/Xiphe/budgetbudget/wiki/BudgetInput',
+          ),
       },
-      { type: 'separator'},
+      { type: 'separator' },
       {
         label: 'Report issue',
-        click: () => shell.openExternal('https://github.com/Xiphe/budgetbudget/issues')
+        click: () =>
+          openExternal('https://github.com/Xiphe/budgetbudget/issues'),
       },
     ],
-    role: 'help'
-  }
+    role: 'help',
+  };
 }

@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ipcRenderer, remote, MenuItemConstructorOptions } from 'electron';
+import {
+  ipcRenderer,
+  remote,
+  MenuItemConstructorOptions,
+  OpenExternalOptions,
+} from 'electron';
 import {
   createMenu,
   createFileMenu,
@@ -63,7 +68,11 @@ function buildMenu(callbacks: CreateMenuCallbacks, recentFiles: RecentFile[]) {
         }),
         createEditMenu(),
         createWindowMenu(),
-        createHelpMenu()
+        createHelpMenu({
+          openExternal(url, options) {
+            ipcRenderer.invoke('OPEN_EXTERNAL', url, options);
+          },
+        }),
       ],
       callbacks,
     ),
