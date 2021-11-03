@@ -11,14 +11,14 @@ jobs:
         with:
           node-version: 16.x
       - uses: actions/cache@v1
-        id: dependencies-v1
+        id: dependencies-v1.1
         with:
           path: node_modules
-          key: ${{ runner.os }}-dependencies-v1-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-dependencies-v1.1-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-dependencies-v1-
+            ${{ runner.os }}-dependencies-v1.1-
       - run: npm install
-        if: steps.dependencies-v1.outputs.cache-hit != 'true'
+        if: steps.dependencies-v1.1.outputs.cache-hit != 'true'
         env:
           CYPRESS_INSTALL_BINARY: 0
           ADBLOCK: true
@@ -31,14 +31,14 @@ jobs:
         with:
           node-version: 16.x
       - uses: actions/cache@v1
-        id: dependencies-v1
+        id: dependencies-v1.1
         with:
           path: node_modules
-          key: ${{ runner.os }}-dependencies-v1-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-dependencies-v1.1-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-dependencies-v1-
+            ${{ runner.os }}-dependencies-v1.1-
       - run: npm install
-        if: steps.dependencies-v1.outputs.cache-hit != 'true'
+        if: steps.dependencies-v1.1.outputs.cache-hit != 'true'
         env:
           CYPRESS_INSTALL_BINARY: 0
           ADBLOCK: true
@@ -62,14 +62,14 @@ jobs:
         with:
           node-version: 16.x
       - uses: actions/cache@v1
-        id: dependencies-v1
+        id: dependencies-v1.1
         with:
           path: node_modules
-          key: ${{ runner.os }}-dependencies-v1-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-dependencies-v1.1-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-dependencies-v1-
+            ${{ runner.os }}-dependencies-v1.1-
       - run: npm install
-        if: steps.dependencies-v1.outputs.cache-hit != 'true'
+        if: steps.dependencies-v1.1.outputs.cache-hit != 'true'
         env:
           CYPRESS_INSTALL_BINARY: 0
           ADBLOCK: true
@@ -99,14 +99,14 @@ jobs:
         with:
           node-version: 16.x
       - uses: actions/cache@v1
-        id: dependencies-v1
+        id: dependencies-v1.1
         with:
           path: node_modules
-          key: ${{ runner.os }}-dependencies-v1-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-dependencies-v1.1-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-dependencies-v1-
+            ${{ runner.os }}-dependencies-v1.1-
       - run: npm install
-        if: steps.dependencies-v1.outputs.cache-hit != 'true'
+        if: steps.dependencies-v1.1.outputs.cache-hit != 'true'
         env:
           CYPRESS_INSTALL_BINARY: 0
           ADBLOCK: true
