@@ -128,6 +128,7 @@
     "electron-builder-notarize": "1.2.0",
     "faker": "5.5.3",
     "get-port-cli": "1.1.0",
+    "istextorbinary": "6.0.0",
     "memfs": "3.2.2",
     "node-sass": "5.0.0",
     "react-scripts": "4.0.3",
