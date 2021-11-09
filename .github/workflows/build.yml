@@ -73,6 +73,7 @@ jobs:
         env:
           CYPRESS_INSTALL_BINARY: 0
           ADBLOCK: true
+      - run: npx cypress install
       - uses: actions/download-artifact@v2
         with:
           name: test-build-v1
