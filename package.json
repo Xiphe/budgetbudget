@@ -130,7 +130,7 @@
     "get-port-cli": "1.1.0",
     "istextorbinary": "6.0.0",
     "memfs": "3.2.2",
-    "node-sass": "5.0.0",
+    "node-sass": "7.0.0",
     "react-scripts": "4.0.3",
     "semantic-release": "17.4.2",
     "serve": "11.3.2",
