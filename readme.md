@@ -71,6 +71,9 @@ npm install
 # start the app in development mode
 npm start
 ```
+## Screenshot
+<img width="941" alt="screenshot_1" src="https://github.com/Xiphe/budgetbudget/assets/7121202/415ef68a-6982-4183-bb04-8840727b9c4d">
+
 
 ## License
 
